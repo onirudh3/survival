@@ -2,9 +2,6 @@
 library(tidyverse)
 library(scales)
 
-# Working directory
-setwd("C:/Users/oniru/OneDrive/Tsimane/Survival Data")
-
 # Import the tree fall final table
 df_final <- read.csv("treefall_final_table.csv")
 
@@ -22,15 +19,15 @@ df_final$canoe.capsize.during.interval <- ifelse(df_final$canoe.capsize.during.i
 df_final$cut.self.during.interval <- ifelse(df_final$cut.self.during.interval == 1, "Cut Self occurred", "Cut Self Not occurred")
 ################################################################################
 
-# Compare intervals where event = 1 vs. intervals where event = 0, 
-# what is the percentage in which sickness occurrs 
+# Compare intervals where event = 1 vs. intervals where event = 0,
+# what is the percentage in which sickness occurrs
 df_final %>%
-  count(sickness.during.interval, event) %>% 
-  group_by(sickness.during.interval) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(sickness.during.interval, event) %>%
+  group_by(sickness.during.interval) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(sickness.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 7) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 30) +
@@ -42,12 +39,12 @@ df_final %>%
 
 # For males and females
 df_final %>%
-  count(sickness.during.interval, event, male) %>% 
-  group_by(sickness.during.interval, male) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(sickness.during.interval, event, male) %>%
+  group_by(sickness.during.interval, male) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(sickness.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 7) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 22) +
@@ -61,12 +58,12 @@ df_final %>%
 
 # By region
 df_final %>%
-  count(sickness.during.interval, event, region) %>% 
-  group_by(sickness.during.interval, region) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(sickness.during.interval, event, region) %>%
+  group_by(sickness.during.interval, region) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(sickness.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 5) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 15) +
@@ -80,15 +77,15 @@ df_final %>%
   guides(x =  guide_axis(angle = 90))
 
 ################################################################################
-# Compare intervals where event = 1 vs. intervals where event = 0, 
-# what is the percentage in which snake or ray bite occurrs 
+# Compare intervals where event = 1 vs. intervals where event = 0,
+# what is the percentage in which snake or ray bite occurrs
 df_final %>%
-  count(bite.during.interval, event) %>% 
-  group_by(bite.during.interval) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(bite.during.interval, event) %>%
+  group_by(bite.during.interval) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(bite.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 7) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 30) +
@@ -100,12 +97,12 @@ df_final %>%
 
 # For males and females
 df_final %>%
-  count(bite.during.interval, event, male) %>% 
-  group_by(bite.during.interval, male) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(bite.during.interval, event, male) %>%
+  group_by(bite.during.interval, male) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(bite.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 7) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 21) +
@@ -119,12 +116,12 @@ df_final %>%
 
 # By region
 df_final %>%
-  count(bite.during.interval, event, region) %>% 
-  group_by(bite.during.interval, region) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(bite.during.interval, event, region) %>%
+  group_by(bite.during.interval, region) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(bite.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 5) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 15) +
@@ -138,15 +135,15 @@ df_final %>%
   guides(x =  guide_axis(angle = 90))
 
 ################################################################################
-# Compare intervals where event = 1 vs. intervals where event = 0, 
-# what is the percentage in which fought 
+# Compare intervals where event = 1 vs. intervals where event = 0,
+# what is the percentage in which fought
 df_final %>%
-  count(fought.during.interval, event) %>% 
-  group_by(fought.during.interval) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(fought.during.interval, event) %>%
+  group_by(fought.during.interval) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(fought.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 7) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 30) +
@@ -158,12 +155,12 @@ df_final %>%
 
 # For males and females
 df_final %>%
-  count(fought.during.interval, event, male) %>% 
-  group_by(fought.during.interval, male) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(fought.during.interval, event, male) %>%
+  group_by(fought.during.interval, male) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(fought.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 7) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 21) +
@@ -177,12 +174,12 @@ df_final %>%
 
 # By region
 df_final %>%
-  count(fought.during.interval, event, region) %>% 
-  group_by(fought.during.interval, region) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(fought.during.interval, event, region) %>%
+  group_by(fought.during.interval, region) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(fought.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 5) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 15) +
@@ -196,15 +193,15 @@ df_final %>%
   guides(x =  guide_axis(angle = 90))
 
 ################################################################################
-# Compare intervals where event = 1 vs. intervals where event = 0, 
-# what is the percentage in which animal attack 
+# Compare intervals where event = 1 vs. intervals where event = 0,
+# what is the percentage in which animal attack
 df_final %>%
-  count(animal.attack.during.interval, event) %>% 
-  group_by(animal.attack.during.interval) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(animal.attack.during.interval, event) %>%
+  group_by(animal.attack.during.interval) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(animal.attack.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 7) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 30) +
@@ -216,12 +213,12 @@ df_final %>%
 
 # For males and females
 df_final %>%
-  count(animal.attack.during.interval, event, male) %>% 
-  group_by(animal.attack.during.interval, male) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(animal.attack.during.interval, event, male) %>%
+  group_by(animal.attack.during.interval, male) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(animal.attack.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 7) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 21) +
@@ -235,12 +232,12 @@ df_final %>%
 
 # By region
 df_final %>%
-  count(animal.attack.during.interval, event, region) %>% 
-  group_by(animal.attack.during.interval, region) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(animal.attack.during.interval, event, region) %>%
+  group_by(animal.attack.during.interval, region) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(animal.attack.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 5) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 15) +
@@ -254,18 +251,18 @@ df_final %>%
   guides(x =  guide_axis(angle = 90))
 
 # It appears that no tree fall occurred after animal attack upriver. Let us check
-View(df_final[(df_final$region == "Upriver"),]) 
+View(df_final[(df_final$region == "Upriver"),])
 
 ################################################################################
-# Compare intervals where event = 1 vs. intervals where event = 0, 
-# what is the percentage in which canoe capsize 
+# Compare intervals where event = 1 vs. intervals where event = 0,
+# what is the percentage in which canoe capsize
 df_final %>%
-  count(canoe.capsize.during.interval, event) %>% 
-  group_by(canoe.capsize.during.interval) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(canoe.capsize.during.interval, event) %>%
+  group_by(canoe.capsize.during.interval) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(canoe.capsize.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 7) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 30) +
@@ -277,12 +274,12 @@ df_final %>%
 
 # For males and females
 df_final %>%
-  count(canoe.capsize.during.interval, event, male) %>% 
-  group_by(canoe.capsize.during.interval, male) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(canoe.capsize.during.interval, event, male) %>%
+  group_by(canoe.capsize.during.interval, male) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(canoe.capsize.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 7) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 21) +
@@ -296,12 +293,12 @@ df_final %>%
 
 # By region
 df_final %>%
-  count(canoe.capsize.during.interval, event, region) %>% 
-  group_by(canoe.capsize.during.interval, region) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(canoe.capsize.during.interval, event, region) %>%
+  group_by(canoe.capsize.during.interval, region) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(canoe.capsize.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 5) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 15) +
@@ -315,15 +312,15 @@ df_final %>%
   guides(x =  guide_axis(angle = 90))
 
 ################################################################################
-# Compare intervals where event = 1 vs. intervals where event = 0, 
-# what is the percentage in which cut self 
+# Compare intervals where event = 1 vs. intervals where event = 0,
+# what is the percentage in which cut self
 df_final %>%
-  count(cut.self.during.interval, event) %>% 
-  group_by(cut.self.during.interval) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(cut.self.during.interval, event) %>%
+  group_by(cut.self.during.interval) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(cut.self.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 7) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 30) +
@@ -335,12 +332,12 @@ df_final %>%
 
 # For males and females
 df_final %>%
-  count(cut.self.during.interval, event, male) %>% 
-  group_by(cut.self.during.interval, male) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(cut.self.during.interval, event, male) %>%
+  group_by(cut.self.during.interval, male) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(cut.self.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 7) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 21) +
@@ -354,12 +351,12 @@ df_final %>%
 
 # By region
 df_final %>%
-  count(cut.self.during.interval, event, region) %>% 
-  group_by(cut.self.during.interval, region) %>% 
-  mutate(pct = prop.table(n) * 100) %>% 
+  count(cut.self.during.interval, event, region) %>%
+  group_by(cut.self.during.interval, region) %>%
+  mutate(pct = prop.table(n) * 100) %>%
   ggplot(aes(cut.self.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")), 
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
             position = position_stack(vjust = 0.5), size = 5) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_classic(base_size = 15) +

@@ -1,14 +1,11 @@
 library(tidyverse)
 library(readxl)
 
-# Working directory
-setwd("C:/Users/oniru/OneDrive/Tsimane/Survival Data")
-
 # Import raw data, this will import sheet "db"
 animal_attack_df <- read_xls("threat_wide___sumACEs_for anirudh.xls")
 
 # Create data frame with only the columns we need
-animal_attack_df <- animal_attack_df[c("pid", "age", "male", "animal.attack.ever", "animal.attack.age", 
+animal_attack_df <- animal_attack_df[c("pid", "age", "male", "animal.attack.ever", "animal.attack.age",
                          "animal.attack.age1")]
 
 # View any duplicate rows

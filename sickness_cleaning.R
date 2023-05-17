@@ -1,14 +1,11 @@
 library(tidyverse)
 library(readxl)
 
-# Working directory
-setwd("C:/Users/oniru/OneDrive/Tsimane/Survival Data")
-
 # Import raw data, this will import sheet "db"
 sick_df <- read_xls("threat_wide___sumACEs_for anirudh.xls")
 
 # Create data frame with only the columns we need
-sick_df <- sick_df[c("pid", "age", "male", "sickness", "sickness.age", "sickness.age1", 
+sick_df <- sick_df[c("pid", "age", "male", "sickness", "sickness.age", "sickness.age1",
            "sickness.age2")]
 
 # View any duplicate rows

@@ -2,19 +2,16 @@
 library(tidyverse)
 library(readxl)
 
-# Working directory
-setwd("C:/Users/oniru/OneDrive/Tsimane/Survival Data")
-
 # Import raw data, this will import sheet "dc"
 dc <- read_xls("threat_wide___sumACEs_for anirudh.xls")
 
 # Create data frame with only the columns we need
-dc <- dc[c("pid", "age", "male","cut.self.ever", "TIPO1", 
-           "other.serious.accident.age", "TIPO2", 
-           "other.serious.accident.age1", "TIPO3", 
-           "other.serious.accident.age2", "TIPO4", 
-           "other.serious.accident.age3", "TIPO5", 
-           "other.serious.accident.age4", "TIPO6", 
+dc <- dc[c("pid", "age", "male","cut.self.ever", "TIPO1",
+           "other.serious.accident.age", "TIPO2",
+           "other.serious.accident.age1", "TIPO3",
+           "other.serious.accident.age2", "TIPO4",
+           "other.serious.accident.age3", "TIPO5",
+           "other.serious.accident.age4", "TIPO6",
            "other.serious.accident.age5")]
 
 # Delete rows where no cut self ever occurred
@@ -45,7 +42,7 @@ dc$cut.age5 <- if_else(dc$TIPO5 == "c", dc$other.serious.accident.age4, NA_real_
 dc$cut.age6 <- if_else(dc$TIPO6 == "c", dc$other.serious.accident.age5, NA_real_)
 
 # Create a dataframe with the columns we want
-dc1 <- dc[c("pid", "age", "male", "cut.self.ever", "cut.age1", "cut.age2", "cut.age3", 
+dc1 <- dc[c("pid", "age", "male", "cut.self.ever", "cut.age1", "cut.age2", "cut.age3",
             "cut.age4", "cut.age5", "cut.age6", "n.cut.self")]
 
 # View any duplicate rows
@@ -62,7 +59,7 @@ dc1 <- dc1 %>%
   ungroup()
 
 # Moving values so there is no NA in cut.age1
-dc1 <- dedupewider::na_move(dc1, cols = names(dc1)[grepl("^cut.age\\d$", 
+dc1 <- dedupewider::na_move(dc1, cols = names(dc1)[grepl("^cut.age\\d$",
                                                          names(dc1))])
 # Trying to check if more than one cut self occurred in one interval
 # View(dc1[(dc1$cut.age1 == dc1$cut.age2), ])

@@ -2,19 +2,16 @@
 library(tidyverse)
 library(readxl)
 
-# Working directory
-setwd("C:/Users/oniru/OneDrive/Tsimane/Survival Data")
-
 # Import raw data, this will import sheet "ds"
 ds <- read_xls("threat_wide___sumACEs_for anirudh.xls")
 
 # Create data frame with only the columns we need
-ds <- ds[c("pid", "age", "male","canoe.capsize.ever", "TIPO1", 
-           "other.serious.accident.age", "TIPO2", 
-           "other.serious.accident.age1", "TIPO3", 
-           "other.serious.accident.age2", "TIPO4", 
-           "other.serious.accident.age3", "TIPO5", 
-           "other.serious.accident.age5", "TIPO6", 
+ds <- ds[c("pid", "age", "male","canoe.capsize.ever", "TIPO1",
+           "other.serious.accident.age", "TIPO2",
+           "other.serious.accident.age1", "TIPO3",
+           "other.serious.accident.age2", "TIPO4",
+           "other.serious.accident.age3", "TIPO5",
+           "other.serious.accident.age5", "TIPO6",
            "other.serious.accident.age5")]
 
 # Delete rows where no canoe capsize ever occurred
@@ -52,7 +49,7 @@ ds1 <- ds1 %>%
   ungroup()
 
 # Moving values so there is no NA in cc.age1
-ds1 <- dedupewider::na_move(ds1, cols = names(ds1)[grepl("^cc.age\\d$", 
+ds1 <- dedupewider::na_move(ds1, cols = names(ds1)[grepl("^cc.age\\d$",
                                                          names(ds1))])
 # Trying to check if more than one canoe capsize occurred in one interval
 # View(ds1[(ds1$cc.age1 == ds1$cc.age2), ])

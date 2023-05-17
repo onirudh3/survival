@@ -4,9 +4,6 @@ library(scales)
 library(gtable)
 library(grid)
 
-# Working directory
-setwd("C:/Users/oniru/OneDrive/Tsimane/Survival Data")
-
 # Import the tree fall final table
 df_final <- read.csv("treefall_final_table.csv")
 
@@ -15,7 +12,7 @@ df_final$male <- ifelse(df_final$male == 1, "Male", "Female")
 ################################################################################
 
 # Creating interval categories for occurrence of tree fall
-df_final <- df_final %>% 
+df_final <- df_final %>%
   mutate(treefall.occurrence.interval = case_when(event == 1 & exit >= 0 & exit < 10 ~ "0-9",
                                                   event == 1 & exit >= 10 & exit < 20 ~ "10-19",
                                                   event == 1 & exit >= 20 & exit < 30 ~ "20-29",
@@ -26,7 +23,7 @@ df_final <- df_final %>%
                                                   event == 1 & exit >= 70 & exit < 80 ~ "70-79"))
 
 # Creating interval categories for co-occurrences of sickness
-df_final <- df_final %>% 
+df_final <- df_final %>%
   mutate(sickness.co_occurrence.interval = case_when(sickness.during.interval == 1 & event == 1 & exit >= 0 & exit < 10 ~ "0-9",
                                                      sickness.during.interval == 1 & event == 1 & exit >= 10 & exit < 20 ~ "10-19",
                                                      sickness.during.interval == 1 & event == 1 & exit >= 20 & exit < 30 ~ "20-29",
@@ -38,7 +35,7 @@ df_final <- df_final %>%
 # df_final$sickness.co_occurrence.interval <- ifelse(is.na(df_final$sickness.co_occurrence.interval), "No Co-occurrence", df_final$sickness.co_occurrence.interval)
 
 # Creating interval categories for co-occurrences of snake/ray bite
-df_final <- df_final %>% 
+df_final <- df_final %>%
   mutate(bite.co_occurrence.interval = case_when(bite.during.interval == 1 & event == 1 & exit >= 0 & exit < 10 ~ "0-9",
                                                  bite.during.interval == 1 & event == 1 & exit >= 10 & exit < 20 ~ "10-19",
                                                  bite.during.interval == 1 & event == 1 & exit >= 20 & exit < 30 ~ "20-29",
@@ -51,7 +48,7 @@ df_final <- df_final %>%
 
 
 # Creating interval categories for co-occurrences of fought
-df_final <- df_final %>% 
+df_final <- df_final %>%
   mutate(fought.co_occurrence.interval = case_when(fought.during.interval == 1 & event == 1 & exit >= 0 & exit < 10 ~ "0-9",
                                                    fought.during.interval == 1 & event == 1 & exit >= 10 & exit < 20 ~ "10-19",
                                                    fought.during.interval == 1 & event == 1 & exit >= 20 & exit < 30 ~ "20-29",
@@ -63,7 +60,7 @@ df_final <- df_final %>%
 # df_final$fought.co_occurrence.interval <- ifelse(is.na(df_final$fought.co_occurrence.interval), "No Co-occurrence", df_final$sickness.co_occurrence.interval)
 
 # Creating interval categories for co-occurrences of animal.attack
-df_final <- df_final %>% 
+df_final <- df_final %>%
   mutate(animal.attack.co_occurrence.interval = case_when(animal.attack.during.interval == 1 & event == 1 & exit >= 0 & exit < 10 ~ "0-9",
                                                           animal.attack.during.interval == 1 & event == 1 & exit >= 10 & exit < 20 ~ "10-19",
                                                           animal.attack.during.interval == 1 & event == 1 & exit >= 20 & exit < 30 ~ "20-29",
@@ -75,7 +72,7 @@ df_final <- df_final %>%
 # df_final$animal.attack.co_occurrence.interval <- ifelse(is.na(df_final$animal.attack.co_occurrence.interval), "No Co-occurrence", df_final$sickness.co_occurrence.interval)
 
 # Creating interval categories for co-occurrences of canoe.capsize
-df_final <- df_final %>% 
+df_final <- df_final %>%
   mutate(canoe.capsize.co_occurrence.interval = case_when(canoe.capsize.during.interval == 1 & event == 1 & exit >= 0 & exit < 10 ~ "0-9",
                                                           canoe.capsize.during.interval == 1 & event == 1 & exit >= 10 & exit < 20 ~ "10-19",
                                                           canoe.capsize.during.interval == 1 & event == 1 & exit >= 20 & exit < 30 ~ "20-29",
@@ -87,7 +84,7 @@ df_final <- df_final %>%
 # df_final$canoe.capsize.co_occurrence.interval <- ifelse(is.na(df_final$canoe.capsize.co_occurrence.interval), "No Co-occurrence", df_final$sickness.co_occurrence.interval)
 
 # Creating interval categories for co-occurrences of cut.self
-df_final <- df_final %>% 
+df_final <- df_final %>%
   mutate(cut.self.co_occurrence.interval = case_when(cut.self.during.interval == 1 & event == 1 & exit >= 0 & exit < 10 ~ "0-9",
                                                      cut.self.during.interval == 1 & event == 1 & exit >= 10 & exit < 20 ~ "10-19",
                                                      cut.self.during.interval == 1 & event == 1 & exit >= 20 & exit < 30 ~ "20-29",
@@ -103,10 +100,10 @@ df_final <- df_final %>%
 ################################################################################
 ################################################################################
 # Distribution of co-occurring sickness within tree fall age intervals
-df_final %>% 
-  count(sickness.co_occurrence.interval) %>% 
-  mutate(prop = prop.table(n)) %>% 
-  filter(!is.na(sickness.co_occurrence.interval)) %>% 
+df_final %>%
+  count(sickness.co_occurrence.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(sickness.co_occurrence.interval)) %>%
   ggplot() +
   geom_col(aes(x = sickness.co_occurrence.interval, y = prop), fill = "lightblue", width = 0.6) +
   geom_text(aes(x = sickness.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .001, size = 6) +
@@ -118,10 +115,10 @@ df_final %>%
   ylab("Percentage of Intervals")
 
 # By gender
-df_final %>% 
-  count(sickness.co_occurrence.interval, male) %>% 
-  mutate(prop = prop.table(n)) %>% 
-  filter(!is.na(sickness.co_occurrence.interval)) %>% 
+df_final %>%
+  count(sickness.co_occurrence.interval, male) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(sickness.co_occurrence.interval)) %>%
   ggplot() +
   geom_col(aes(x = sickness.co_occurrence.interval, y = prop), fill = "lightblue", width = 0.6) +
   geom_text(aes(x = sickness.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .001, size = 6) +
@@ -136,10 +133,10 @@ df_final %>%
 
 ################################################################################
 # Distribution of co-occurring snake/ray bite within tree fall age intervals
-df_final %>% 
-  count(bite.co_occurrence.interval) %>% 
-  mutate(prop = prop.table(n)) %>% 
-  filter(!is.na(bite.co_occurrence.interval)) %>% 
+df_final %>%
+  count(bite.co_occurrence.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(bite.co_occurrence.interval)) %>%
   ggplot() +
   geom_col(aes(x = bite.co_occurrence.interval, y = prop), fill = "lightblue", width = 0.6) +
   geom_text(aes(x = bite.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .001, size = 6) +
@@ -151,10 +148,10 @@ df_final %>%
   ylab("Percentage of Intervals")
 
 # By gender
-df_final %>% 
-  count(bite.co_occurrence.interval, male) %>% 
-  mutate(prop = prop.table(n)) %>% 
-  filter(!is.na(bite.co_occurrence.interval)) %>% 
+df_final %>%
+  count(bite.co_occurrence.interval, male) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(bite.co_occurrence.interval)) %>%
   ggplot() +
   geom_col(aes(x = bite.co_occurrence.interval, y = prop), fill = "lightblue", width = 0.6) +
   geom_text(aes(x = bite.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .001, size = 6) +
@@ -169,10 +166,10 @@ df_final %>%
 
 ################################################################################
 # Distribution of co-occurring fought within tree fall age intervals
-df_final %>% 
-  count(fought.co_occurrence.interval) %>% 
-  mutate(prop = prop.table(n)) %>% 
-  filter(!is.na(fought.co_occurrence.interval)) %>% 
+df_final %>%
+  count(fought.co_occurrence.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(fought.co_occurrence.interval)) %>%
   ggplot() +
   geom_col(aes(x = fought.co_occurrence.interval, y = prop), fill = "lightblue", width = 0.6) +
   geom_text(aes(x = fought.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .001, size = 6) +
@@ -184,10 +181,10 @@ df_final %>%
   ylab("Percentage of Intervals")
 
 # By gender
-df_final %>% 
-  count(fought.co_occurrence.interval, male) %>% 
-  mutate(prop = prop.table(n)) %>% 
-  filter(!is.na(fought.co_occurrence.interval)) %>% 
+df_final %>%
+  count(fought.co_occurrence.interval, male) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(fought.co_occurrence.interval)) %>%
   ggplot() +
   geom_col(aes(x = fought.co_occurrence.interval, y = prop), fill = "lightblue", width = 0.6) +
   geom_text(aes(x = fought.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .001, size = 6) +
@@ -202,10 +199,10 @@ df_final %>%
 
 ################################################################################
 # Distribution of co-occurring animal attack within tree fall age intervals
-df_final %>% 
-  count(animal.attack.co_occurrence.interval) %>% 
-  mutate(prop = prop.table(n)) %>% 
-  filter(!is.na(animal.attack.co_occurrence.interval)) %>% 
+df_final %>%
+  count(animal.attack.co_occurrence.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(animal.attack.co_occurrence.interval)) %>%
   ggplot() +
   geom_col(aes(x = animal.attack.co_occurrence.interval, y = prop), fill = "lightblue", width = 0.6) +
   geom_text(aes(x = animal.attack.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .0001, size = 6) +
@@ -217,10 +214,10 @@ df_final %>%
   ylab("Percentage of Intervals")
 
 # By gender
-df_final %>% 
-  count(animal.attack.co_occurrence.interval, male) %>% 
-  mutate(prop = prop.table(n)) %>% 
-  filter(!is.na(animal.attack.co_occurrence.interval)) %>% 
+df_final %>%
+  count(animal.attack.co_occurrence.interval, male) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(animal.attack.co_occurrence.interval)) %>%
   ggplot() +
   geom_col(aes(x = animal.attack.co_occurrence.interval, y = prop), fill = "lightblue", width = 0.6) +
   geom_text(aes(x = animal.attack.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .0001, size = 6) +
@@ -235,10 +232,10 @@ df_final %>%
 
 ################################################################################
 # Distribution of co-occurring canoe capsize within tree fall age intervals
-df_final %>% 
-  count(canoe.capsize.co_occurrence.interval) %>% 
-  mutate(prop = prop.table(n)) %>% 
-  filter(!is.na(canoe.capsize.co_occurrence.interval)) %>% 
+df_final %>%
+  count(canoe.capsize.co_occurrence.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(canoe.capsize.co_occurrence.interval)) %>%
   ggplot() +
   geom_col(aes(x = canoe.capsize.co_occurrence.interval, y = prop), fill = "lightblue", width = 0.6) +
   geom_text(aes(x = canoe.capsize.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .001, size = 6) +
@@ -250,10 +247,10 @@ df_final %>%
   ylab("Percentage of Intervals")
 
 # By gender
-df_final %>% 
-  count(canoe.capsize.co_occurrence.interval, male) %>% 
-  mutate(prop = prop.table(n)) %>% 
-  filter(!is.na(canoe.capsize.co_occurrence.interval)) %>% 
+df_final %>%
+  count(canoe.capsize.co_occurrence.interval, male) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(canoe.capsize.co_occurrence.interval)) %>%
   ggplot() +
   geom_col(aes(x = canoe.capsize.co_occurrence.interval, y = prop), fill = "lightblue", width = 0.6) +
   geom_text(aes(x = canoe.capsize.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .0001, size = 6) +
@@ -268,10 +265,10 @@ df_final %>%
 
 ################################################################################
 # Distribution of co-occurring cut self within tree fall age intervals
-df_final %>% 
-  count(cut.self.co_occurrence.interval) %>% 
-  mutate(prop = prop.table(n)) %>% 
-  filter(!is.na(cut.self.co_occurrence.interval)) %>% 
+df_final %>%
+  count(cut.self.co_occurrence.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(cut.self.co_occurrence.interval)) %>%
   ggplot() +
   geom_col(aes(x = cut.self.co_occurrence.interval, y = prop), fill = "lightblue", width = 0.6) +
   geom_text(aes(x = cut.self.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .001, size = 6) +
@@ -283,10 +280,10 @@ df_final %>%
   ylab("Percentage of Intervals")
 
 # By gender
-df_final %>% 
-  count(cut.self.co_occurrence.interval, male) %>% 
-  mutate(prop = prop.table(n)) %>% 
-  filter(!is.na(cut.self.co_occurrence.interval)) %>% 
+df_final %>%
+  count(cut.self.co_occurrence.interval, male) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(cut.self.co_occurrence.interval)) %>%
   ggplot() +
   geom_col(aes(x = cut.self.co_occurrence.interval, y = prop), fill = "lightblue", width = 0.6) +
   geom_text(aes(x = cut.self.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .0005, size = 6) +
