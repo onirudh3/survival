@@ -6,9 +6,9 @@ library(scales)
 df_final <- read.csv("treefall_final_table.csv")
 
 
-
 ########################### PERCENTAGE PLOTS ###################################
 ################################################################################
+# Changing the 0's and 1's of the variables for the plots to be more understandable
 df_final$event <- ifelse(df_final$event == 1, "Treefall occurr", "Treefall Not occurr")
 df_final$male <- ifelse(df_final$male == 1, "Male", "Female")
 df_final$sickness.during.interval <- ifelse(df_final$sickness.during.interval == 1, "Sickness occurred", "Sickness Did Not occurr")
@@ -20,7 +20,7 @@ df_final$cut.self.during.interval <- ifelse(df_final$cut.self.during.interval ==
 ################################################################################
 
 # Compare intervals where event = 1 vs. intervals where event = 0,
-# what is the percentage in which sickness occurrs
+# what is the percentage in which sickness occurs
 df_final %>%
   count(sickness.during.interval, event) %>%
   group_by(sickness.during.interval) %>%
