@@ -11,7 +11,7 @@ df$sickness.during.interval <- ifelse((df$enter < df$sickness.age & df$sickness.
 df$sickness.during.interval <- ifelse(is.na(df$sickness.during.interval), 0, df$sickness.during.interval)
 
 # Removing unnecessary columns
-df_final <- df[c("pid", "age", "male", "enter", "exit", "event", "n.tree.fall",
+df_final <- df[c("pid", "age", "male", "region", "enter", "exit", "event", "n.tree.fall",
            "sickness.during.interval")]
 
 ######################## SNAKE/RAY BITE ########################################
