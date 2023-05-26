@@ -48,9 +48,6 @@ db1 <- db1 %>%
   filter(age == max(age)) %>%
   ungroup()
 
-# Export as csv
-write.csv(db1, "raw_data_no_duplicates.csv", row.names = F)
-
 # How many ever fell from tree?
 plyr::count(db1, c("tree.fall.ever"))
 
@@ -79,6 +76,9 @@ db1 %>%
 
 # For splitting, we need ID, age, event, and the corresponding ages
 db3 <- db1[c("pid", "tree.fall.ever", "age", "tf.age1", "tf.age2", "tf.age3")]
+
+# Export as csv
+write.csv(db1, "raw_data_no_duplicates.csv", row.names = F)
 
 # Creating the row splits
 db4 <- db3 %>%
