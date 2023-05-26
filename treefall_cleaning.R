@@ -79,8 +79,9 @@ db1 %>%
 # For splitting, we need ID, age, event, and the corresponding ages
 db3 <- db1[c("pid", "tree.fall.ever", "age", "tf.age1", "tf.age2", "tf.age3")]
 
-# Anything weird?
-db3[(db3$age == db3$tf.age1),] # So three individuals have age = tree fall age
+# Anything weird? Any individuals with age = age of tree fall?
+db3[(db3$age == db3$tf.age1),]
+# So three individuals have age = tree fall age: 3WPX, DYJA, F9DJ
 
 # Export as csv
 write.csv(db3, "raw_data_no_duplicates.csv", row.names = F)

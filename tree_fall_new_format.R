@@ -90,10 +90,13 @@ cut_vector <- c(1:80)
 df <- survSplit(db6, cut = cut_vector, start = "enter", end = "exit",
                 event = "event")
 
-rm(db3, db4, db5, df_row, region_df)
+rm(db3, db4, db5, df_row, region_df, cut_vector, id_list)
 
-# Trying to figure out what is going on
+# So we get 13454, the final pieces of the puzzle are beginning to reveal
+# themselves. The three individuals who reported tree fall age = age.
 df_final <- df_final[c("pid", "age", "region", "enter", "exit", "event")]
 anti <- anti_join(db6, df_final)
 plyr::count(anti$pid)
 # 3WPX, DYJA, F9DJ are the problem, where age = age of tree fall
+
+# Let's fix this
