@@ -124,16 +124,6 @@ df_final <- df_final %>%
 #                                   age >= 60 & age < 70 ~ "60-69",
 #                                   age >= 70 & age < 80 ~ "70-79"))
 
-# Adding region column
-region_df <- read_xls("threat_wide___sumACEs_for anirudh.xls")
-region_df <- region_df[c("pid", "region", "age")]
-region_df <- region_df %>%
-  group_by(pid) %>%
-  filter(age == max(age)) %>%
-  ungroup()
-region_df <- region_df[c("pid", "region")]
-df_final <- left_join(df_final, region_df, by = "pid")
-
 ################################################################################
 # Co-occurrence of sickness
 df_final$sickness.co_occurrence <- ifelse(df_final$event == 1 & df_final$sickness.during.interval == 1, 1, 0)

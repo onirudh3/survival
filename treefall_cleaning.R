@@ -6,7 +6,7 @@ library(readxl)
 db <- read_xls("threat_wide___sumACEs_for anirudh.xls")
 
 # Create data frame with only the columns we need
-db <- db[c("pid", "age", "male","tree.fall.ever", "TIPO1",
+db <- db[c("pid", "age", "male", "tree.fall.ever", "TIPO1",
            "other.serious.accident.age", "TIPO2",
            "other.serious.accident.age1", "TIPO3",
            "other.serious.accident.age2", "TIPO4",
@@ -108,9 +108,19 @@ db6$n.tree.fall <- ifelse(db6$n.tree.fall == 0 | db6$n.tree.fall == 1, db6$n.tre
                           ifelse(db6$tf.age1 == db6$tf.age2 & db6$tf.age1 == db6$exit, 2, 1))
 db6$n.tree.fall <- ifelse(db6$event == 0, 0, db6$n.tree.fall)
 
+# Adding region column
+region_df <- read_xls("threat_wide___sumACEs_for anirudh.xls")
+region_df <- region_df[c("pid", "region", "age")]
+region_df <- region_df %>%
+  group_by(pid) %>%
+  filter(age == max(age)) %>%
+  ungroup()
+region_df <- region_df[c("pid", "region")]
+db6 <- left_join(db6, region_df, by = "pid")
+
 # Final table
-db6 <- db6[c("pid", "age", "enter", "exit", "event", "n.tree.fall")]
 db6 <- left_join(db6, male_table, by = "pid")
+db6 <- db6[c("pid", "age", "male", "region", "enter", "exit", "event", "n.tree.fall")]
 rm(male_table)
 rm(db1, db2, db3, db4, db5)
 
