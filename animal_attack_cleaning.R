@@ -27,6 +27,15 @@ animal_attack_df1[] <- t(apply(animal_attack_df1, 1, function(x) x[order(x)]))
 animal_attack_df2 <- animal_attack_df[c("pid")]
 animal_attack_df3 <- cbind(animal_attack_df2, animal_attack_df1)
 
+# Is age = animal attack age ever?
+age_df <- animal_attack_df[c("pid", "age")]
+
+animal_attack_df4 <- left_join(animal_attack_df3, age_df)
+
+View(animal_attack_df4[(animal_attack_df4$age == animal_attack_df4$animal.attack.age |
+                     animal_attack_df4$age == animal_attack_df4$animal.attack.age1),])
+# Yes, for 5 individuals 89RD, RXEC, C9NU, 7QKV, DPC7
+
 # Have you been attacked more than once in the same interval?
 # View(animal_attack_df3[(animal_attack_df3$animal.attack.age == animal_attack_df3$animal.attack.age1),])
 animal_attack_df3[(animal_attack_df3$animal.attack.age == animal_attack_df3$animal.attack.age1),] # 0 people have

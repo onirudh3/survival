@@ -31,4 +31,12 @@ sick_df3 <- cbind(sick_df2, sick_df1)
 # View(sick_df3[(sick_df3$sickness.age == sick_df3$sickness.age1),])
 sick_df3[(sick_df3$sickness.age == sick_df3$sickness.age1),] # 17 people have
 
-rm(sick_df,sick_df1,sick_df2)
+# Is age = sickness age ever?
+age_df <- sick_df[c("pid", "age")]
+
+sick_df4 <- left_join(sick_df3, age_df)
+
+View(sick_df4[(sick_df4$age == sick_df4$sickness.age |
+                          sick_df4$age == sick_df4$sickness.age1 |
+                          sick_df4$age == sick_df4$sickness.age2),])
+# Yes, for 31 individuals!

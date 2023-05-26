@@ -33,7 +33,8 @@ db$tf.age2 <- if_else(db$TIPO2 == "b", db$other.serious.accident.age1, NA_real_)
 db$tf.age3 <- if_else(db$TIPO3 == "b", db$other.serious.accident.age2, NA_real_)
 
 # Create a dataframe with the columns we want
-db1 <- db[c("pid", "age", "male", "tree.fall.ever", "tf.age1", "tf.age2", "tf.age3", "n.tree.fall")]
+db1 <- db[c("pid", "age", "male", "tree.fall.ever", "tf.age1", "tf.age2",
+            "tf.age3", "n.tree.fall")]
 
 # View any duplicate rows
 # View(db1[duplicated(db1$pid), ])
@@ -59,26 +60,30 @@ db1 <- dedupewider::na_move(db1, cols = names(db1)[grepl("^tf.age\\d$",
                                                          names(db1))])
 # Trying to check if more than one tree fall occurred in one interval
 # View(db1[(db1$tf.age1 == db1$tf.age2), ])
-db1[(db1$tf.age1 == db1$tf.age2), ] # There are three rows where this happened for PIDs 5001, 5027, HRP4
+db1[(db1$tf.age1 == db1$tf.age2), ] # There are three rows where this happened
+# for PIDs 5001, 5027, HRP4
 
 # Sorting the ages horizontally
 db2 <- db1[c("tf.age1", "tf.age2", "tf.age3")]
 db2[] <- t(apply(db2, 1, function(x) x[order(x)]))
 db1 <- db1[c("pid", "age", "male", "tree.fall.ever", "n.tree.fall")]
 db1 <- cbind(db1, db2)
-# ^This is the version of the table that has treefall age1, age2... just like
+# ^This is the version of the table that has tree fall age1, age2... just like
 # the raw data for other mortality types
 
 # How many out of 388 people experienced tree falls?
 db1 %>%
   filter(tree.fall.ever == 1) %>%
-  summarise(count = n_distinct(pid)) # 165 out of 388 people experienced tree fall
+  summarise(count = n_distinct(pid)) # 165 out of 388 people experienced it
 
 # For splitting, we need ID, age, event, and the corresponding ages
 db3 <- db1[c("pid", "tree.fall.ever", "age", "tf.age1", "tf.age2", "tf.age3")]
 
+# Anything weird?
+db3[(db3$age == db3$tf.age1),] # So three individuals have age = tree fall age
+
 # Export as csv
-write.csv(db1, "raw_data_no_duplicates.csv", row.names = F)
+write.csv(db3, "raw_data_no_duplicates.csv", row.names = F)
 
 # Creating the row splits
 db4 <- db3 %>%
@@ -104,8 +109,10 @@ db6$event <- ifelse(db6$exit == db6$age, 0, 1)
 # Note that this is context specific.
 # In this case, at most, 2 tree falls have occurred in an interval.
 # And as mentioned earlier, only 3 observations document this.
-db6$n.tree.fall <- ifelse(db6$n.tree.fall == 0 | db6$n.tree.fall == 1, db6$n.tree.fall,
-                          ifelse(db6$tf.age1 == db6$tf.age2 & db6$tf.age1 == db6$exit, 2, 1))
+db6$n.tree.fall <- ifelse(db6$n.tree.fall == 0 | db6$n.tree.fall == 1,
+                          db6$n.tree.fall,
+                          ifelse(db6$tf.age1 == db6$tf.age2 &
+                                   db6$tf.age1 == db6$exit, 2, 1))
 db6$n.tree.fall <- ifelse(db6$event == 0, 0, db6$n.tree.fall)
 
 # Adding region column
@@ -120,9 +127,8 @@ db6 <- left_join(db6, region_df, by = "pid")
 
 # Final table
 db6 <- left_join(db6, male_table, by = "pid")
-db6 <- db6[c("pid", "age", "male", "region", "enter", "exit", "event", "n.tree.fall")]
-rm(male_table)
-rm(db1, db2, db3, db4, db5)
+db6 <- db6[c("pid", "age", "male", "region", "enter", "exit", "event",
+             "n.tree.fall")]
 
 # Export as csv
 write.csv(db6, "treefall_cleaned.csv", row.names = F)

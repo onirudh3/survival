@@ -31,4 +31,12 @@ snake_df3 <- cbind(snake_df2, snake_df1)
 # View(snake_df3[(snake_df3$snake.or.ray.bite.age == snake_df3$snake.or.ray.bite.age1),])
 snake_df3[(snake_df3$snake.or.ray.bite.age == snake_df3$snake.or.ray.bite.age1),] # 9 people have
 
-rm(snake_df,snake_df1,snake_df2)
+# Is age = snake/ray bite age ever?
+age_df <- snake_df[c("pid", "age")]
+
+snake_df4 <- left_join(snake_df3, age_df)
+
+View(snake_df4[(snake_df4$age == snake_df4$snake.or.ray.bite.age |
+                  snake_df4$age == snake_df4$snake.or.ray.bite.age1 |
+                  snake_df4$age == snake_df4$snake.or.ray.bite.age2),])
+# Yes, for 6 individuals RPWM, YWP3, U92T, V9Q4, FVQR, 8FLL

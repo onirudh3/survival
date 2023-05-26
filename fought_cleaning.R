@@ -5,14 +5,17 @@ library(readxl)
 fought_df <- read_xls("threat_wide___sumACEs_for anirudh.xls")
 
 # Create data frame with only the columns we need
-fought_df <- fought_df[c("pid", "age", "male", "Fought.other", "fought.age", "fought.age1",
+fought_df <- fought_df[c("pid", "age", "male", "Fought.other", "fought.age",
+                         "fought.age1",
                      "fought.age2")]
 
 # View any duplicate rows
 # View(fought_df[duplicated(fought_df$pid), ])
 fought_df[duplicated(fought_df$pid), ]
-# View(fought_df[duplicated(fought_df$pid) | duplicated(fought_df$pid, fromLast = TRUE), ])
-fought_df[duplicated(fought_df$pid) | duplicated(fought_df$pid, fromLast = TRUE), ]
+# View(fought_df[duplicated(fought_df$pid) | duplicated(fought_df$pid,
+# fromLast = TRUE), ])
+fought_df[duplicated(fought_df$pid) | duplicated(fought_df$pid,
+                                                 fromLast = TRUE), ]
 
 # Delete duplicate rows, keeping the latest observation for a person
 # db1 <- db1[!duplicated(db$pid), ]
@@ -31,4 +34,12 @@ fought_df3 <- cbind(fought_df2, fought_df1)
 # View(fought_df3[(fought_df3$fought.age == fought_df3$fought.age1),])
 fought_df3[(fought_df3$fought.age == fought_df3$fought.age1),] # 7 people have
 
-rm(fought_df,fought_df1,fought_df2)
+# Is age = fought age ever?
+age_df <- fought_df[c("pid", "age")]
+
+fought_df4 <- left_join(fought_df3, age_df)
+
+View(fought_df4[(fought_df4$age == fought_df4$fought.age |
+                   fought_df4$age == fought_df4$fought.age1 |
+                   fought_df4$age == fought_df4$fought.age2),])
+# Yes, for 2 individuals RXEC, PPB4

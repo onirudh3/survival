@@ -5,12 +5,54 @@ library(survival)
 
 # Load data
 df_final <- read.csv("treefall_final_table.csv")
-df_final <- df_final[c("pid", "age", "male", "region", "enter", "exit", "event")]
+raw_df <- read.csv("raw_data_no_duplicates.csv")
+df_final <- df_final[c("pid", "age", "male", "region", "enter", "exit",
+                       "event")]
+
+#################### WORKING OUT RE-FORMATTING ISSUES ##########################
 
 # Reformat the data frame
-# ?make.communal
+# ?survSplit()
+cut_vector <- c(1:80)
+df <- survSplit(df_final, cut = cut_vector, start = "enter", end = "exit",
+                event = "event")
 
-db4 <- db3 %>% # db3 <- db1[c("pid", "tree.fall.ever", "age", "tf.age1", "tf.age2", "tf.age3")]
+# Did it work correctly?
+sum(raw_df$age)
+# Exact sum of ages is 13,254.9397672827
+
+raw_df$age_rounded_up <- ceiling(raw_df$age)
+sum(raw_df$age_rounded_up)
+# Shows 13451, ideally should match no. of rows in df which is showing 13463
+
+# What are these 12 rows where the problem is coming from?
+df_row <- df %>% count(pid)
+raw_df <- left_join(raw_df, df_row)
+View(raw_df[(raw_df$n != raw_df$age_rounded_up),])
+# So 12 individuals reported precise decimal tree fall times, so it is creating
+# extra interval
+id_list <- c("ALJ4", "TTWM", "3TUC", "VCV2", "DJB7", "D7FT", "VHKK", "VBYN",
+             "ISPN", "9XE5", "QBCD", "X9HY")
+
+# Let us fix this so only last interval till age for an individual is not a year
+
+
+######################### RE-FORMATTING ########################################
+
+# Rounding up the tree fall times so that we get the desired final output
+raw_df$tf.age1 <- ceiling(raw_df$tf.age1)
+raw_df$tf.age2 <-  ceiling(raw_df$tf.age2)
+
+# Let's see if it worked
+# View(filter(raw_df, pid %in% id_list))
+
+# Recycled code from tree fall cleaning script
+# For splitting, we need ID, age, event, and the corresponding ages
+db3 <- raw_df[c("pid", "tree.fall.ever", "age", "tf.age1", "tf.age2",
+                "tf.age3")]
+
+# Creating the row splits
+db4 <- db3 %>%
   mutate(start = 0, end = age) %>%
   select(-tree.fall.ever) %>%
   gather(tree.fall.ever, enter, -pid) %>%
@@ -23,28 +65,35 @@ db4 <- db3 %>% # db3 <- db1[c("pid", "tree.fall.ever", "age", "tf.age1", "tf.age
   select(pid, enter, exit, event) %>%
   ungroup()
 
-View(logrye)
-View(logrye[, 2, drop = F])
-View(scania)
+# Cleaning up
+db4 <- subset(db4, enter != exit)
+db5 <- raw_df[c("pid", "age", "tf.age1",
+                "tf.age2", "tf.age3")]
+db6 <- left_join(db4, db5, by = "pid")
+db6$event <- ifelse(db6$exit == db6$age, 0, 1)
 
-scand <- make.communal(scania, logrye[, 2, drop = FALSE],
-                       start = 1801.75)
+# Adding region column
+region_df <- read_xls("threat_wide___sumACEs_for anirudh.xls")
+region_df <- region_df[c("pid", "region", "age")]
+region_df <- region_df %>%
+  group_by(pid) %>%
+  filter(age == max(age)) %>%
+  ungroup()
+region_df <- region_df[c("pid", "region")]
+db6 <- left_join(db6, region_df, by = "pid")
 
+# Final table
+db6 <- db6[c("pid", "age", "region", "enter", "exit", "event")]
 
-df <- survSplit(df_final,
-                cut = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                        17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-                        31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
-                        45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58,
-                        59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72,
-                        73, 74, 75, 76),
-                start = "enter", end = "exit", event = "event")
+# Re-formatted with one year intervals
+cut_vector <- c(1:80)
+df <- survSplit(db6, cut = cut_vector, start = "enter", end = "exit",
+                event = "event")
 
+rm(db3, db4, db5, df_row, region_df)
 
-# ?survSplit()
-
-df %>%
-  group_by(Year) %>%
-  filter(dist <= 1100 & !duplicated(key)) %>%
-  summarise(RR = sum(RR), dist = sum(dist))
-
+# Trying to figure out what is going on
+df_final <- df_final[c("pid", "age", "region", "enter", "exit", "event")]
+anti <- anti_join(db6, df_final)
+plyr::count(anti$pid)
+# 3WPX, DYJA, F9DJ are the problem, where age = age of tree fall

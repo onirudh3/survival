@@ -58,6 +58,16 @@ dc1 <- dc1 %>%
   filter(age == max(age)) %>%
   ungroup()
 
+# Is age = cut self age ever?
+age_df <- dc1[c("pid", "age")]
+
+dc3 <- left_join(dc1, age_df)
+
+View(dc3[(dc3$age == dc3$cut.age1 | dc3$age == dc3$cut.age2 |
+            dc3$age == dc3$cut.age3 | dc3$age == dc3$cut.age4 |
+            dc3$age == dc3$cut.age5 | dc3$age == dc3$cut.age6),])
+# Yes, for 44 people! Bizarre!
+
 # Moving values so there is no NA in cut.age1
 dc1 <- dedupewider::na_move(dc1, cols = names(dc1)[grepl("^cut.age\\d$",
                                                          names(dc1))])

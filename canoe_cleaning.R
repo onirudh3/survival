@@ -61,4 +61,15 @@ ds2[] <- t(apply(ds2, 1, function(x) x[order(x)]))
 ds1 <- ds1[c("pid", "age", "male", "canoe.capsize.ever", "n.canoe.capsize")]
 ds1 <- cbind(ds1, ds2)
 
+# Is age = canoe capsize age ever?
+age_df <- ds1[c("pid", "age")]
+
+ds3 <- left_join(ds1, age_df)
+
+View(ds3[(ds3$age == ds3$cc.age1 | ds3$age == ds3$cc.age2 | ds3$age == ds3$cc.age3),])
+# Just one guy, TTWM
+
+# Final step
 ds1 <- ds1[c("pid", "cc.age1", "cc.age2", "cc.age3")]
+
+
