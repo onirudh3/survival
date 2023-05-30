@@ -1,7 +1,8 @@
-# Libraries
+############################ LIBRARIES #########################################
 library(tidyverse)
 library(eha)
 library(survival)
+library(readxl)
 
 # Load data
 df_final <- read.csv("treefall_final_table.csv")
@@ -11,30 +12,31 @@ df_final <- df_final[c("pid", "age", "male", "region", "enter", "exit",
 
 #################### WORKING OUT RE-FORMATTING ISSUES ##########################
 
-# Reformat the data frame
-# ?survSplit()
-cut_vector <- c(1:80)
-df <- survSplit(df_final, cut = cut_vector, start = "enter", end = "exit",
-                event = "event")
-
-# Did it work correctly?
-sum(raw_df$age)
-# Exact sum of ages is 13,254.9397672827
-
-raw_df$age_rounded_up <- ceiling(raw_df$age)
-sum(raw_df$age_rounded_up)
-# Shows 13451, ideally should match no. of rows in df which is showing 13463
-
-# What are these 12 rows where the problem is coming from?
-df_row <- df %>% count(pid)
-raw_df <- left_join(raw_df, df_row)
-View(raw_df[(raw_df$n != raw_df$age_rounded_up),])
-# So 12 individuals reported precise decimal tree fall times, so it is creating
-# extra interval
-id_list <- c("ALJ4", "TTWM", "3TUC", "VCV2", "DJB7", "D7FT", "VHKK", "VBYN",
-             "ISPN", "9XE5", "QBCD", "X9HY")
-
-# Let us fix this so only last interval till age for an individual is not a year
+# # Reformat the data frame
+# # ?survSplit()
+# cut_vector <- c(1:80)
+# df <- survSplit(df_final, cut = cut_vector, start = "enter", end = "exit",
+#                 event = "event")
+#
+# # Did it work correctly?
+# sum(raw_df$age)
+# # Exact sum of ages is 13,254.9397672827
+#
+# raw_df$age_rounded_up <- ceiling(raw_df$age)
+# sum(raw_df$age_rounded_up)
+# # Shows 13451, ideally should match no. of rows in df which is showing 13463
+#
+# # What are these 12 rows where the problem is coming from?
+# df_row <- df %>% count(pid)
+# raw_df <- left_join(raw_df, df_row)
+# View(raw_df[(raw_df$n != raw_df$age_rounded_up),])
+# # So 12 individuals reported precise decimal tree fall times, so it is
+# # creating extra interval
+# id_list <- c("ALJ4", "TTWM", "3TUC", "VCV2", "DJB7", "D7FT", "VHKK", "VBYN",
+#              "ISPN", "9XE5", "QBCD", "X9HY")
+#
+# # Let's fix this so only last interval (till age) for an individual is not a
+# # year long
 
 
 ######################### RE-FORMATTING ########################################
@@ -93,10 +95,18 @@ df <- survSplit(db6, cut = cut_vector, start = "enter", end = "exit",
 rm(db3, db4, db5, df_row, region_df, cut_vector, id_list)
 
 # So we get 13454, the final pieces of the puzzle are beginning to reveal
-# themselves. The three individuals who reported tree fall age = age.
+# themselves. There seem to be three individuals reported tree fall age = age.
 df_final <- df_final[c("pid", "age", "region", "enter", "exit", "event")]
 anti <- anti_join(db6, df_final)
 plyr::count(anti$pid)
-# 3WPX, DYJA, F9DJ are the problem, where age = age of tree fall
+# 3WPX, DYJA, F9DJ are the problem, where age = age of tree fall, hence three
+# extra rows
 
 # Let's fix this
+# Approach is the following:
+# If exit > age, delete current row and assign event = 1 to the preceding row
+df <- df %>%
+  mutate(event = case_when(lead(exit) > lead(age) ~ 1, TRUE ~ event))
+
+df <- subset(df, exit <= age)
+# We have got 13451 rows, so this is the correct data frame
