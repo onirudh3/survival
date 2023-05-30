@@ -104,6 +104,8 @@ df_final <- cbind(df_final, df2)
 # Creating column for time since last fall
 df_final$time.since.last.fall <- ifelse(df_final$enter == 0 & df_final$exit <= df_final$age,
                                         NA_real_, df_final$exit - df_final$enter)
+
+# Moving the column to where I want it, after the n.tree.fall column
 df_final <- df_final %>%
   relocate(time.since.last.fall, .after = n.tree.fall)
 
