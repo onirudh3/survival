@@ -9,14 +9,14 @@ df_final <- read.csv("treefall_final_table.csv")
 ########################### PERCENTAGE PLOTS ###################################
 ################################################################################
 # Changing the 0's and 1's of the variables for the plots to be more understandable
-df_final$event <- ifelse(df_final$event == 1, "Treefall occurr", "Treefall Not occurr")
+df_final$event <- ifelse(df_final$event == 1, "Treefall Occured", "Treefall Did Not Occur")
 df_final$male <- ifelse(df_final$male == 1, "Male", "Female")
-df_final$sickness.during.interval <- ifelse(df_final$sickness.during.interval == 1, "Sickness occurred", "Sickness Did Not occurr")
-df_final$bite.during.interval <- ifelse(df_final$bite.during.interval == 1, "Snake/Ray Bite occurred", "Snake/Ray Bite Did Not occurr")
-df_final$fought.during.interval <- ifelse(df_final$fought.during.interval == 1, "Fight occurred", "Fight Did Not occurr")
-df_final$animal.attack.during.interval <- ifelse(df_final$animal.attack.during.interval == 1, "Animal Attack occurred", "Animal Attack Did Not occurr")
-df_final$canoe.capsize.during.interval <- ifelse(df_final$canoe.capsize.during.interval == 1, "Canoe Capsize occurred", "Canoe Capsize Did Not occurr")
-df_final$cut.self.during.interval <- ifelse(df_final$cut.self.during.interval == 1, "Cut Self occurred", "Cut Self Not occurred")
+df_final$sickness.during.interval <- ifelse(df_final$sickness.during.interval == 1, "Sickness Occured", "Sickness Did Not Occur")
+df_final$bite.during.interval <- ifelse(df_final$bite.during.interval == 1, "Snake/Ray Bite Occured", "Snake/Ray Bite Did Not Occur")
+df_final$fought.during.interval <- ifelse(df_final$fought.during.interval == 1, "Fight Occured", "Fight Did Not Occur")
+df_final$animal.attack.during.interval <- ifelse(df_final$animal.attack.during.interval == 1, "Animal Attack Occured", "Animal Attack Did Not Occur")
+df_final$canoe.capsize.during.interval <- ifelse(df_final$canoe.capsize.during.interval == 1, "Canoe Capsize Occured", "Canoe Capsize Did Not Occur")
+df_final$cut.self.during.interval <- ifelse(df_final$cut.self.during.interval == 1, "Cut Self Occured", "Cut Self Not Occur")
 ################################################################################
 
 # Compare intervals where event = 1 vs. intervals where event = 0,
@@ -28,14 +28,14 @@ df_final %>%
   ggplot(aes(sickness.during.interval, pct, fill = event)) +
   geom_bar(stat = "identity", width = 0.5) +
   geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
-            position = position_stack(vjust = 0.5), size = 7) +
+            position = position_stack(vjust = 0.5), size = 5) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
-  theme_classic(base_size = 30) +
+  theme_classic(base_size = 20) +
   ggtitle("TREE FALL and SICKNESS") +
   theme(plot.title = element_text(size = 50)) +
   xlab("") +
   ylab("Percentage of Intervals") +
-  labs(fill = "Tree Fall occurred During Interval")
+  labs(fill = "")
 
 # For males and females
 df_final %>%
