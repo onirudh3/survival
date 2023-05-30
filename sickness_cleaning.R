@@ -27,6 +27,9 @@ sick_df1[] <- t(apply(sick_df1, 1, function(x) x[order(x)]))
 sick_df2 <- sick_df[c("pid")]
 sick_df3 <- cbind(sick_df2, sick_df1)
 
+# Export as csv
+write.csv(sick_df3, "sickness_cleaned.csv", row.names = F)
+
 # Have you been sick more than once in the same interval?
 # View(sick_df3[(sick_df3$sickness.age == sick_df3$sickness.age1),])
 sick_df3[(sick_df3$sickness.age == sick_df3$sickness.age1),] # 17 people have

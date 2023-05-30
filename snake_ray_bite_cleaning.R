@@ -27,6 +27,9 @@ snake_df1[] <- t(apply(snake_df1, 1, function(x) x[order(x)]))
 snake_df2 <- snake_df[c("pid")]
 snake_df3 <- cbind(snake_df2, snake_df1)
 
+# Export as csv
+write.csv(snake_df3, "snake_bite_cleaned.csv", row.names = F)
+
 # Have you been bit more than once in the same interval?
 # View(snake_df3[(snake_df3$snake.or.ray.bite.age == snake_df3$snake.or.ray.bite.age1),])
 snake_df3[(snake_df3$snake.or.ray.bite.age == snake_df3$snake.or.ray.bite.age1),] # 9 people have

@@ -27,6 +27,9 @@ animal_attack_df1[] <- t(apply(animal_attack_df1, 1, function(x) x[order(x)]))
 animal_attack_df2 <- animal_attack_df[c("pid")]
 animal_attack_df3 <- cbind(animal_attack_df2, animal_attack_df1)
 
+# Export as csv
+write.csv(animal_attack_df3, "animal_attack_cleaned.csv", row.names = F)
+
 # Is age = animal attack age ever?
 age_df <- animal_attack_df[c("pid", "age")]
 

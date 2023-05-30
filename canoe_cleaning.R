@@ -72,4 +72,7 @@ View(ds3[(ds3$age == ds3$cc.age1 | ds3$age == ds3$cc.age2 | ds3$age == ds3$cc.ag
 # Final step
 ds1 <- ds1[c("pid", "cc.age1", "cc.age2", "cc.age3")]
 
+# Export as csv
+write.csv(ds1, "canoe_cleaned.csv", row.names = F)
+
 

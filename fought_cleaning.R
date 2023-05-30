@@ -30,6 +30,9 @@ fought_df1[] <- t(apply(fought_df1, 1, function(x) x[order(x)]))
 fought_df2 <- fought_df[c("pid")]
 fought_df3 <- cbind(fought_df2, fought_df1)
 
+# Export as csv
+write.csv(fought_df3, "fought_cleaned.csv", row.names = F)
+
 # Have you fought more than once in the same interval?
 # View(fought_df3[(fought_df3$fought.age == fought_df3$fought.age1),])
 fought_df3[(fought_df3$fought.age == fought_df3$fought.age1),] # 7 people have

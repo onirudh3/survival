@@ -82,3 +82,6 @@ dc1 <- dc1[c("pid", "age", "male", "cut.self.ever", "n.cut.self")]
 dc1 <- cbind(dc1, dc2)
 
 dc1 <- dc1[c("pid", "cut.age1", "cut.age2", "cut.age3", "cut.age4", "cut.age5", "cut.age6")]
+
+# Export as csv
+write.csv(dc1, "cut_self_cleaned.csv", row.names = F)
