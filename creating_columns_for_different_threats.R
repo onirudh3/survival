@@ -1,4 +1,18 @@
-######################## SICKNESS ##############################################
+###################### LIBRARIES AND IMPORT DATA ###############################
+library(tidyverse)
+library(readxl)
+
+# Import data
+db6 <- read.csv("treefall_cleaned.csv")
+sick_df3 <- read.csv("sickness_cleaned.csv")
+snake_df3 <- read.csv("snake_bite_cleaned.csv")
+fought_df3 <- read.csv("fought_cleaned.csv")
+animal_attack_df3 <- read.csv("animal_attack_cleaned.csv")
+ds1 <- read.csv("canoe_cleaned.csv")
+dc1 <- read.csv("cut_self_cleaned.csv")
+
+
+################################ SICKNESS ######################################
 
 # Merging sickness and tree fall
 df <- left_join(db6, sick_df3, by = "pid")

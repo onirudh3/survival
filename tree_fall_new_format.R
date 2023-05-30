@@ -39,7 +39,7 @@ df_final <- df_final[c("pid", "age", "male", "region", "enter", "exit",
 # # year long
 
 
-######################### RE-FORMATTING ########################################
+############################ RE-FORMATTING #####################################
 
 # Rounding up the tree fall times so that we get the desired final output
 raw_df$tf.age1 <- ceiling(raw_df$tf.age1)
@@ -92,8 +92,6 @@ cut_vector <- c(1:80)
 df <- survSplit(db6, cut = cut_vector, start = "enter", end = "exit",
                 event = "event")
 
-rm(db3, db4, db5, df_row, region_df, cut_vector, id_list)
-
 # So we get 13454, the final pieces of the puzzle are beginning to reveal
 # themselves. There seem to be three individuals reported tree fall age = age.
 df_final <- df_final[c("pid", "age", "region", "enter", "exit", "event")]
@@ -108,5 +106,121 @@ plyr::count(anti$pid)
 df <- df %>%
   mutate(event = case_when(lead(exit) > lead(age) ~ 1, TRUE ~ event))
 
+# Remove the three rows where exit > age
 df <- subset(df, exit <= age)
 # We have got 13451 rows, so this is the correct data frame
+
+
+#################### ADDING COLUMNS FOR DIFFERENT THREATS ######################
+# Sickness ####
+# Read sickness data
+sick_df3 <- read.csv("sickness_cleaned.csv")
+
+# Merging sickness and tree fall
+df <- left_join(df, sick_df3, by = "pid")
+
+# Have you ever been sick in the intervals that you experienced tree fall?
+df <- df %>%
+  mutate(sickness.during.interval = case_when(enter < sickness.age & sickness.age <= exit ~ 1,
+                                              enter < sickness.age1 & sickness.age1 <= exit ~ 1,
+                                              enter < sickness.age2 & sickness.age2 <= exit ~ 1,
+                                              TRUE ~ 0))
+# plyr::count(df$sickness.during.interval)
+
+# Snake/Ray Bite ####
+# Read snake/ray bite data
+snake_df3 <- read.csv("snake_bite_cleaned.csv")
+
+# Merging snake/ray bite and tree fall
+df <- left_join(df, snake_df3, by = "pid")
+
+# Have you ever been bit in the intervals that you experienced tree fall?
+df <- df %>%
+  mutate(bite.during.interval = case_when(enter < snake.or.ray.bite.age & snake.or.ray.bite.age <= exit ~ 1,
+                                              enter < snake.or.ray.bite.age1 & snake.or.ray.bite.age1 <= exit ~ 1,
+                                              enter < snake.or.ray.bite.age2 & snake.or.ray.bite.age2 <= exit ~ 1,
+                                              TRUE ~ 0))
+
+
+# Fought ####
+# Read fought data
+fought_df3 <- read.csv("fought_cleaned.csv")
+
+# Merging fought and tree fall
+df <- left_join(df, fought_df3, by = "pid")
+
+# Have you ever fought in the intervals that you experienced tree fall?
+df <- df %>%
+  mutate(fought.during.interval = case_when(enter < fought.age & fought.age <= exit ~ 1,
+                                              enter < fought.age1 & fought.age1 <= exit ~ 1,
+                                              enter < fought.age2 & fought.age2 <= exit ~ 1,
+                                              TRUE ~ 0))
+
+
+# Animal Attack ####
+# Read animal attack data
+animal_attack_df3 <- read.csv("animal_attack_cleaned.csv")
+
+# Merge animal attack and tree fall
+df <- left_join(df, animal_attack_df3, by = "pid")
+
+# Have you ever experienced animal attack in the same intervals that you
+# experienced tree fall?
+df <- df %>%
+  mutate(animal.attack.during.interval = case_when(enter < animal.attack.age & animal.attack.age <= exit ~ 1,
+                                            enter < animal.attack.age1 & animal.attack.age1 <= exit ~ 1,
+                                            TRUE ~ 0))
+
+
+# Canoe Capsize ####
+# Read canoe capsize data
+ds1 <- read.csv("canoe_cleaned.csv")
+
+# Merge canoe capsize and tree fall
+df <- left_join(df, ds1, by = "pid")
+
+# Have you ever canoe capsize in the intervals that you experienced tree fall?
+df <- df %>%
+  mutate(canoe.capsize.during.interval = case_when(enter < cc.age1 & cc.age1 <= exit ~ 1,
+                                            enter < cc.age2 & cc.age2 <= exit ~ 1,
+                                            enter < cc.age3 & cc.age3 <= exit ~ 1,
+                                            TRUE ~ 0))
+
+# Cut Self ####
+# Read cut self data
+dc1 <- read.csv("cut_self_cleaned.csv")
+
+# Merge cut self and tree fall
+df <- left_join(df, dc1, by = "pid")
+
+# Have you ever cut self in the intervals that you experienced tree fall?
+df <- df %>%
+  mutate(cut.self.during.interval = case_when(enter < cut.age1 & cut.age1 <= exit ~ 1,
+                                              enter < cut.age2 & cut.age2 <= exit ~ 1,
+                                              enter < cut.age3 & cut.age3 <= exit ~ 1,
+                                              enter < cut.age4 & cut.age4 <= exit ~ 1,
+                                              enter < cut.age5 & cut.age5 <= exit ~ 1,
+                                              enter < cut.age6 & cut.age6 <= exit ~ 1,
+                                                   TRUE ~ 0))
+
+
+
+############################### FINAL STEPS ####################################
+# Adding male column
+male_df <- read_xls("threat_wide___sumACEs_for anirudh.xls")
+male_df <- male_df %>%
+  group_by(pid) %>%
+  filter(age == max(age)) %>%
+  ungroup()
+male_df <- male_df[c("pid", "male")]
+df <- left_join(df, male_df)
+
+# Selecting only the necessary columns
+df <- df[c("pid", "age", "male", "region", "enter", "exit", "event",
+           "sickness.during.interval", "bite.during.interval",
+           "fought.during.interval", "animal.attack.during.interval",
+           "canoe.capsize.during.interval", "cut.self.during.interval")]
+
+# Export as csv
+write.csv(df, "tree_fall_new_format.csv", row.names = F)
+
