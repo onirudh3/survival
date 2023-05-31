@@ -100,7 +100,7 @@ ggplot(df_surv, aes(x = time, y = hazard)) +
               color = "darkgreen") +
   theme_classic()
 
-# This one gives something that looks different
+# This one gives non parametric apparently
 ff <- muhaz(df_final$exit, df_final$event)
 plot(ff)
 # ?muhaz()
