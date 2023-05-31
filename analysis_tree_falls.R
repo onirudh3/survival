@@ -81,9 +81,11 @@ ggsurvplot(fit2, font.title = c("30"), conf.int = TRUE, legend = "right",
   ylab("Cumulative hazard")
 
 ############################ HAZARD FUNCTION ###################################
+# This one gives a smoothed hazard function plot
 fit <- bshazard(Surv(exit, event) ~ strata(male), data = df_final)
 plot(fit)
 
+# This one gives the same smoothed hazard function plot as above
 df_surv <- data.frame(time = fit$time,
                       hazard = fit$hazard,
                       lower.ci = fit$lower.ci,
@@ -98,9 +100,10 @@ ggplot(df_surv, aes(x = time, y = hazard)) +
               color = "darkgreen") +
   theme_classic()
 
+# This one gives something that looks different
 ff <- muhaz(df_final$exit, df_final$event)
 plot(ff)
-
+# ?muhaz()
 
 
 ################################################################################
