@@ -105,6 +105,10 @@ ff <- muhaz(df_final$exit, df_final$event)
 plot(ff)
 # ?muhaz()
 
+# Some other non-parametric thing
+fi <- kphaz.fit(df_final$exit, df_final$event)
+kphaz.plot(fi)
+
 
 ################################################################################
 ############################ PARAMETRICS #######################################
