@@ -109,6 +109,14 @@ plot(ff)
 fi <- kphaz.fit(df_final$exit, df_final$event)
 kphaz.plot(fi)
 
+# This is something too idk
+mod <- survfit(Surv(enter, exit, event) ~ 1, data = df_final)
+survival.table1 <- broom::tidy(mod) %>% filter(n.event > 0)
+survival.table1 <- survival.table1 %>% mutate(hazard = n.event / (n.risk * (lead(time) - time)))
+ggplot() +
+  geom_step(data = survival.table1, aes(x = time, y = hazard)) +
+  labs(x = "Time", y = "Hazard")
+
 
 ################################################################################
 ############################ PARAMETRICS #######################################

@@ -2,6 +2,7 @@
 library(survival)
 library(eha)
 library(tidyverse)
+library(ggfortify)
 library(stargazer)
 
 # Import data
@@ -9,47 +10,6 @@ df <- read.csv("tree_fall_new_format.csv")
 
 # Make region as factor
 df$region <- as.factor(df$region)
-
-################################# PLOTS ########################################
-# # Changing the 0's and 1's of the variables for the plots to be understandable
-# df$event <- ifelse(df$event == 1, "Treefall Occured", "Treefall Did Not Occur")
-# df$male <- ifelse(df$male == 1, "Male", "Female")
-# df$sickness.during.interval <- ifelse(df$sickness.during.interval == 1,
-#                                       "Sickness Occured",
-#                                       "Sickness Did Not Occur")
-# df$bite.during.interval <- ifelse(df$bite.during.interval == 1,
-#                                   "Snake/Ray Bite Occured",
-#                                   "Snake/Ray Bite Did Not Occur")
-# df$fought.during.interval <- ifelse(df$fought.during.interval == 1,
-#                                     "Fight Occured", "Fight Did Not Occur")
-# df$animal.attack.during.interval <- ifelse(df$animal.attack.during.interval ==
-#                                              1, "Animal Attack Occured",
-#                                            "Animal Attack Did Not Occur")
-# df$canoe.capsize.during.interval <- ifelse(df$canoe.capsize.during.interval ==
-#                                              1, "Canoe Capsize Occured",
-#                                            "Canoe Capsize Did Not Occur")
-# df$cut.self.during.interval <- ifelse(df$cut.self.during.interval == 1,
-#                                       "Cut Self Occured", "Cut Self Not Occur")
-#
-# # Plotting percentage of intervals where risks co-occur ####
-# # TREE FALL and SICKNESS
-# df %>%
-#   count(sickness.during.interval, event) %>%
-#   group_by(sickness.during.interval) %>%
-#   mutate(pct = prop.table(n) * 100) %>%
-#   ggplot(aes(sickness.during.interval, pct, fill = event)) +
-#   geom_bar(stat = "identity", width = 0.5) +
-#   geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
-#             position = position_stack(vjust = 0.5), size = 5) +
-#   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
-#   theme_classic(base_size = 20) +
-#   ggtitle("TREE FALL and SICKNESS") +
-#   theme(plot.title = element_text(size = 50)) +
-#   xlab("") +
-#   ylab("Percentage of Intervals") +
-#   labs(fill = "")
-
-
 
 ############################## Model 1: Sex ####################################
 model1 <- coxreg(Surv(enter, exit, event) ~ male, data = df)
@@ -83,12 +43,11 @@ stargazer(model1, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           dep.var.labels = "Hazard Rate", covariate.labels = "Male",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,541"),
-                           c("Censored Observations", "13,358"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
 ############################# Model 2: Sex + Risk ##############################
-# Model 2a: Sex + Sickness ####
+#* Model 2a: Sex + Sickness ####
 model2a <- coxreg(Surv(enter, exit, event) ~ male + sickness.during.interval,
                   data = df)
 summary(model2a)
@@ -100,11 +59,10 @@ stargazer(model2a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Male", "Sickness"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,541"),
-                           c("Censored Observations", "13,358"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
-# Model 2b: Sex + Snake Bite ####
+#* Model 2b: Sex + Snake Bite ####
 model2b <- coxreg(Surv(enter, exit, event) ~ male + bite.during.interval,
                   data = df)
 summary(model2b)
@@ -116,11 +74,10 @@ stargazer(model2b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Male", "Snake/Ray Bite"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,541"),
-                           c("Censored Observations", "13,358"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
-# Model 2c: Sex + Fought ####
+#* Model 2c: Sex + Fought ####
 model2c <- coxreg(Surv(enter, exit, event) ~ male + fought.during.interval,
                   data = df)
 summary(model2c)
@@ -131,11 +88,10 @@ stargazer(model2c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           dep.var.labels = "Hazard Rate", covariate.labels = c("Male", "Fight"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,541"),
-                           c("Censored Observations", "13,358"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
-# Model 2d: Sex + Animal Attack ####
+#* Model 2d: Sex + Animal Attack ####
 model2d <- coxreg(Surv(enter, exit, event) ~ male +
                     animal.attack.during.interval, data = df)
 summary(model2d)
@@ -147,11 +103,10 @@ stargazer(model2d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                                                "Animal Attack"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,541"),
-                           c("Censored Observations", "13,358"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
-# Model 2e: Sex + Canoe Capsize ####
+#* Model 2e: Sex + Canoe Capsize ####
 model2e <- coxreg(Surv(enter, exit, event) ~ male +
                     canoe.capsize.during.interval, data = df)
 summary(model2e)
@@ -163,11 +118,10 @@ stargazer(model2e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                                                "Canoe Capsize"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,541"),
-                           c("Censored Observations", "13,358"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
-# Model 2f: Sex + Cut Self ####
+#* Model 2f: Sex + Cut Self ####
 model2f <- coxreg(Surv(enter, exit, event) ~ male + cut.self.during.interval,
                   data = df)
 summary(model2f)
@@ -179,13 +133,11 @@ stargazer(model2f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                                                "Cut Self"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,541"),
-                           c("Censored Observations", "13,358"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
-
-######################## Model 3: Sex + Region + Risk ##########################
-# Model 3a: Sex + Region + Sickness ####
+######################### Model 3: Sex + Region + Risk #########################
+#* Model 3a: Sex + Region + Sickness ####
 model3a <- coxreg(Surv(enter, exit, event) ~ male + region +
                     sickness.during.interval, data = df)
 summary(model3a)
@@ -197,11 +149,10 @@ stargazer(model3a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Male", "Near San Borja", "Upriver", "Sickness"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,541"),
-                           c("Censored Observations", "13,358"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
-# Model 3b: Sex + Region + Snake/Ray Bite ####
+#* Model 3b: Sex + Region + Snake/Ray Bite ####
 model3b <- coxreg(Surv(enter, exit, event) ~ male + region +
                     bite.during.interval, data = df)
 summary(model3b)
@@ -214,11 +165,10 @@ stargazer(model3b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                "Snake/Ray Bite"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,541"),
-                           c("Censored Observations", "13,358"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
-# Model 3c: Sex + Region + Fought ####
+#* Model 3c: Sex + Region + Fought ####
 model3c <- coxreg(Surv(enter, exit, event) ~ male + region +
                     fought.during.interval, data = df)
 summary(model3c)
@@ -230,11 +180,10 @@ stargazer(model3c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Male", "Near San Borja", "Upriver", "Fight"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,541"),
-                           c("Censored Observations", "13,358"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
-# Model 3d: Sex + Region + Animal Attack ####
+#* Model 3d: Sex + Region + Animal Attack ####
 model3d <- coxreg(Surv(enter, exit, event) ~ male + region +
                     animal.attack.during.interval, data = df)
 summary(model3d)
@@ -247,11 +196,10 @@ stargazer(model3d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                "Animal Attack"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,541"),
-                           c("Censored Observations", "13,358"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
-# Model 3e: Sex + Region + Canoe Capsize ####
+#* Model 3e: Sex + Region + Canoe Capsize ####
 model3e <- coxreg(Surv(enter, exit, event) ~ male + region +
                     canoe.capsize.during.interval, data = df)
 summary(model3e)
@@ -264,11 +212,10 @@ stargazer(model3e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                "Canoe Capsize"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,541"),
-                           c("Censored Observations", "13,358"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
-# Model 3f: Sex + Region + Cut Self ####
+#* Model 3f: Sex + Region + Cut Self ####
 model3f <- coxreg(Surv(enter, exit, event) ~ male + region +
                     cut.self.during.interval, data = df)
 summary(model3f)
@@ -280,7 +227,119 @@ stargazer(model3f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Male", "Near San Borja", "Upriver", "Cut Self"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,541"),
-                           c("Censored Observations", "13,358"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
+
+
+################## Model 4: Sex + Region + Risk + Sex*Risk #####################
+#* Model 4a: Sex + Region + Sickness + Sex*Sickness ####
+model4a <- coxreg(Surv(enter, exit, event) ~ male + region +
+                    sickness.during.interval + male * sickness.during.interval,
+                  data = df)
+summary(model4a)
+
+# Export results in table
+stargazer(model4a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+          notes = "Standard errors in parentheses", out = "model4a.tex",
+          dep.var.labels = "Hazard Rate",
+          covariate.labels = c("Male", "Near San Borja", "Upriver", "Sickness",
+                               "Male \\texttimes\\ Sickness"),
+          add.lines = list(c("No. of Individuals", "388"),
+                           c("No. of Intervals", "13,541"),
+                           c("Total No. of Risk Years", "13,254.94")),
+          omit.stat = c("ll", "n"))
+
+#* Model 4b: Sex + Region + Sickness + Sex*Snake/Ray Bite ####
+model4b <- coxreg(Surv(enter, exit, event) ~ male + region +
+                    bite.during.interval + male * bite.during.interval,
+                  data = df)
+summary(model4b)
+
+# Export results in table
+stargazer(model4b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+          notes = "Standard errors in parentheses", out = "model4b.tex",
+          dep.var.labels = "Hazard Rate",
+          covariate.labels = c("Male", "Near San Borja", "Upriver",
+                               "Snake/Ray Bite",
+                               "Male \\texttimes\\ Snake/Ray Bite"),
+          add.lines = list(c("No. of Individuals", "388"),
+                           c("No. of Intervals", "13,541"),
+                           c("Total No. of Risk Years", "13,254.94")),
+          omit.stat = c("ll", "n"))
+
+#* Model 4c: Sex + Region + Sickness + Sex*Fought ####
+model4c <- coxreg(Surv(enter, exit, event) ~ male + region +
+                    fought.during.interval + male * fought.during.interval,
+                  data = df)
+summary(model4c)
+
+# Export results in table
+stargazer(model4c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+          notes = "Standard errors in parentheses", out = "model4c.tex",
+          dep.var.labels = "Hazard Rate",
+          covariate.labels = c("Male", "Near San Borja", "Upriver",
+                               "Fight",
+                               "Male \\texttimes\\ Fight"),
+          add.lines = list(c("No. of Individuals", "388"),
+                           c("No. of Intervals", "13,541"),
+                           c("Total No. of Risk Years", "13,254.94")),
+          omit.stat = c("ll", "n"))
+
+#* Model 4d: Sex + Region + Sickness + Sex*animal.attack ####
+model4d <- coxreg(Surv(enter, exit, event) ~ male + region +
+                    animal.attack.during.interval + male * animal.attack.during.interval,
+                  data = df)
+summary(model4d)
+
+# Export results in table
+stargazer(model4d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+          notes = "Standard errors in parentheses", out = "model4d.tex",
+          dep.var.labels = "Hazard Rate",
+          covariate.labels = c("Male", "Near San Borja", "Upriver",
+                               "Animal Attack",
+                               "Male \\texttimes\\ Animal Attack"),
+          add.lines = list(c("No. of Individuals", "388"),
+                           c("No. of Intervals", "13,541"),
+                           c("Total No. of Risk Years", "13,254.94")),
+          omit.stat = c("ll", "n"))
+
+#* Model 4e: Sex + Region + Sickness + Sex*canoe.capsize ####
+model4e <- coxreg(Surv(enter, exit, event) ~ male + region +
+                    canoe.capsize.during.interval + male * canoe.capsize.during.interval,
+                  data = df)
+summary(model4e)
+
+# Export results in table
+stargazer(model4e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+          notes = "Standard errors in parentheses", out = "model4e.tex",
+          dep.var.labels = "Hazard Rate",
+          covariate.labels = c("Male", "Near San Borja", "Upriver",
+                               "Canoe Capsize",
+                               "Male \\texttimes\\ Canoe Capsize"),
+          add.lines = list(c("No. of Individuals", "388"),
+                           c("No. of Intervals", "13,541"),
+                           c("Total No. of Risk Years", "13,254.94")),
+          omit.stat = c("ll", "n"))
+
+#* Model 4f: Sex + Region + Sickness + Sex*cut.self ####
+model4f <- coxreg(Surv(enter, exit, event) ~ male + region +
+                    cut.self.during.interval + male * cut.self.during.interval,
+                  data = df)
+summary(model4f)
+
+# Export results in table
+stargazer(model4f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+          notes = "Standard errors in parentheses", out = "model4f.tex",
+          dep.var.labels = "Hazard Rate",
+          covariate.labels = c("Male", "Near San Borja", "Upriver",
+                               "Cut Self",
+                               "Male \\texttimes\\ Cut Self"),
+          add.lines = list(c("No. of Individuals", "388"),
+                           c("No. of Intervals", "13,541"),
+                           c("Total No. of Risk Years", "13,254.94")),
+          omit.stat = c("ll", "n"))
+
+
+
+
 
