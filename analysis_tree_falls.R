@@ -82,10 +82,16 @@ ggsurvplot(fit2, font.title = c("30"), conf.int = TRUE, legend = "right",
 
 ############################ HAZARD FUNCTION ###################################
 # This one gives a smoothed hazard function plot
-fit <- bshazard(Surv(exit, event) ~ strata(male), data = df_final)
-plot(fit)
+fit <- bshazard(Surv(enter, exit, event) ~ 1, data = df_final)
+plot(fit,
+     col = "brown",
+     col.fill = "pink",
+     main = "TREE FALL",
+     ylab = "Probability of experiencing risk",
+     xlab = "Age in Years")
 
 # This one gives the same smoothed hazard function plot as above
+fit <- bshazard(Surv(enter, exit, event) ~ 1, data = df_final)
 df_surv <- data.frame(time = fit$time,
                       hazard = fit$hazard,
                       lower.ci = fit$lower.ci,
