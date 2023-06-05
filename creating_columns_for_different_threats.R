@@ -225,6 +225,8 @@ df_final <- df_final %>%
                                                      cut.self.during.interval == 1 & event == 1 & exit >= 60 & exit < 70 ~ "60-69",
                                                      cut.self.during.interval == 1 & event == 1 & exit >= 70 & exit < 80 ~ "70-79"))
 
-################################################################################
-# Export final table to csv
+
+
+# Export final table to csv -----------------------------------------------
+
 write.csv(df_final, "treefall_final_table.csv", row.names = F)

@@ -3,6 +3,7 @@ library(tidyverse)
 library(eha)
 library(survival)
 library(readxl)
+library(dplyr)
 
 # Load data
 df_final <- read.csv("treefall_final_table.csv")
@@ -45,9 +46,6 @@ df_final <- df_final[c("pid", "age", "male", "region", "enter", "exit",
 raw_df$tf.age1 <- ceiling(raw_df$tf.age1)
 raw_df$tf.age2 <-  ceiling(raw_df$tf.age2)
 
-# Let's see if it worked
-# View(filter(raw_df, pid %in% id_list))
-
 # Recycled code from tree fall cleaning script
 # For splitting, we need ID, age, event, and the corresponding ages
 db3 <- raw_df[c("pid", "tree.fall.ever", "age", "tf.age1", "tf.age2",
@@ -56,7 +54,7 @@ db3 <- raw_df[c("pid", "tree.fall.ever", "age", "tf.age1", "tf.age2",
 # Creating the row splits
 db4 <- db3 %>%
   mutate(start = 0, end = age) %>%
-  select(-tree.fall.ever) %>%
+  dplyr::select(-tree.fall.ever) %>%
   gather(tree.fall.ever, enter, -pid) %>%
   group_by(pid) %>%
   arrange(pid, enter) %>%
@@ -64,7 +62,7 @@ db4 <- db3 %>%
   mutate(exit = lead(enter)) %>%
   filter(!is.na(exit), !grepl("time_to_risk_out_start", tree.fall.ever)) %>%
   mutate(event = lead(grepl("time_to_event", tree.fall.ever), default = 0)) %>%
-  select(pid, enter, exit, event) %>%
+  dplyr::select(pid, enter, exit, event) %>%
   ungroup()
 
 # Cleaning up
@@ -221,6 +219,25 @@ df <- df[c("pid", "age", "male", "region", "enter", "exit", "event",
            "fought.during.interval", "animal.attack.during.interval",
            "canoe.capsize.during.interval", "cut.self.during.interval")]
 
+# Categorizing the age in the interval for an individual
+df <- df %>%
+  mutate(age.cat = case_when(exit >= 0 & exit < 5 ~ "0-5",
+                             exit >= 5 & exit < 10 ~ "5-10",
+                             exit >= 10 & exit < 15 ~ "10-15",
+                             exit >= 15 & exit < 20 ~ "15-20",
+                             exit >= 20 & exit < 25 ~ "20-25",
+                             exit >= 25 & exit < 30 ~ "25-30",
+                             exit >= 30 & exit < 35 ~ "30-35",
+                             exit >= 35 & exit < 40 ~ "35-40",
+                             exit >= 40 & exit < 45 ~ "40-45",
+                             exit >= 45 & exit < 50 ~ "45-50",
+                             exit >= 50 & exit < 55 ~ "50-55",
+                             exit >= 55 & exit < 60 ~ "55-60",
+                             exit >= 60 ~ "60+"))
+
+# Rename event column to tree.fall.during.interval
+df <- df %>% dplyr::rename("tree.fall.during.interval" = "event")
+
 # Export as csv
-write.csv(df, "tree_fall_new_format.csv", row.names = F)
+write.csv(df, "data_new_format.csv", row.names = F)
 

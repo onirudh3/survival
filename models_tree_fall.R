@@ -29,6 +29,8 @@ df_final$Upriver <- ifelse(df_final$region == "Upriver", 1, 0)
 # Creating column for risk years
 df_final$risk.years <- df_final$exit - df_final$enter
 sum(df_final$risk.years) # 13254.94
+# Basically adding the ages of everyone
+
 
 ############################## MODELS ##########################################
 
@@ -92,7 +94,6 @@ stargazer(model1, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           dep.var.labels = "Hazard Rate", covariate.labels = "Male",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "568"),
-                           c("Censored Observations", "388"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
@@ -119,7 +120,6 @@ stargazer(model2a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Male", "Sickness"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "568"),
-                           c("Censored Observations", "388"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
@@ -142,7 +142,6 @@ stargazer(model2b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Male", "Snake/Ray Bite"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "568"),
-                           c("Censored Observations", "388"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
@@ -164,7 +163,6 @@ stargazer(model2c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           dep.var.labels = "Hazard Rate", covariate.labels = c("Male", "Fight"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "568"),
-                           c("Censored Observations", "388"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
@@ -190,7 +188,6 @@ stargazer(model2d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                                                "Animal Attack"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "568"),
-                           c("Censored Observations", "388"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
@@ -215,7 +212,6 @@ stargazer(model2e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                                                "Canoe Capsize"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "568"),
-                           c("Censored Observations", "388"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
@@ -238,7 +234,6 @@ stargazer(model2f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                                                "Cut Self"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "568"),
-                           c("Censored Observations", "388"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
@@ -268,7 +263,6 @@ stargazer(model3a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Male", "Near San Borja", "Upriver", "Sickness"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "568"),
-                           c("Censored Observations", "388"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
@@ -296,7 +290,6 @@ stargazer(model3b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                "Snake/Ray Bite"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "568"),
-                           c("Censored Observations", "388"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
@@ -323,7 +316,6 @@ stargazer(model3c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Male", "Near San Borja", "Upriver", "Fight"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "568"),
-                           c("Censored Observations", "388"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
@@ -351,7 +343,6 @@ stargazer(model3d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                "Animal Attack"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "568"),
-                           c("Censored Observations", "388"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
@@ -379,7 +370,6 @@ stargazer(model3e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                "Canoe Capsize"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "568"),
-                           c("Censored Observations", "388"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
@@ -406,7 +396,6 @@ stargazer(model3f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Male", "Near San Borja", "Upriver", "Cut Self"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "568"),
-                           c("Censored Observations", "388"),
                            c("Total No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
@@ -416,14 +405,12 @@ stargazer(model3f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
 # Regressions with sex, region, length of previous tree fall, and other risk as
 # predictor
 ################################ MODEL 4a ######################################
-# Length of Prior Tree Fall
-
 # Create new df with no NAs in length.of.last.fall
 new_df <- df_final %>%
   tidyr::drop_na(length.of.last.fall)
 
 # Total risk years in new_df
-sum(new_df$risk.years) # 2636.626
+sum(new_df$risk.years) # 2,630.692
 
 model4a <- coxreg(Surv(enter, exit, event) ~ length.of.last.fall,
                   data = new_df)
@@ -436,8 +423,7 @@ stargazer(model4a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Length of Prior Tree Fall Interval"),
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
-                           c("Censored Observations", "548"),
-                           c("Total No. of Risk Years", "2,636.626")),
+                           c("Total No. of Risk Years", "2,630.692")),
           omit.stat = c("ll", "n"))
 
 ################################ MODEL 4b ######################################
@@ -456,8 +442,7 @@ stargazer(model4b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Length of Prior Tree Fall Interval", "Male"),
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
-                           c("Censored Observations", "548"),
-                           c("Total No. of Risk Years", "2,636.626")),
+                           c("Total No. of Risk Years", "2,630.692")),
           omit.stat = c("ll", "n"))
 
 ################################ MODEL 4c ######################################
@@ -477,8 +462,7 @@ stargazer(model4c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                "Near San Borja", "Upriver"),
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
-                           c("Censored Observations", "548"),
-                           c("Total No. of Risk Years", "2,636.626")),
+                           c("Total No. of Risk Years", "2,630.692")),
           omit.stat = c("ll", "n"))
 
 ################################ MODEL 4d ######################################
@@ -498,8 +482,7 @@ stargazer(model4d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                "Sickness"),
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
-                           c("Censored Observations", "548"),
-                           c("Total No. of Risk Years", "2,636.626")),
+                           c("Total No. of Risk Years", "2,630.692")),
           omit.stat = c("ll", "n"))
 
 ################################ MODEL 4e ######################################
@@ -519,8 +502,7 @@ stargazer(model4e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                "Snake/Ray Bite"),
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
-                           c("Censored Observations", "548"),
-                           c("Total No. of Risk Years", "2,636.626")),
+                           c("Total No. of Risk Years", "2,630.692")),
           omit.stat = c("ll", "n"))
 
 ################################ MODEL 4f ######################################
@@ -539,8 +521,7 @@ stargazer(model4f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Length of Prior Tree Fall Interval", "Fight"),
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
-                           c("Censored Observations", "548"),
-                           c("Total No. of Risk Years", "2,636.626")),
+                           c("Total No. of Risk Years", "2,630.692")),
           omit.stat = c("ll", "n"))
 
 ################################ MODEL 4g ######################################
@@ -560,8 +541,7 @@ stargazer(model4g, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                "Animal Attack"),
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
-                           c("Censored Observations", "548"),
-                           c("Total No. of Risk Years", "2,636.626")),
+                           c("Total No. of Risk Years", "2,630.692")),
           omit.stat = c("ll", "n"))
 
 ################################ MODEL 4h ######################################
@@ -581,8 +561,7 @@ stargazer(model4h, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                "Canoe Capsize"),
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
-                           c("Censored Observations", "548"),
-                           c("Total No. of Risk Years", "2,636.626")),
+                           c("Total No. of Risk Years", "2,630.692")),
           omit.stat = c("ll", "n"))
 
 ################################ MODEL 4i ######################################
@@ -602,6 +581,5 @@ stargazer(model4i, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                                "Cut Self"),
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
-                           c("Censored Observations", "548"),
-                           c("Total No. of Risk Years", "2,636.626")),
+                           c("Total No. of Risk Years", "2,630.692")),
           omit.stat = c("ll", "n"))

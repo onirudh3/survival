@@ -71,25 +71,26 @@ db1 <- cbind(db1, db2)
 # ^This is the version of the table that has tree fall age1, age2... just like
 # the raw data for other mortality types
 
-# How many out of 388 people experienced tree falls?
-db1 %>%
-  filter(tree.fall.ever == 1) %>%
-  summarise(count = n_distinct(pid)) # 165 out of 388 people experienced it
-
 # For splitting, we need ID, age, event, and the corresponding ages
 db3 <- db1[c("pid", "tree.fall.ever", "age", "tf.age1", "tf.age2", "tf.age3")]
 
 # Anything weird? Any individuals with age = age of tree fall?
-db3[(db3$age == db3$tf.age1),]
+View(db3[(db3$age == db3$tf.age1),])
 # So three individuals have age = tree fall age: 3WPX, DYJA, F9DJ
 
 # Export as csv
 write.csv(db3, "raw_data_no_duplicates.csv", row.names = F)
+write.csv(db3[c("pid", "tf.age1", "tf.age2", "tf.age3")],
+          "tree_fall_cleaned.csv", row.names = F)
+
+# Rounding up the tree fall times so that we get the desired final output
+db3$tf.age1 <- ceiling(db3$tf.age1)
+db3$tf.age2 <-  ceiling(db3$tf.age2)
 
 # Creating the row splits
 db4 <- db3 %>%
   mutate(start = 0, end = age) %>%
-  select(-tree.fall.ever) %>%
+  dplyr::select(-tree.fall.ever) %>%
   gather(tree.fall.ever, enter, -pid) %>%
   group_by(pid) %>%
   arrange(pid, enter) %>%
@@ -97,7 +98,7 @@ db4 <- db3 %>%
   mutate(exit = lead(enter)) %>%
   filter(!is.na(exit), !grepl("time_to_risk_out_start", tree.fall.ever)) %>%
   mutate(event = lead(grepl("time_to_event", tree.fall.ever), default = 0)) %>%
-  select(pid, enter, exit, event) %>%
+  dplyr::select(pid, enter, exit, event) %>%
   ungroup()
 
 # Cleaning up
@@ -105,6 +106,13 @@ db4 <- subset(db4, enter != exit)
 db5 <- db1[c("pid", "age", "n.tree.fall", "tf.age1", "tf.age2", "tf.age3")]
 db6 <- left_join(db4, db5, by = "pid")
 db6$event <- ifelse(db6$exit == db6$age, 0, 1)
+
+# If exit > age, delete current row and assign event = 1 to the preceding row
+db6 <- db6 %>%
+  mutate(event = case_when(lead(exit) > lead(age) ~ 1, TRUE ~ event))
+
+# Remove the three rows where exit > age
+db6 <- subset(db6, exit <= age)
 
 # Sorting out the number of tree falls.
 # Note that this is context specific.
@@ -133,3 +141,23 @@ db6 <- db6[c("pid", "age", "male", "region", "enter", "exit", "event",
 
 # Export as csv
 write.csv(db6, "treefall_cleaned.csv", row.names = F)
+
+
+# How many out of 388 people experienced tree falls?
+db3 %>%
+  filter(tree.fall.ever == 1) %>%
+  summarise(count = n_distinct(pid)) # Apparently 165 out of 388 people experienced it
+# But there is a story here...
+trial_df <- db3 %>%
+  filter(tree.fall.ever == 1)
+trial_df1 <- plyr::count(unique(trial_df$pid))
+
+trial_df2 <- db6 %>%
+  filter(event == 1)
+trial_df3 <- plyr::count(unique(trial_df2$pid))
+
+anti_join(trial_df1, trial_df3)
+# So Q3DD and RWNT experienced tree fall but did not report age of tree fall!
+# So instead of 165, our observations are 163
+
+

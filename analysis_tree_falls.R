@@ -10,7 +10,7 @@ library(muhaz)
 library(bshazard)
 
 # Load data
-df_final <- read.csv("treefall_final_table.csv")
+df_final <- read.csv("data_new_format.csv")
 
 
 ################################################################################
@@ -19,13 +19,13 @@ df_final <- read.csv("treefall_final_table.csv")
 
 ################### (Kaplan-Meier) Survival function ###########################
 
-# with(df_final, plot(Surv(enter, exit, event),
+# with(df_final, plot(Surv(enter, exit, tree.fall.during.interval),
 #                     main = "TREE FALL",
 #                     xlab = "Age", ylab = "Proportion of individuals not
 #                                           experienced risk"))
 
 # help(autoplot.survfit)
-fit <- survfit(Surv(enter, exit, event) ~ 1, data = df_final) # survfit() for
+fit <- survfit(Surv(enter, exit, tree.fall.during.interval) ~ 1, data = df_final) # survfit() for
 # survival curves
 p <- autoplot(fit, censor.shape = '|', censor.colour = "orange",
               surv.colour = "orange") +
@@ -42,7 +42,7 @@ p
 
 # I'm not able to change the legend title from "strata" for some reason
 # df_final$male <- ifelse(df_final$male == 1, "Male", "Female")
-fit2 <- survfit(Surv(enter, exit, event) ~ male, data = df_final)
+fit2 <- survfit(Surv(enter, exit, tree.fall.during.interval) ~ male, data = df_final)
 # autoplot(fit2, legTitle = "Gender") +
 #   theme_classic() +
 #   ggtitle("TREE FALL") +
@@ -60,7 +60,7 @@ ggsurvplot(fit2, font.title = c("30"), conf.int = TRUE, legend = "right",
 
 ################ (Nelson-Aalen) Cumulative hazards function ####################
 
-# with(df_final, plot(Surv(enter, exit, event), fun = "cumhaz",
+# with(df_final, plot(Surv(enter, exit, tree.fall.during.interval), fun = "cumhaz",
 #                     main = "Tree Fall (Non-parametric)",
 #                     xlab = "Age", ylab = "Cumulative Hazard"))
 
@@ -82,7 +82,7 @@ ggsurvplot(fit2, font.title = c("30"), conf.int = TRUE, legend = "right",
 
 ############################ HAZARD FUNCTION ###################################
 # This one gives a smoothed hazard function plot
-fit <- bshazard(Surv(enter, exit, event) ~ 1, data = df_final)
+fit <- bshazard(Surv(enter, exit, tree.fall.during.interval) ~ 1, data = df_final)
 plot(fit,
      col = "brown",
      col.fill = "pink",
@@ -91,7 +91,7 @@ plot(fit,
      xlab = "Age in Years")
 
 # This one gives the same smoothed hazard function plot as above
-fit <- bshazard(Surv(enter, exit, event) ~ 1, data = df_final)
+fit <- bshazard(Surv(enter, exit, tree.fall.during.interval) ~ 1, data = df_final)
 df_surv <- data.frame(time = fit$time,
                       hazard = fit$hazard,
                       lower.ci = fit$lower.ci,
@@ -104,19 +104,23 @@ ggplot(df_surv, aes(x = time, y = hazard)) +
               alpha = 0.2,
               fill = "darkgreen",
               color = "darkgreen") +
-  theme_classic()
+  theme_classic() +
+  xlab("Age in Years") +
+  ylab("Probability of experiencing risk") +
+  ggtitle("TREE FALL") +
+  theme(plot.title = element_text(size = 30))
 
 # This one gives non parametric apparently
-ff <- muhaz(df_final$exit, df_final$event)
+ff <- muhaz(df_final$exit, df_final$tree.fall.during.interval)
 plot(ff)
 # ?muhaz()
 
 # Some other non-parametric thing
-fi <- kphaz.fit(df_final$exit, df_final$event)
+fi <- kphaz.fit(df_final$exit, df_final$tree.fall.during.interval)
 kphaz.plot(fi)
 
 # This is something too idk
-mod <- survfit(Surv(enter, exit, event) ~ 1, data = df_final)
+mod <- survfit(Surv(enter, exit, tree.fall.during.interval) ~ 1, data = df_final)
 survival.table1 <- broom::tidy(mod) %>% filter(n.event > 0)
 survival.table1 <- survival.table1 %>% mutate(hazard = n.event / (n.risk * (lead(time) - time)))
 ggplot() +
@@ -127,7 +131,7 @@ ggplot() +
 ################################################################################
 ############################ PARAMETRICS #######################################
 ################################################################################
-fit.w <- phreg(Surv(enter, exit, event) ~ 1, data = df_final)
+fit.w <- phreg(Surv(enter, exit, tree.fall.during.interval) ~ 1, data = df_final)
 
 # Survival function
 plot(fit.w, fn = "sur", main = "TREE FALL", xlab = "Age in years",
