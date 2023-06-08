@@ -40,9 +40,9 @@ df3[(df3$sickness.age == df3$sickness.age1),] # 17 people have
 # Is age = sickness age ever?
 age_df <- df[c("pid", "age")]
 df4 <- left_join(df3, age_df)
-View(df4[(df4$age == df4$sickness.age |
-                          df4$age == df4$sickness.age1 |
-                          df4$age == df4$sickness.age2),])
+# View(df4[(df4$age == df4$sickness.age |
+#                           df4$age == df4$sickness.age1 |
+#                           df4$age == df4$sickness.age2),])
 # Yes, for 31 individuals!
 
 
@@ -94,6 +94,17 @@ df6$event <- ifelse(is.na(df6$event), 0, df6$event)
 df6 <- df6[c("pid", "age", "male", "region", "enter", "exit", "event")]
 
 rm(df1, df2, df3, df4, df5, df7, age_df)
+
+# Two more columns --------------------------------------------------------
+
+# Creating column for time since last sickness
+df6$time.since.last.sickness <- ifelse(df6$enter == 0 & df6$exit <= df6$age,
+                                       NA_real_, df6$exit - df6$enter)
+
+# Create column for length of prior sickness interval
+df6$length.of.last.sickness <- lag(df6$exit) - lag(df6$enter)
+df6$length.of.last.sickness <- ifelse(df6$enter == 0, NA_real_,
+                                      df6$length.of.last.sickness)
 
 
 # Add columns for other risks ---------------------------------------------
@@ -151,6 +162,7 @@ df6$cut.self.during.interval <- ifelse(is.na(df6$cut.self.during.interval), 0, d
 
 # Final Table
 df6 <- df6[c("pid", "age", "male", "region", "enter", "exit", "event",
+             "length.of.last.sickness", "time.since.last.sickness",
              "tree.fall.during.interval", "bite.during.interval",
              "fought.during.interval", "animal.attack.during.interval",
              "canoe.capsize.during.interval", "cut.self.during.interval")]
@@ -248,17 +260,6 @@ df6 <- df6 %>%
                                                      cut.self.during.interval == 1 & event == 1 & exit >= 50 & exit < 60 ~ "50-59",
                                                      cut.self.during.interval == 1 & event == 1 & exit >= 60 & exit < 70 ~ "60-69",
                                                      cut.self.during.interval == 1 & event == 1 & exit >= 70 & exit < 80 ~ "70-79"))
-
-
-# Two more columns --------------------------------------------------------
-
-# Creating column for time since last fall
-df6$time.since.last.sickness <- ifelse(df6$enter == 0 & df6$exit <= df6$age,
-                                   NA_real_, df6$exit - df6$enter)
-
-# Create column for length of prior tree fall interval
-df6$length.of.last.sickness <- lag(df6$exit) - lag(df6$enter)
-df6$length.of.last.sickness <- ifelse(df6$enter == 0, NA_real_, df6$length.of.last.sickness)
 
 
 # Export final table to csv -----------------------------------------------
