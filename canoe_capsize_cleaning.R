@@ -79,7 +79,7 @@ df3 <- left_join(df1, age_df)
 df1 <- df1[c("pid", "cc.age1", "cc.age2", "cc.age3")]
 
 # Export as csv
-write.csv(df1, "canoe_cleaned.csv", row.names = F)
+write.csv(df1, "canoe_capsize_cleaned.csv", row.names = F)
 
 # Counting process format -------------------------------------------------
 
@@ -126,23 +126,23 @@ df6$event <- ifelse(is.na(df6$event), 0, df6$event)
 # Final Table
 df6 <- df6[c("pid", "age", "male", "region", "enter", "exit", "event")]
 
-rm(df1, df2, df3, df5, df7, age_df)
+rm(df2, df3, df5, df7, age_df)
 
 # Two more columns --------------------------------------------------------
 
 # Creating column for time since last fight
 df6$time.since.last.canoe.capsize <- ifelse(df6$enter == 0 & df6$exit <= df6$age,
-                                    NA_real_, df6$exit - df6$enter)
+                                            NA_real_, df6$exit - df6$enter)
 
 # Create column for length of prior fight interval
 df6$length.of.last.canoe.capsize <- lag(df6$exit) - lag(df6$enter)
 df6$length.of.last.canoe.capsize <- ifelse(df6$enter == 0, NA_real_,
-                                   df6$length.of.last.canoe.capsize)
+                                           df6$length.of.last.canoe.capsize)
 
 # Add columns for other risks ---------------------------------------------
 
 db6 <- read.csv("tree_fall_cleaned.csv")
-snake_df3 <- read.csv("snake_bite_cleaned.csv")
+snake_df3 <- read.csv("snake_ray_bite_cleaned.csv")
 sick_df3 <- read.csv("sickness_cleaned.csv")
 animal_attack_df3 <- read.csv("animal_attack_cleaned.csv")
 fought_df3 <- read.csv("fought_cleaned.csv")
@@ -292,6 +292,58 @@ df6 <- df6 %>%
                                                      cut.self.during.interval == 1 & event == 1 & exit >= 60 & exit < 70 ~ "60-69",
                                                      cut.self.during.interval == 1 & event == 1 & exit >= 70 & exit < 80 ~ "70-79"))
 
+
+
+# Add column for number of occurrences per interval -----------------------
+df <- df6
+df <- left_join(df, df1)
+df$cc.age1 <- ceiling(df$cc.age1)
+df$cc.age2 <- ceiling(df$cc.age2)
+df$cc.age3 <- ceiling(df$cc.age3)
+
+dx <- df[c("pid", "exit", "event", "cc.age1",
+           "cc.age2", "cc.age3")]
+
+dy <- dx %>%
+  filter(event == 1)
+
+dy <- dy %>%
+  rowwise() %>%
+  mutate(n.canoe.capsize = sum(c_across(cc.age1:cc.age3) == exit, na.rm = TRUE)) %>%
+  ungroup()
+dy$n.canoe.capsize <- ifelse(dy$n.canoe.capsize == 0, 1, dy$n.canoe.capsize)
+
+dy <- dy[c("pid", "exit", "n.canoe.capsize")]
+df <- left_join(df, dy)
+df <- relocate(df, n.canoe.capsize, .after = event)
+df$n.canoe.capsize <- ifelse(is.na(df$n.canoe.capsize), 0, df$n.canoe.capsize)
+
+df <- subset(df, select = -c(cc.age1, cc.age2, cc.age3))
+
+# Add household ID column -------------------------------------------------
+
+h_id <- read_xls("add household ids_a.xls")
+df <- left_join(df, h_id)
+df <- relocate(df, house.id, .after = pid)
+
 # Export final table to csv -----------------------------------------------
 
-write.csv(df6, "canoe_capsize_final_table.csv", row.names = F)
+write.csv(df, "canoe_capsize_final_table.csv", row.names = F)
+
+
+
+# Who reported experiencing the risk but did not report any ages? ---------
+
+df %>%
+  filter(canoe.capsize.ever == 1) %>%
+  summarise(count = n_distinct(pid)) # Apparently 99 out of 388 people experienced it
+# But there is a story here...
+trial_df <- df %>%
+  filter(canoe.capsize.ever == 1)
+trial_df1 <- plyr::count(unique(trial_df$pid))
+
+trial_df2 <- df6 %>%
+  filter(event == 1)
+trial_df3 <- plyr::count(unique(trial_df2$pid))
+
+anti_join(trial_df1, trial_df3) # 6 people said they experienced it but did not report any ages.

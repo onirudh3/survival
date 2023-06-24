@@ -87,7 +87,7 @@ df6$event <- ifelse(is.na(df6$event), 0, df6$event)
 # Final Table
 df6 <- df6[c("pid", "age", "male", "region", "enter", "exit", "event")]
 
-rm(df1, df2, df3, df4, df5, df7, age_df)
+rm(df1, df2, df4, df5, df7, age_df)
 
 # Two more columns --------------------------------------------------------
 
@@ -103,10 +103,10 @@ df6$length.of.last.animal.attack <- ifelse(df6$enter == 0, NA_real_,
 # Add columns for other risks ---------------------------------------------
 
 db6 <- read.csv("tree_fall_cleaned.csv")
-snake_df3 <- read.csv("snake_bite_cleaned.csv")
+snake_df3 <- read.csv("snake_ray_bite_cleaned.csv")
 sick_df3 <- read.csv("sickness_cleaned.csv")
 fought_df3 <- read.csv("fought_cleaned.csv")
-ds1 <- read.csv("canoe_cleaned.csv")
+ds1 <- read.csv("canoe_capsize_cleaned.csv")
 dc1 <- read.csv("cut_self_cleaned.csv")
 
 ## Tree Fall ----
@@ -253,7 +253,38 @@ df6 <- df6 %>%
                                                      cut.self.during.interval == 1 & event == 1 & exit >= 60 & exit < 70 ~ "60-69",
                                                      cut.self.during.interval == 1 & event == 1 & exit >= 70 & exit < 80 ~ "70-79"))
 
+# Add column for number of occurrences per interval -----------------------
+df <- df6
+df <- left_join(df, df3)
+df$animal.attack.age <- ceiling(df$animal.attack.age)
+df$animal.attack.age1 <- ceiling(df$animal.attack.age1)
+
+dx <- df[c("pid", "exit", "event", "animal.attack.age",
+           "animal.attack.age1")]
+
+dy <- dx %>%
+  filter(event == 1)
+
+dy <- dy %>%
+  rowwise() %>%
+  mutate(n.animal.attack = sum(c_across(animal.attack.age:animal.attack.age1) == exit, na.rm = TRUE)) %>%
+  ungroup()
+dy$n.animal.attack <- ifelse(dy$n.animal.attack == 0, 1, dy$n.animal.attack)
+
+dy <- dy[c("pid", "exit", "n.animal.attack")]
+df <- left_join(df, dy)
+df <- relocate(df, n.animal.attack, .after = event)
+df$n.animal.attack <- ifelse(is.na(df$n.animal.attack), 0, df$n.animal.attack)
+
+df <- subset(df, select = -c(animal.attack.age, animal.attack.age1))
+
+
+# Add household ID column -------------------------------------------------
+
+h_id <- read_xls("add household ids_a.xls")
+df <- left_join(df, h_id)
+df <- relocate(df, house.id, .after = pid)
 
 # Export final table to csv -----------------------------------------------
 
-write.csv(df6, "animal_attack_final_table.csv", row.names = F)
+write.csv(df, "animal_attack_final_table.csv", row.names = F)

@@ -93,7 +93,7 @@ df6$event <- ifelse(is.na(df6$event), 0, df6$event)
 # Final Table
 df6 <- df6[c("pid", "age", "male", "region", "enter", "exit", "event")]
 
-rm(df1, df2, df3, df4, df5, df7, age_df)
+rm(df1, df2, df4, df5, df7, age_df)
 
 # Two more columns --------------------------------------------------------
 
@@ -110,10 +110,10 @@ df6$length.of.last.sickness <- ifelse(df6$enter == 0, NA_real_,
 # Add columns for other risks ---------------------------------------------
 
 db6 <- read.csv("tree_fall_cleaned.csv")
-snake_df3 <- read.csv("snake_bite_cleaned.csv")
+snake_df3 <- read.csv("snake_ray_bite_cleaned.csv")
 fought_df3 <- read.csv("fought_cleaned.csv")
 animal_attack_df3 <- read.csv("animal_attack_cleaned.csv")
-ds1 <- read.csv("canoe_cleaned.csv")
+ds1 <- read.csv("canoe_capsize_cleaned.csv")
 dc1 <- read.csv("cut_self_cleaned.csv")
 
 ## Tree Fall ----
@@ -262,6 +262,76 @@ df6 <- df6 %>%
                                                      cut.self.during.interval == 1 & event == 1 & exit >= 70 & exit < 80 ~ "70-79"))
 
 
+# Add column for number of occurrences per interval -----------------------
+df <- df6
+df <- left_join(df, df3)
+df$sickness.age <- ceiling(df$sickness.age)
+df$sickness.age1 <- ceiling(df$sickness.age1)
+df$sickness.age2 <- ceiling(df$sickness.age2)
+
+dx <- df[c("pid", "exit", "event", "sickness.age", "sickness.age1", "sickness.age2")]
+
+dy <- dx %>%
+  filter(event == 1)
+
+dy <- dy %>%
+  rowwise() %>%
+  mutate(n.sickness = sum(c_across(sickness.age:sickness.age2) == exit, na.rm = TRUE)) %>%
+  ungroup()
+dy$n.sickness <- ifelse(dy$n.sickness == 0, 1, dy$n.sickness)
+
+dy <- dy[c("pid", "exit", "n.sickness")]
+df <- left_join(df, dy)
+df <- relocate(df, n.sickness, .after = event)
+df$n.sickness <- ifelse(is.na(df$n.sickness), 0, df$n.sickness)
+
+df <- subset(df, select = -c(sickness.age, sickness.age1, sickness.age2))
+
+
+# Add household ID column -------------------------------------------------
+
+h_id <- read_xls("add household ids_a.xls")
+df <- left_join(df, h_id)
+df <- relocate(df, house.id, .after = pid)
+
 # Export final table to csv -----------------------------------------------
 
-write.csv(df6, "sickness_final_table.csv", row.names = F)
+write.csv(df, "sickness_final_table.csv", row.names = F)
+
+# # Who reported experiencing the risk but did not report any ages? ---------
+#
+# df %>%
+#   filter(sickness == 1) %>%
+#   summarise(count = n_distinct(pid)) # Apparently 349 out of 388 people experienced it
+# # But there is a story here...
+# trial_df <- df %>%
+#   filter(sickness == 1)
+# trial_df1 <- plyr::count(unique(trial_df$pid))
+#
+# trial_df2 <- df6 %>%
+#   filter(event == 1)
+# trial_df3 <- plyr::count(unique(trial_df2$pid))
+#
+# anti_join(trial_df1, trial_df3) # 8 people said they experienced it but did not report any ages.
+
+
+rm(df3, df6, dx, dy, h_id)
+
+# Adding columns for cause, etc. ------------------------------------------
+# Note that this is all highly context-specific, meaning that each risk has a
+# different number of recorded ages, which means that the code to add these
+# columns is slightly modified for every risk
+
+raw <- read.csv("raw_data_no_duplicates.csv")
+
+raw <- select(raw, c(7, 16:35))
+raw <- subset(raw, select = -c(snake.or.ray.bite.age, snake.or.ray.bite.age1))
+dx <- left_join(df, raw)
+dx <- subset(dx, select = -c(house.id, age, male, region, length.of.last.bite:cut.self.co_occurrence.interval))
+
+dx <- dx %>%
+  filter(event == 1)
+dx <- dx %>%
+  group_by(pid) %>%
+  mutate(index = 1:n())
+dx <- relocate(dx, index, .after = event)
