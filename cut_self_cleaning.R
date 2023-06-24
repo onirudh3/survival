@@ -145,7 +145,7 @@ df6$event <- ifelse(is.na(df6$event), 0, df6$event)
 # Final Table
 df6 <- df6[c("pid", "age", "male", "region", "enter", "exit", "event")]
 
-rm(df, df1, df2, df5, df7, age_df, region_df)
+rm(df, df2, df5, df7, age_df, region_df)
 
 # Two more columns --------------------------------------------------------
 
@@ -161,10 +161,10 @@ df6$length.of.last.cut.self <- ifelse(df6$enter == 0, NA_real_, df6$length.of.la
 # Add columns for other risks ---------------------------------------------
 
 db6 <- read.csv("tree_fall_cleaned.csv")
-snake_df3 <- read.csv("snake_bite_cleaned.csv")
+snake_df3 <- read.csv("snake_ray_bite_cleaned.csv")
 sick_df3 <- read.csv("sickness_cleaned.csv")
 animal_attack_df3 <- read.csv("animal_attack_cleaned.csv")
-ds1 <- read.csv("canoe_cleaned.csv")
+ds1 <- read.csv("canoe_capsize_cleaned.csv")
 fought_df3 <- read.csv("fought_cleaned.csv")
 
 ## Tree Fall ----
@@ -307,6 +307,44 @@ df6 <- df6 %>%
                                                    fought.during.interval == 1 & event == 1 & exit >= 50 & exit < 60 ~ "50-59",
                                                    fought.during.interval == 1 & event == 1 & exit >= 60 & exit < 70 ~ "60-69",
                                                    fought.during.interval == 1 & event == 1 & exit >= 70 & exit < 80 ~ "70-79"))
+
+
+# Add column for number of occurrences per interval -----------------------
+df <- df6
+df <- left_join(df, df1)
+df$cut.age1 <- ceiling(df$cut.age1)
+df$cut.age2 <- ceiling(df$cut.age2)
+df$cut.age3 <- ceiling(df$cut.age3)
+df$cut.age4 <- ceiling(df$cut.age4)
+df$cut.age5 <- ceiling(df$cut.age5)
+df$cut.age6 <- ceiling(df$cut.age6)
+
+dx <- df[c("pid", "exit", "event", "cut.age1", "cut.age2",
+           "cut.age3", "cut.age4", "cut.age5", "cut.age6")]
+
+dy <- dx %>%
+  filter(event == 1)
+
+dy <- dy %>%
+  rowwise() %>%
+  mutate(n.cut.self = sum(c_across(cut.age1:cut.age6) == exit, na.rm = TRUE)) %>%
+  ungroup()
+dy$n.cut.self <- ifelse(dy$n.cut.self == 0, 1, dy$n.cut.self)
+
+dy <- dy[c("pid", "exit", "n.cut.self")]
+df <- left_join(df, dy)
+df <- relocate(df, n.cut.self, .after = event)
+df$n.cut.self <- ifelse(is.na(df$n.cut.self), 0, df$n.cut.self)
+
+df <- subset(df, select = -c(cut.age1, cut.age2, cut.age3, cut.age4, cut.age5,
+                             cut.age6))
+
+
+# Add household ID column -------------------------------------------------
+
+h_id <- read_xls("add household ids_a.xls")
+df <- left_join(df, h_id)
+df <- relocate(df, house.id, .after = pid)
 
 # Export final table to csv -----------------------------------------------
 
