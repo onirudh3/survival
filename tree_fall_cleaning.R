@@ -51,6 +51,8 @@ df1 <- df1 %>%
   filter(age == max(age)) %>%
   ungroup()
 
+# View(subset(df1, tf.age2 > tf.age3))
+
 # Moving values so there is no NA in tf.age1
 df1 <- dedupewider::na_move(df1, cols = names(df1)[grepl("^tf.age\\d$",
                                                          names(df1))])
@@ -330,16 +332,48 @@ write.csv(df, "tree_fall_final_table.csv", row.names = F)
 
 # Who reported experiencing the risk but did not report any ages? ---------
 
-df %>%
-  filter(tree.fall.ever == 1) %>%
-  summarise(count = n_distinct(pid)) # Apparently 99 out of 388 people experienced it
-# But there is a story here...
-trial_df <- df %>%
-  filter(tree.fall.ever == 1)
-trial_df1 <- plyr::count(unique(trial_df$pid))
+# df %>%
+#   filter(tree.fall.ever == 1) %>%
+#   summarise(count = n_distinct(pid)) # Apparently 99 out of 388 people experienced it
+# # But there is a story here...
+# trial_df <- df %>%
+#   filter(tree.fall.ever == 1)
+# trial_df1 <- plyr::count(unique(trial_df$pid))
+#
+# trial_df2 <- df6 %>%
+#   filter(event == 1)
+# trial_df3 <- plyr::count(unique(trial_df2$pid))
+#
+# anti_join(trial_df1, trial_df3) # 6 people said they experienced it but did not report any ages.
 
-trial_df2 <- df6 %>%
+
+
+# Adding columns for cause, etc. ------------------------------------------
+# Note that this is all highly context-specific, meaning that each risk has a
+# different number of reported ages, which means that the code to add these
+# columns is slightly modified for every risk.
+
+raw <- read.csv("raw_data_no_duplicates.csv")
+raw <- select(raw, c(7, TIPO1:other.serious.accident.still.bothers5))
+raw <- subset(raw, select = -c(other.serious.accident.age, other.serious.accident.age1,
+                               other.serious.accident.age2, other.serious.accident.age3,
+                               other.serious.accident.age4))
+dx <- left_join(df, raw)
+
+dx <- dx %>%
   filter(event == 1)
-trial_df3 <- plyr::count(unique(trial_df2$pid))
+dx <- dx %>%
+  group_by(pid) %>%
+  mutate(index = 1:n())
+dx <- relocate(dx, index, .after = event)
 
-anti_join(trial_df1, trial_df3) # 6 people said they experienced it but did not report any ages.
+# Tree fall occurs maximum thrice in an interval
+# plyr::count(raw$TIPO1)
+# plyr::count(raw$TIPO2)
+# plyr::count(raw$TIPO3)
+# plyr::count(raw$TIPO4)
+# plyr::count(raw$TIPO5)
+# plyr::count(raw$TIPO6)
+
+### Where hurt? ----
+

@@ -294,9 +294,7 @@ h_id <- read_xls("add household ids_a.xls")
 df <- left_join(df, h_id)
 df <- relocate(df, house.id, .after = pid)
 
-# Export final table to csv -----------------------------------------------
-
-write.csv(df, "sickness_final_table.csv", row.names = F)
+rm(df3, df6, dx, dy, h_id)
 
 # # Who reported experiencing the risk but did not report any ages? ---------
 #
@@ -315,8 +313,6 @@ write.csv(df, "sickness_final_table.csv", row.names = F)
 # anti_join(trial_df1, trial_df3) # 8 people said they experienced it but did not report any ages.
 
 
-rm(df3, df6, dx, dy, h_id)
-
 # Adding columns for cause, etc. ------------------------------------------
 # Note that this is all highly context-specific, meaning that each risk has a
 # different number of recorded ages, which means that the code to add these
@@ -324,10 +320,9 @@ rm(df3, df6, dx, dy, h_id)
 
 raw <- read.csv("raw_data_no_duplicates.csv")
 
-raw <- select(raw, c(7, 16:35))
-raw <- subset(raw, select = -c(snake.or.ray.bite.age, snake.or.ray.bite.age1))
+raw <- select(raw, c(7, sickness.what:sickness.cause2))
+raw <- subset(raw, select = -c(sickness.age, sickness.age1, sickness.age2))
 dx <- left_join(df, raw)
-dx <- subset(dx, select = -c(house.id, age, male, region, length.of.last.bite:cut.self.co_occurrence.interval))
 
 dx <- dx %>%
   filter(event == 1)
@@ -335,3 +330,272 @@ dx <- dx %>%
   group_by(pid) %>%
   mutate(index = 1:n())
 dx <- relocate(dx, index, .after = event)
+
+### Sickness what ----
+dx$sickness_what_1 <- NA_character_
+dx$sickness_what_2 <- NA_character_
+dx$sickness_what_3 <- NA_character_
+
+dx <- relocate(dx, c(sickness_what_1, sickness_what_2,
+                     sickness_what_3), .after = n.sickness)
+
+# index = 1
+dx <- dx %>%
+  mutate(sickness_what_1 = case_when(index == 1 & n.sickness == 1 ~ sickness.what, T ~ as.character(sickness_what_1)),
+         sickness_what_2 = case_when(index == 1 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_what_2)),
+         sickness_what_3 = case_when(index == 1 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_what_3)))
+
+dx <- dx %>%
+  mutate(sickness_what_1 = case_when(index == 1 & n.sickness == 2 ~ sickness.what, T ~ as.character(sickness_what_1)),
+         sickness_what_2 = case_when(index == 1 & n.sickness == 2 ~ sickness.what1, T ~ as.character(sickness_what_2)),
+         sickness_what_3 = case_when(index == 1 & n.sickness == 2 ~ NA_character_, T ~ as.character(sickness_what_3)))
+
+dx <- dx %>%
+  mutate(sickness_what_1 = case_when(index == 1 & n.sickness == 3 ~ sickness.what, T ~ as.character(sickness_what_1)),
+         sickness_what_2 = case_when(index == 1 & n.sickness == 3 ~ sickness.what1, T ~ as.character(sickness_what_2)),
+         sickness_what_3 = case_when(index == 1 & n.sickness == 3 ~ sickness.what2, T ~ as.character(sickness_what_3)))
+
+# index = 2
+dx <- dx %>%
+  mutate(sickness_what_1 = case_when(index == 2 & n.sickness == 1 ~ sickness.what1, T ~ as.character(sickness_what_1)),
+         sickness_what_2 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_what_2)),
+         sickness_what_3 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_what_3)))
+
+dx <- dx %>%
+  mutate(sickness_what_1 = case_when(index == 2 & n.sickness == 2 ~ sickness.what1, T ~ as.character(sickness_what_1)),
+         sickness_what_2 = case_when(index == 2 & n.sickness == 2 ~ sickness.what2, T ~ as.character(sickness_what_2)),
+         sickness_what_3 = case_when(index == 2 & n.sickness == 2 ~ NA_character_, T ~ as.character(sickness_what_3)))
+
+# index = 3
+dx <- dx %>%
+  mutate(sickness_what_1 = case_when(index == 3 & n.sickness == 1 ~ sickness.what2, T ~ as.character(sickness_what_1)),
+         sickness_what_2 = case_when(index == 3 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_what_2)),
+         sickness_what_3 = case_when(index == 3 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_what_3)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(sickness.what, sickness.what1, sickness.what2))
+
+### Days disabled ----
+dx$days_disabled_sickness_1 <- NA_integer_
+dx$days_disabled_sickness_2 <- NA_integer_
+dx$days_disabled_sickness_3 <- NA_integer_
+
+dx <- relocate(dx, c(days_disabled_sickness_1, days_disabled_sickness_2,
+                     days_disabled_sickness_3), .after = sickness_what_3)
+
+# index = 1
+dx <- dx %>%
+  mutate(days_disabled_sickness_1 = case_when(index == 1 & n.sickness == 1 ~ days.disabled.sickness, T ~ as.integer(days_disabled_sickness_1)),
+         days_disabled_sickness_2 = case_when(index == 1 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_2)),
+         days_disabled_sickness_3 = case_when(index == 1 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_3)))
+
+dx <- dx %>%
+  mutate(days_disabled_sickness_1 = case_when(index == 1 & n.sickness == 2 ~ days.disabled.sickness, T ~ as.integer(days_disabled_sickness_1)),
+         days_disabled_sickness_2 = case_when(index == 1 & n.sickness == 2 ~ days.disabled.sickness1, T ~ as.integer(days_disabled_sickness_2)),
+         days_disabled_sickness_3 = case_when(index == 1 & n.sickness == 2 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_3)))
+
+dx <- dx %>%
+  mutate(days_disabled_sickness_1 = case_when(index == 1 & n.sickness == 3 ~ days.disabled.sickness, T ~ as.integer(days_disabled_sickness_1)),
+         days_disabled_sickness_2 = case_when(index == 1 & n.sickness == 3 ~ days.disabled.sickness1, T ~ as.integer(days_disabled_sickness_2)),
+         days_disabled_sickness_3 = case_when(index == 1 & n.sickness == 3 ~ days.disabled.sickness2, T ~ as.integer(days_disabled_sickness_3)))
+
+# index = 2
+dx <- dx %>%
+  mutate(days_disabled_sickness_1 = case_when(index == 2 & n.sickness == 1 ~ days.disabled.sickness1, T ~ as.integer(days_disabled_sickness_1)),
+         days_disabled_sickness_2 = case_when(index == 2 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_2)),
+         days_disabled_sickness_3 = case_when(index == 2 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_3)))
+
+dx <- dx %>%
+  mutate(days_disabled_sickness_1 = case_when(index == 2 & n.sickness == 2 ~ days.disabled.sickness1, T ~ as.integer(days_disabled_sickness_1)),
+         days_disabled_sickness_2 = case_when(index == 2 & n.sickness == 2 ~ days.disabled.sickness2, T ~ as.integer(days_disabled_sickness_2)),
+         days_disabled_sickness_3 = case_when(index == 2 & n.sickness == 2 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_3)))
+
+# index = 3
+dx <- dx %>%
+  mutate(days_disabled_sickness_1 = case_when(index == 3 & n.sickness == 1 ~ days.disabled.sickness2, T ~ as.integer(days_disabled_sickness_1)),
+         days_disabled_sickness_2 = case_when(index == 3 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_2)),
+         days_disabled_sickness_3 = case_when(index == 3 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_3)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(days.disabled.sickness, days.disabled.sickness1, days.disabled.sickness2))
+### Almost died ----
+dx$almost_died_sickness_1 <- NA_integer_
+dx$almost_died_sickness_2 <- NA_integer_
+dx$almost_died_sickness_3 <- NA_integer_
+
+dx <- relocate(dx, c(almost_died_sickness_1, almost_died_sickness_2,
+                     almost_died_sickness_3), .after = days_disabled_sickness_3)
+
+# index = 1
+dx <- dx %>%
+  mutate(almost_died_sickness_1 = case_when(index == 1 & n.sickness == 1 ~ almost.died.sickness, T ~ as.integer(almost_died_sickness_1)),
+         almost_died_sickness_2 = case_when(index == 1 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(almost_died_sickness_2)),
+         almost_died_sickness_3 = case_when(index == 1 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(almost_died_sickness_3)))
+
+dx <- dx %>%
+  mutate(almost_died_sickness_1 = case_when(index == 1 & n.sickness == 2 ~ almost.died.sickness, T ~ as.integer(almost_died_sickness_1)),
+         almost_died_sickness_2 = case_when(index == 1 & n.sickness == 2 ~ almost.died.sickness1, T ~ as.integer(almost_died_sickness_2)),
+         almost_died_sickness_3 = case_when(index == 1 & n.sickness == 2 ~ NA_integer_, T ~ as.integer(almost_died_sickness_3)))
+
+dx <- dx %>%
+  mutate(almost_died_sickness_1 = case_when(index == 1 & n.sickness == 3 ~ almost.died.sickness, T ~ as.integer(almost_died_sickness_1)),
+         almost_died_sickness_2 = case_when(index == 1 & n.sickness == 3 ~ almost.died.sickness1, T ~ as.integer(almost_died_sickness_2)),
+         almost_died_sickness_3 = case_when(index == 1 & n.sickness == 3 ~ almost.died.sickness2, T ~ as.integer(almost_died_sickness_3)))
+
+# index = 2
+dx <- dx %>%
+  mutate(almost_died_sickness_1 = case_when(index == 2 & n.sickness == 1 ~ almost.died.sickness1, T ~ as.integer(almost_died_sickness_1)),
+         almost_died_sickness_2 = case_when(index == 2 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(almost_died_sickness_2)),
+         almost_died_sickness_3 = case_when(index == 2 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(almost_died_sickness_3)))
+
+dx <- dx %>%
+  mutate(almost_died_sickness_1 = case_when(index == 2 & n.sickness == 2 ~ almost.died.sickness1, T ~ as.integer(almost_died_sickness_1)),
+         almost_died_sickness_2 = case_when(index == 2 & n.sickness == 2 ~ almost.died.sickness2, T ~ as.integer(almost_died_sickness_2)),
+         almost_died_sickness_3 = case_when(index == 2 & n.sickness == 2 ~ NA_integer_, T ~ as.integer(almost_died_sickness_3)))
+
+# index = 3
+dx <- dx %>%
+  mutate(almost_died_sickness_1 = case_when(index == 3 & n.sickness == 1 ~ almost.died.sickness2, T ~ as.integer(almost_died_sickness_1)),
+         almost_died_sickness_2 = case_when(index == 3 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(almost_died_sickness_2)),
+         almost_died_sickness_3 = case_when(index == 3 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(almost_died_sickness_3)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(almost.died.sickness, almost.died.sickness1, almost.died.sickness2))
+### How cured sickness ----
+dx$how_cured_sickness_1 <- NA_character_
+dx$how_cured_sickness_2 <- NA_character_
+dx$how_cured_sickness_3 <- NA_character_
+
+dx <- relocate(dx, c(how_cured_sickness_1, how_cured_sickness_2,
+                     how_cured_sickness_3), .after = almost_died_sickness_3)
+
+# index = 1
+dx <- dx %>%
+  mutate(how_cured_sickness_1 = case_when(index == 1 & n.sickness == 1 ~ how.cured.sickness, T ~ as.character(how_cured_sickness_1)),
+         how_cured_sickness_2 = case_when(index == 1 & n.sickness == 1 ~ NA_character_, T ~ as.character(how_cured_sickness_2)),
+         how_cured_sickness_3 = case_when(index == 1 & n.sickness == 1 ~ NA_character_, T ~ as.character(how_cured_sickness_3)))
+
+dx <- dx %>%
+  mutate(how_cured_sickness_1 = case_when(index == 1 & n.sickness == 2 ~ how.cured.sickness, T ~ as.character(how_cured_sickness_1)),
+         how_cured_sickness_2 = case_when(index == 1 & n.sickness == 2 ~ how.cured.sickness1, T ~ as.character(how_cured_sickness_2)),
+         how_cured_sickness_3 = case_when(index == 1 & n.sickness == 2 ~ NA_character_, T ~ as.character(how_cured_sickness_3)))
+
+dx <- dx %>%
+  mutate(how_cured_sickness_1 = case_when(index == 1 & n.sickness == 3 ~ how.cured.sickness, T ~ as.character(how_cured_sickness_1)),
+         how_cured_sickness_2 = case_when(index == 1 & n.sickness == 3 ~ how.cured.sickness1, T ~ as.character(how_cured_sickness_2)),
+         how_cured_sickness_3 = case_when(index == 1 & n.sickness == 3 ~ how.cured.sickness2, T ~ as.character(how_cured_sickness_3)))
+
+# index = 2
+dx <- dx %>%
+  mutate(how_cured_sickness_1 = case_when(index == 2 & n.sickness == 1 ~ how.cured.sickness1, T ~ as.character(how_cured_sickness_1)),
+         how_cured_sickness_2 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(how_cured_sickness_2)),
+         how_cured_sickness_3 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(how_cured_sickness_3)))
+
+dx <- dx %>%
+  mutate(how_cured_sickness_1 = case_when(index == 2 & n.sickness == 2 ~ how.cured.sickness1, T ~ as.character(how_cured_sickness_1)),
+         how_cured_sickness_2 = case_when(index == 2 & n.sickness == 2 ~ how.cured.sickness2, T ~ as.character(how_cured_sickness_2)),
+         how_cured_sickness_3 = case_when(index == 2 & n.sickness == 2 ~ NA_character_, T ~ as.character(how_cured_sickness_3)))
+
+# index = 3
+dx <- dx %>%
+  mutate(how_cured_sickness_1 = case_when(index == 3 & n.sickness == 1 ~ how.cured.sickness2, T ~ as.character(how_cured_sickness_1)),
+         how_cured_sickness_2 = case_when(index == 3 & n.sickness == 1 ~ NA_character_, T ~ as.character(how_cured_sickness_2)),
+         how_cured_sickness_3 = case_when(index == 3 & n.sickness == 1 ~ NA_character_, T ~ as.character(how_cured_sickness_3)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(how.cured.sickness, how.cured.sickness1, how.cured.sickness2))
+### Who helped sickness ----
+dx$who_helped_sickness_1 <- NA_character_
+dx$who_helped_sickness_2 <- NA_character_
+dx$who_helped_sickness_3 <- NA_character_
+
+dx <- relocate(dx, c(who_helped_sickness_1, who_helped_sickness_2,
+                     who_helped_sickness_3), .after = how_cured_sickness_3)
+
+# index = 1
+dx <- dx %>%
+  mutate(who_helped_sickness_1 = case_when(index == 1 & n.sickness == 1 ~ who.helped.sickness, T ~ as.character(who_helped_sickness_1)),
+         who_helped_sickness_2 = case_when(index == 1 & n.sickness == 1 ~ NA_character_, T ~ as.character(who_helped_sickness_2)),
+         who_helped_sickness_3 = case_when(index == 1 & n.sickness == 1 ~ NA_character_, T ~ as.character(who_helped_sickness_3)))
+
+dx <- dx %>%
+  mutate(who_helped_sickness_1 = case_when(index == 1 & n.sickness == 2 ~ who.helped.sickness, T ~ as.character(who_helped_sickness_1)),
+         who_helped_sickness_2 = case_when(index == 1 & n.sickness == 2 ~ who.helped.sickness1, T ~ as.character(who_helped_sickness_2)),
+         who_helped_sickness_3 = case_when(index == 1 & n.sickness == 2 ~ NA_character_, T ~ as.character(who_helped_sickness_3)))
+
+dx <- dx %>%
+  mutate(who_helped_sickness_1 = case_when(index == 1 & n.sickness == 3 ~ who.helped.sickness, T ~ as.character(who_helped_sickness_1)),
+         who_helped_sickness_2 = case_when(index == 1 & n.sickness == 3 ~ who.helped.sickness1, T ~ as.character(who_helped_sickness_2)),
+         who_helped_sickness_3 = case_when(index == 1 & n.sickness == 3 ~ who.helped.sickness2, T ~ as.character(who_helped_sickness_3)))
+
+# index = 2
+dx <- dx %>%
+  mutate(who_helped_sickness_1 = case_when(index == 2 & n.sickness == 1 ~ who.helped.sickness1, T ~ as.character(who_helped_sickness_1)),
+         who_helped_sickness_2 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(who_helped_sickness_2)),
+         who_helped_sickness_3 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(who_helped_sickness_3)))
+
+dx <- dx %>%
+  mutate(who_helped_sickness_1 = case_when(index == 2 & n.sickness == 2 ~ who.helped.sickness1, T ~ as.character(who_helped_sickness_1)),
+         who_helped_sickness_2 = case_when(index == 2 & n.sickness == 2 ~ who.helped.sickness2, T ~ as.character(who_helped_sickness_2)),
+         who_helped_sickness_3 = case_when(index == 2 & n.sickness == 2 ~ NA_character_, T ~ as.character(who_helped_sickness_3)))
+
+# index = 3
+dx <- dx %>%
+  mutate(who_helped_sickness_1 = case_when(index == 3 & n.sickness == 1 ~ who.helped.sickness2, T ~ as.character(who_helped_sickness_1)),
+         who_helped_sickness_2 = case_when(index == 3 & n.sickness == 1 ~ NA_character_, T ~ as.character(who_helped_sickness_2)),
+         who_helped_sickness_3 = case_when(index == 3 & n.sickness == 1 ~ NA_character_, T ~ as.character(who_helped_sickness_3)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(who.helped.sickness, who.helped.sickness1, who.helped.sickness2))
+### Sickness cause ----
+dx$sickness_cause_1 <- NA_character_
+dx$sickness_cause_2 <- NA_character_
+dx$sickness_cause_3 <- NA_character_
+
+dx <- relocate(dx, c(sickness_cause_1, sickness_cause_2,
+                     sickness_cause_3), .after = who_helped_sickness_3)
+
+# index = 1
+dx <- dx %>%
+  mutate(sickness_cause_1 = case_when(index == 1 & n.sickness == 1 ~ sickness.cause, T ~ as.character(sickness_cause_1)),
+         sickness_cause_2 = case_when(index == 1 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_cause_2)),
+         sickness_cause_3 = case_when(index == 1 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_cause_3)))
+
+dx <- dx %>%
+  mutate(sickness_cause_1 = case_when(index == 1 & n.sickness == 2 ~ sickness.cause, T ~ as.character(sickness_cause_1)),
+         sickness_cause_2 = case_when(index == 1 & n.sickness == 2 ~ sickness.cause1, T ~ as.character(sickness_cause_2)),
+         sickness_cause_3 = case_when(index == 1 & n.sickness == 2 ~ NA_character_, T ~ as.character(sickness_cause_3)))
+
+dx <- dx %>%
+  mutate(sickness_cause_1 = case_when(index == 1 & n.sickness == 3 ~ sickness.cause, T ~ as.character(sickness_cause_1)),
+         sickness_cause_2 = case_when(index == 1 & n.sickness == 3 ~ sickness.cause1, T ~ as.character(sickness_cause_2)),
+         sickness_cause_3 = case_when(index == 1 & n.sickness == 3 ~ sickness.cause2, T ~ as.character(sickness_cause_3)))
+
+# index = 2
+dx <- dx %>%
+  mutate(sickness_cause_1 = case_when(index == 2 & n.sickness == 1 ~ sickness.cause1, T ~ as.character(sickness_cause_1)),
+         sickness_cause_2 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_cause_2)),
+         sickness_cause_3 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_cause_3)))
+
+dx <- dx %>%
+  mutate(sickness_cause_1 = case_when(index == 2 & n.sickness == 2 ~ sickness.cause1, T ~ as.character(sickness_cause_1)),
+         sickness_cause_2 = case_when(index == 2 & n.sickness == 2 ~ sickness.cause2, T ~ as.character(sickness_cause_2)),
+         sickness_cause_3 = case_when(index == 2 & n.sickness == 2 ~ NA_character_, T ~ as.character(sickness_cause_3)))
+
+# index = 3
+dx <- dx %>%
+  mutate(sickness_cause_1 = case_when(index == 3 & n.sickness == 1 ~ sickness.cause2, T ~ as.character(sickness_cause_1)),
+         sickness_cause_2 = case_when(index == 3 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_cause_2)),
+         sickness_cause_3 = case_when(index == 3 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_cause_3)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(sickness.cause, sickness.cause1, sickness.cause2))
+
+## Get back to original data frame
+df <- left_join(df, dx)
+df <- relocate(df, c(sickness_what_1:sickness_cause_3), .after = time.since.last.sickness)
+df <- subset(df, select = -c(index))
+
+# Export final table to csv -----------------------------------------------
+
+write.csv(df, "sickness_final_table.csv", row.names = F)

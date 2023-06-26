@@ -21,6 +21,8 @@ df <- df %>%
   filter(age == max(age)) %>%
   ungroup()
 
+# View(subset(df, animal.attack.age > animal.attack.age1))
+
 # Making sure that the ages are chronological for each observation
 df1 <- df[c("animal.attack.age", "animal.attack.age1")]
 df1[] <- t(apply(df1, 1, function(x) x[order(x)]))
@@ -285,6 +287,85 @@ h_id <- read_xls("add household ids_a.xls")
 df <- left_join(df, h_id)
 df <- relocate(df, house.id, .after = pid)
 
-# Export final table to csv -----------------------------------------------
 
+rm(df3, df6, dx, dy, h_id)
+
+
+# Adding columns for cause, etc. ------------------------------------------
+# Note that this is all highly context-specific, meaning that each risk has a
+# different number of reported ages, which means that the code to add these
+# columns is slightly modified for every risk.
+
+## Animal Attack ----
+
+raw <- read.csv("raw_data_no_duplicates.csv")
+
+raw <- select(raw, c(7, 39:50))
+raw <- subset(raw, select = -c(animal.attack.age))
+dx <- left_join(df, raw)
+
+dx <- dx %>%
+  filter(event == 1)
+dx <- dx %>%
+  group_by(pid) %>%
+  mutate(index = 1:n())
+dx <- relocate(dx, index, .after = event)
+
+# It can be observed that multiple attacks never occur in any given interval
+
+### What attacked you? ----
+dx$what_attacked_you <- NA_character_
+dx <- relocate(dx, c(what_attacked_you), .after = n.animal.attack)
+dx <- dx %>%
+  mutate(what_attacked_you = case_when(index == 1 & n.animal.attack == 1 ~ what.attacked.you, T ~ as.character(what_attacked_you)),
+         what_attacked_you = case_when(index == 2 & n.animal.attack == 1 ~ what.attacked.you1, T ~ as.character(what_attacked_you)))
+dx <- subset(dx, select = -c(what.attacked.you, what.attacked.you1))
+
+### Where attacked body? ----
+dx$where_attacked_body <- NA_character_
+dx <- relocate(dx, c(where_attacked_body), .after = what_attacked_you)
+dx <- dx %>%
+  mutate(where_attacked_body = case_when(index == 1 & n.animal.attack == 1 ~ where.attacked.body, T ~ as.character(where_attacked_body)),
+         where_attacked_body = case_when(index == 2 & n.animal.attack == 1 ~ where.attacked.body1, T ~ as.character(where_attacked_body)))
+dx <- subset(dx, select = -c(where.attacked.body, where.attacked.body1))
+
+### Activity when attacked ----
+# Note that there is no column in the raw data for activity when it is experienced a second time
+dx$activity_when_attacked <- NA_character_
+dx <- relocate(dx, c(activity_when_attacked), .after = where_attacked_body)
+dx <- dx %>%
+  mutate(activity_when_attacked = case_when(index == 1 & n.animal.attack == 1 ~ activity.when.bit1...41, T ~ as.character(activity_when_attacked)),
+         activity_when_attacked = case_when(index == 2 & n.animal.attack == 1 ~ NA_character_, T ~ as.character(activity_when_attacked)))
+dx <- subset(dx, select = -c(activity.when.bit1...41))
+
+### Days disabled attack ----
+dx$days_disabled_attack <- NA_integer_
+dx <- relocate(dx, c(days_disabled_attack), .after = activity_when_attacked)
+dx <- dx %>%
+  mutate(days_disabled_attack = case_when(index == 1 & n.animal.attack == 1 ~ days.disabled.attack, T ~ as.integer(days_disabled_attack)),
+         days_disabled_attack = case_when(index == 2 & n.animal.attack == 1 ~ days.disabled.attack1, T ~ as.integer(days_disabled_attack)))
+dx <- subset(dx, select = -c(days.disabled.attack, days.disabled.attack1))
+
+### Almost died attack ----
+dx$almost_died_attack <- NA_integer_
+dx <- relocate(dx, c(almost_died_attack), .after = days_disabled_attack)
+dx <- dx %>%
+  mutate(almost_died_attack = case_when(index == 1 & n.animal.attack == 1 ~ almost.died.attack, T ~ as.integer(almost_died_attack)),
+         almost_died_attack = case_when(index == 2 & n.animal.attack == 1 ~ almost.died.attack1, T ~ as.integer(almost_died_attack)))
+dx <- subset(dx, select = -c(almost.died.attack, almost.died.attack1))
+
+### Still bothers attack ----
+dx$still_bothers_attack <- NA_integer_
+dx <- relocate(dx, c(still_bothers_attack), .after = almost_died_attack)
+dx <- dx %>%
+  mutate(still_bothers_attack = case_when(index == 1 & n.animal.attack == 1 ~ still.bothers.attack, T ~ as.integer(still_bothers_attack)),
+         still_bothers_attack = case_when(index == 2 & n.animal.attack == 1 ~ still.bothers.attack1, T ~ as.integer(still_bothers_attack)))
+dx <- subset(dx, select = -c(still.bothers.attack, still.bothers.attack1))
+
+## Get back to original data frame
+df <- left_join(df, dx)
+df <- relocate(df, c(what_attacked_you:still_bothers_attack), .after = time.since.last.animal.attack)
+df <- subset(df, select = -c(index))
+
+# Export final table to csv -----------------------------------------------
 write.csv(df, "animal_attack_final_table.csv", row.names = F)

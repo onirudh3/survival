@@ -22,6 +22,9 @@ df <- df %>%
   filter(age == max(age)) %>%
   ungroup()
 
+# View(subset(df, snake.or.ray.bite.age > snake.or.ray.bite.age1))
+# View(subset(df, snake.or.ray.bite.age1 > snake.or.ray.bite.age2))
+
 # Making sure that the ages are chronological for each observation
 df1 <- df[c("snake.or.ray.bite.age", "snake.or.ray.bite.age1",
             "snake.or.ray.bite.age2")]
@@ -598,7 +601,7 @@ dx <- subset(dx, select = -c(still.bothers.bite, still.bothers.bite1, still.both
 ## Get back to original dataframe
 df <- left_join(df, dx)
 df <- relocate(df, c(what_bit_you_snake_ray_1:still_bothers_snake_ray_3), .after = time.since.last.bite)
-
+df <- subset(df, select = -c(index))
 
 # Export final table to csv -----------------------------------------------
 
