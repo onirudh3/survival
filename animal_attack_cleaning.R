@@ -258,8 +258,8 @@ df6 <- df6 %>%
 # Add column for number of occurrences per interval -----------------------
 df <- df6
 df <- left_join(df, df3)
-df$animal.attack.age <- ceiling(df$animal.attack.age)
-df$animal.attack.age1 <- ceiling(df$animal.attack.age1)
+# df$animal.attack.age <- ceiling(df$animal.attack.age)
+# df$animal.attack.age1 <- ceiling(df$animal.attack.age1)
 
 dx <- df[c("pid", "exit", "event", "animal.attack.age",
            "animal.attack.age1")]

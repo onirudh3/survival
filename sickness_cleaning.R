@@ -24,6 +24,14 @@ df <- df %>%
   filter(age == max(age)) %>%
   ungroup()
 
+# ref_df <- df %>%
+#   group_by(pid) %>%
+#   filter(age == max(age)) %>%
+#   ungroup()
+# ref_df <- subset(ref_df, select = -c(sickness))
+
+# View(subset(df, sickness.age > sickness.age1))
+
 # Making sure that the ages are chronological for each observation
 df1 <- df[c("sickness.age", "sickness.age1", "sickness.age2")]
 df1[] <- t(apply(df1, 1, function(x) x[order(x)]))
@@ -265,9 +273,9 @@ df6 <- df6 %>%
 # Add column for number of occurrences per interval -----------------------
 df <- df6
 df <- left_join(df, df3)
-df$sickness.age <- ceiling(df$sickness.age)
-df$sickness.age1 <- ceiling(df$sickness.age1)
-df$sickness.age2 <- ceiling(df$sickness.age2)
+# df$sickness.age <- ceiling(df$sickness.age)
+# df$sickness.age1 <- ceiling(df$sickness.age1)
+# df$sickness.age2 <- ceiling(df$sickness.age2)
 
 dx <- df[c("pid", "exit", "event", "sickness.age", "sickness.age1", "sickness.age2")]
 
@@ -321,6 +329,23 @@ rm(df3, df6, dx, dy, h_id)
 raw <- read.csv("raw_data_no_duplicates.csv")
 
 raw <- select(raw, c(7, sickness.what:sickness.cause2))
+
+# Arrange the instances in ascending order
+raw <- transform(raw,
+                 sickness.what = ifelse(sickness.age > sickness.age1, sickness.what1, sickness.what),
+                 sickness.what1 = ifelse(sickness.age > sickness.age1, sickness.what, sickness.what1),
+                 days.disabled.sickness = ifelse(sickness.age > sickness.age1, days.disabled.sickness1, days.disabled.sickness),
+                 days.disabled.sickness1 = ifelse(sickness.age > sickness.age1, days.disabled.sickness, days.disabled.sickness1),
+                 almost.died.sickness = ifelse(sickness.age > sickness.age1, almost.died.sickness1, almost.died.sickness),
+                 almost.died.sickness1 = ifelse(sickness.age > sickness.age1, almost.died.sickness, almost.died.sickness1),
+                 how.cured.sickness = ifelse(sickness.age > sickness.age1, how.cured.sickness1, how.cured.sickness),
+                 how.cured.sickness1 = ifelse(sickness.age > sickness.age1, how.cured.sickness, how.cured.sickness1),
+                 who.helped.sickness = ifelse(sickness.age > sickness.age1, who.helped.sickness1, who.helped.sickness),
+                 who.helped.sickness1 = ifelse(sickness.age > sickness.age1, who.helped.sickness, who.helped.sickness1),
+                 sickness.cause = ifelse(sickness.age > sickness.age1, sickness.cause1, sickness.cause),
+                 sickness.cause1 = ifelse(sickness.age > sickness.age1, sickness.cause, sickness.cause1))
+
+
 raw <- subset(raw, select = -c(sickness.age, sickness.age1, sickness.age2))
 dx <- left_join(df, raw)
 
@@ -599,3 +624,12 @@ df <- subset(df, select = -c(index))
 # Export final table to csv -----------------------------------------------
 
 write.csv(df, "sickness_final_table.csv", row.names = F)
+
+
+
+# Dealing with cases where reported age is larger than subsequent reported ages,
+# meaning the ages are not in order. Happens only twice here, XVJK and DDLL.
+# df <- left_join(df, ref_df)
+#
+# View(subset(df, sickness.age > exit))
+

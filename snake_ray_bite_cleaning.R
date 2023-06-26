@@ -267,9 +267,9 @@ df6 <- df6 %>%
 # Add column for number of occurrences per interval -----------------------
 df <- df6
 df <- left_join(df, df3)
-df$snake.or.ray.bite.age <- ceiling(df$snake.or.ray.bite.age)
-df$snake.or.ray.bite.age1 <- ceiling(df$snake.or.ray.bite.age1)
-df$snake.or.ray.bite.age2 <- ceiling(df$snake.or.ray.bite.age2)
+# df$snake.or.ray.bite.age <- ceiling(df$snake.or.ray.bite.age)
+# df$snake.or.ray.bite.age1 <- ceiling(df$snake.or.ray.bite.age1)
+# df$snake.or.ray.bite.age2 <- ceiling(df$snake.or.ray.bite.age2)
 
 dx <- df[c("pid", "exit", "event", "snake.or.ray.bite.age",
            "snake.or.ray.bite.age1", "snake.or.ray.bite.age2")]

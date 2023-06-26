@@ -63,6 +63,13 @@ df1 <- df1 %>%
   filter(age == max(age)) %>%
   ungroup()
 
+View(subset(df1, cut.age1 > cut.age2))
+View(subset(df1, cut.age2 > cut.age3))
+View(subset(df1, cut.age3 > cut.age4))
+View(subset(df1, cut.age4 > cut.age5))
+View(subset(df1, cut.age5 > cut.age6))
+# God this one is a mess
+
 # Region df
 region_df <- df[c("pid", "region")]
 
@@ -312,12 +319,12 @@ df6 <- df6 %>%
 # Add column for number of occurrences per interval -----------------------
 df <- df6
 df <- left_join(df, df1)
-df$cut.age1 <- ceiling(df$cut.age1)
-df$cut.age2 <- ceiling(df$cut.age2)
-df$cut.age3 <- ceiling(df$cut.age3)
-df$cut.age4 <- ceiling(df$cut.age4)
-df$cut.age5 <- ceiling(df$cut.age5)
-df$cut.age6 <- ceiling(df$cut.age6)
+# df$cut.age1 <- ceiling(df$cut.age1)
+# df$cut.age2 <- ceiling(df$cut.age2)
+# df$cut.age3 <- ceiling(df$cut.age3)
+# df$cut.age4 <- ceiling(df$cut.age4)
+# df$cut.age5 <- ceiling(df$cut.age5)
+# df$cut.age6 <- ceiling(df$cut.age6)
 
 dx <- df[c("pid", "exit", "event", "cut.age1", "cut.age2",
            "cut.age3", "cut.age4", "cut.age5", "cut.age6")]

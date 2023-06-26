@@ -265,9 +265,9 @@ df6 <- df6 %>%
 # Add column for number of occurrences per interval -----------------------
 df <- df6
 df <- left_join(df, df3)
-df$fought.age <- ceiling(df$fought.age)
-df$fought.age1 <- ceiling(df$fought.age1)
-df$fought.age2 <- ceiling(df$fought.age2)
+# df$fought.age <- ceiling(df$fought.age)
+# df$fought.age1 <- ceiling(df$fought.age1)
+# df$fought.age2 <- ceiling(df$fought.age2)
 
 dx <- df[c("pid", "exit", "event", "fought.age",
            "fought.age1", "fought.age2")]

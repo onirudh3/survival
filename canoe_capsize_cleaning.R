@@ -54,6 +54,10 @@ df1 <- df1 %>%
   filter(age == max(age)) %>%
   ungroup()
 
+# View(subset(df, cc.age1 > cc.age2))
+# View(subset(df, cc.age2 > cc.age3))
+# View(subset(df, cc.age1 > cc.age3))
+
 # Moving values so there is no NA in cc.age1
 df1 <- dedupewider::na_move(df1, cols = names(df1)[grepl("^cc.age\\d$",
                                                          names(df1))])
@@ -297,9 +301,9 @@ df6 <- df6 %>%
 # Add column for number of occurrences per interval -----------------------
 df <- df6
 df <- left_join(df, df1)
-df$cc.age1 <- ceiling(df$cc.age1)
-df$cc.age2 <- ceiling(df$cc.age2)
-df$cc.age3 <- ceiling(df$cc.age3)
+# df$cc.age1 <- ceiling(df$cc.age1)
+# df$cc.age2 <- ceiling(df$cc.age2)
+# df$cc.age3 <- ceiling(df$cc.age3)
 
 dx <- df[c("pid", "exit", "event", "cc.age1",
            "cc.age2", "cc.age3")]

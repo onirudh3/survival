@@ -51,6 +51,7 @@ df1 <- df1 %>%
   filter(age == max(age)) %>%
   ungroup()
 
+# View(subset(df1, tf.age1 > tf.age2))
 # View(subset(df1, tf.age2 > tf.age3))
 
 # Moving values so there is no NA in tf.age1
@@ -297,9 +298,9 @@ df6 <- df6 %>%
 # Add column for number of occurrences per interval -----------------------
 df <- df6
 df <- left_join(df, df1)
-df$tf.age1 <- ceiling(df$tf.age1)
-df$tf.age2 <- ceiling(df$tf.age2)
-df$tf.age3 <- ceiling(df$tf.age3)
+# df$tf.age1 <- ceiling(df$tf.age1)
+# df$tf.age2 <- ceiling(df$tf.age2)
+# df$tf.age3 <- ceiling(df$tf.age3)
 
 dx <- df[c("pid", "exit", "event", "tf.age1", "tf.age2", "tf.age3")]
 
@@ -326,9 +327,11 @@ h_id <- read_xls("add household ids_a.xls")
 df <- left_join(df, h_id)
 df <- relocate(df, house.id, .after = pid)
 
+rm(df1, df6, dx, dy, h_id)
 
 # Export final table to csv -----------------------------------------------
 write.csv(df, "tree_fall_final_table.csv", row.names = F)
+
 
 # Who reported experiencing the risk but did not report any ages? ---------
 
@@ -354,10 +357,469 @@ write.csv(df, "tree_fall_final_table.csv", row.names = F)
 # columns is slightly modified for every risk.
 
 raw <- read.csv("raw_data_no_duplicates.csv")
-raw <- select(raw, c(7, TIPO1:other.serious.accident.still.bothers5))
+raw <- select(raw, c(7, TIPO1:other.serious.accident.age5))
+
+# ref_df <- subset(raw, select = c(pid, other.serious.accident.age, other.serious.accident.age1,
+#                                other.serious.accident.age2, other.serious.accident.age3,
+#                                other.serious.accident.age4, other.serious.accident.age5))
+#
+# prob_df1 <- subset(ref_df, other.serious.accident.age > other.serious.accident.age1)
+# prob_df2 <- subset(ref_df, other.serious.accident.age1 > other.serious.accident.age2)
+# prob_df3 <- subset(ref_df, other.serious.accident.age2 > other.serious.accident.age3)
+# prob_df4 <- subset(ref_df, other.serious.accident.age3 > other.serious.accident.age4)
+# prob_df5 <- subset(ref_df, other.serious.accident.age4 > other.serious.accident.age5)
+#
+# problem_df <- bind_rows(prob_df1, prob_df2, prob_df3, prob_df4, prob_df5)
+# problem_df <- problem_df[!duplicated(problem_df), ]
+# rm(prob_df1, prob_df2, prob_df3, prob_df4, prob_df5)
+
+## Arrange the instances in ascending order, implementing bubble sort algorithm ----
+# Very tedious but could not find a better way
+# Iteration 1/5
+raw <- transform(raw, TIPO1 = ifelse(other.serious.accident.age > other.serious.accident.age1, TIPO2, TIPO1),
+                 TIPO2 = ifelse(other.serious.accident.age > other.serious.accident.age1, TIPO1, TIPO2),
+                 other.serious.accident.age = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.age1, other.serious.accident.age),
+                 other.serious.accident.age1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.age, other.serious.accident.age1),
+                 other.serious.accident.where.hurt = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.where.hurt1, other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.where.hurt, other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.activity1, other.serious.accident.activity),
+                 other.serious.accident.activity1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.activity, other.serious.accident.activity1),
+                 other.serious.accident.injured = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.injured.yesno1, other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.injured, other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.days.disabled1, other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.days.disabled, other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.almost.died1, other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.almost.died, other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.still.bothers1, other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.still.bothers, other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, TIPO3, TIPO2),
+                 TIPO3 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, TIPO2, TIPO3),
+                 other.serious.accident.age1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.age2, other.serious.accident.age1),
+                 other.serious.accident.age2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.age1, other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.where.hurt2, other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.where.hurt1, other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.activity2, other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.activity1, other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.injured.yesno2, other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.injured.yesno1, other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.days.disabled2, other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.days.disabled1, other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.almost.died2, other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.almost.died1, other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.still.bothers2, other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.still.bothers1, other.serious.accident.still.bothers2))
+
+raw$other.serious.accident.activity3 <- NA_character_
+raw$other.serious.accident.activity4 <- NA_character_
+raw$other.serious.accident.activity5 <- NA_character_
+
+raw <- transform(raw, TIPO3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, TIPO4, TIPO3),
+                 TIPO4 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, TIPO3, TIPO4),
+                 other.serious.accident.age2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.age3, other.serious.accident.age2),
+                 other.serious.accident.age3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.age2, other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.where.hurt3, other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.where.hurt2, other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.activity3, other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.activity2, other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.injured3, other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.injured.yesno2, other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.days.disabled3, other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.days.disabled2, other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.almost.died3, other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.almost.died2, other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.still.bothers3, other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.still.bothers2, other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, TIPO5, TIPO4),
+                 TIPO5 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, TIPO4, TIPO5),
+                 other.serious.accident.age3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.age4, other.serious.accident.age3),
+                 other.serious.accident.age4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.age3, other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.where.hurt4, other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.where.hurt3, other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.activity4, other.serious.accident.activity3),
+                 other.serious.accident.activity4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.activity3, other.serious.accident.activity4),
+                 other.serious.accident.injured3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.injured4, other.serious.accident.injured3),
+                 other.serious.accident.injured4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.injured3, other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.days.disabled4, other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.days.disabled3, other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.almost.died4, other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.almost.died3, other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.still.bothers4, other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.still.bothers3, other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, TIPO6, TIPO5),
+                 TIPO6 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, TIPO5, TIPO6),
+                 other.serious.accident.age4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.age5, other.serious.accident.age4),
+                 other.serious.accident.age5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.age4, other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.where.hurt5, other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.where.hurt4, other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.activity5, other.serious.accident.activity4),
+                 other.serious.accident.activity5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.activity4, other.serious.accident.activity5),
+                 other.serious.accident.injured4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.injured5, other.serious.accident.injured4),
+                 other.serious.accident.injured5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.injured4, other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.days.disabled5, other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.days.disabled4, other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.almost.died5, other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.almost.died4, other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.still.bothers5, other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.still.bothers4, other.serious.accident.still.bothers5))
+
+# Iteration 2/5
+raw <- transform(raw, TIPO1 = ifelse(other.serious.accident.age > other.serious.accident.age1, TIPO2, TIPO1),
+                 TIPO2 = ifelse(other.serious.accident.age > other.serious.accident.age1, TIPO1, TIPO2),
+                 other.serious.accident.age = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.age1, other.serious.accident.age),
+                 other.serious.accident.age1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.age, other.serious.accident.age1),
+                 other.serious.accident.where.hurt = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.where.hurt1, other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.where.hurt, other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.activity1, other.serious.accident.activity),
+                 other.serious.accident.activity1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.activity, other.serious.accident.activity1),
+                 other.serious.accident.injured = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.injured.yesno1, other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.injured, other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.days.disabled1, other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.days.disabled, other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.almost.died1, other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.almost.died, other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.still.bothers1, other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.still.bothers, other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, TIPO3, TIPO2),
+                 TIPO3 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, TIPO2, TIPO3),
+                 other.serious.accident.age1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.age2, other.serious.accident.age1),
+                 other.serious.accident.age2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.age1, other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.where.hurt2, other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.where.hurt1, other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.activity2, other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.activity1, other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.injured.yesno2, other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.injured.yesno1, other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.days.disabled2, other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.days.disabled1, other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.almost.died2, other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.almost.died1, other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.still.bothers2, other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.still.bothers1, other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, TIPO4, TIPO3),
+                 TIPO4 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, TIPO3, TIPO4),
+                 other.serious.accident.age2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.age3, other.serious.accident.age2),
+                 other.serious.accident.age3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.age2, other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.where.hurt3, other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.where.hurt2, other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.activity3, other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.activity2, other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.injured3, other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.injured.yesno2, other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.days.disabled3, other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.days.disabled2, other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.almost.died3, other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.almost.died2, other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.still.bothers3, other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.still.bothers2, other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, TIPO5, TIPO4),
+                 TIPO5 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, TIPO4, TIPO5),
+                 other.serious.accident.age3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.age4, other.serious.accident.age3),
+                 other.serious.accident.age4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.age3, other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.where.hurt4, other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.where.hurt3, other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.activity4, other.serious.accident.activity3),
+                 other.serious.accident.activity4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.activity3, other.serious.accident.activity4),
+                 other.serious.accident.injured3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.injured4, other.serious.accident.injured3),
+                 other.serious.accident.injured4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.injured3, other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.days.disabled4, other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.days.disabled3, other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.almost.died4, other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.almost.died3, other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.still.bothers4, other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.still.bothers3, other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, TIPO6, TIPO5),
+                 TIPO6 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, TIPO5, TIPO6),
+                 other.serious.accident.age4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.age5, other.serious.accident.age4),
+                 other.serious.accident.age5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.age4, other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.where.hurt5, other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.where.hurt4, other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.activity5, other.serious.accident.activity4),
+                 other.serious.accident.activity5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.activity4, other.serious.accident.activity5),
+                 other.serious.accident.injured4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.injured5, other.serious.accident.injured4),
+                 other.serious.accident.injured5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.injured4, other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.days.disabled5, other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.days.disabled4, other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.almost.died5, other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.almost.died4, other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.still.bothers5, other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.still.bothers4, other.serious.accident.still.bothers5))
+
+# Iteration 3/5
+raw <- transform(raw, TIPO1 = ifelse(other.serious.accident.age > other.serious.accident.age1, TIPO2, TIPO1),
+                 TIPO2 = ifelse(other.serious.accident.age > other.serious.accident.age1, TIPO1, TIPO2),
+                 other.serious.accident.age = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.age1, other.serious.accident.age),
+                 other.serious.accident.age1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.age, other.serious.accident.age1),
+                 other.serious.accident.where.hurt = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.where.hurt1, other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.where.hurt, other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.activity1, other.serious.accident.activity),
+                 other.serious.accident.activity1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.activity, other.serious.accident.activity1),
+                 other.serious.accident.injured = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.injured.yesno1, other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.injured, other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.days.disabled1, other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.days.disabled, other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.almost.died1, other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.almost.died, other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.still.bothers1, other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.still.bothers, other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, TIPO3, TIPO2),
+                 TIPO3 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, TIPO2, TIPO3),
+                 other.serious.accident.age1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.age2, other.serious.accident.age1),
+                 other.serious.accident.age2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.age1, other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.where.hurt2, other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.where.hurt1, other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.activity2, other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.activity1, other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.injured.yesno2, other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.injured.yesno1, other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.days.disabled2, other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.days.disabled1, other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.almost.died2, other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.almost.died1, other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.still.bothers2, other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.still.bothers1, other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, TIPO4, TIPO3),
+                 TIPO4 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, TIPO3, TIPO4),
+                 other.serious.accident.age2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.age3, other.serious.accident.age2),
+                 other.serious.accident.age3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.age2, other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.where.hurt3, other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.where.hurt2, other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.activity3, other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.activity2, other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.injured3, other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.injured.yesno2, other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.days.disabled3, other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.days.disabled2, other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.almost.died3, other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.almost.died2, other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.still.bothers3, other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.still.bothers2, other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, TIPO5, TIPO4),
+                 TIPO5 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, TIPO4, TIPO5),
+                 other.serious.accident.age3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.age4, other.serious.accident.age3),
+                 other.serious.accident.age4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.age3, other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.where.hurt4, other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.where.hurt3, other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.activity4, other.serious.accident.activity3),
+                 other.serious.accident.activity4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.activity3, other.serious.accident.activity4),
+                 other.serious.accident.injured3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.injured4, other.serious.accident.injured3),
+                 other.serious.accident.injured4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.injured3, other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.days.disabled4, other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.days.disabled3, other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.almost.died4, other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.almost.died3, other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.still.bothers4, other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.still.bothers3, other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, TIPO6, TIPO5),
+                 TIPO6 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, TIPO5, TIPO6),
+                 other.serious.accident.age4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.age5, other.serious.accident.age4),
+                 other.serious.accident.age5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.age4, other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.where.hurt5, other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.where.hurt4, other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.activity5, other.serious.accident.activity4),
+                 other.serious.accident.activity5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.activity4, other.serious.accident.activity5),
+                 other.serious.accident.injured4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.injured5, other.serious.accident.injured4),
+                 other.serious.accident.injured5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.injured4, other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.days.disabled5, other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.days.disabled4, other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.almost.died5, other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.almost.died4, other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.still.bothers5, other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.still.bothers4, other.serious.accident.still.bothers5))
+
+# Iteration 4/5
+raw <- transform(raw, TIPO1 = ifelse(other.serious.accident.age > other.serious.accident.age1, TIPO2, TIPO1),
+                 TIPO2 = ifelse(other.serious.accident.age > other.serious.accident.age1, TIPO1, TIPO2),
+                 other.serious.accident.age = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.age1, other.serious.accident.age),
+                 other.serious.accident.age1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.age, other.serious.accident.age1),
+                 other.serious.accident.where.hurt = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.where.hurt1, other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.where.hurt, other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.activity1, other.serious.accident.activity),
+                 other.serious.accident.activity1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.activity, other.serious.accident.activity1),
+                 other.serious.accident.injured = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.injured.yesno1, other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.injured, other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.days.disabled1, other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.days.disabled, other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.almost.died1, other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.almost.died, other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.still.bothers1, other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.still.bothers, other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, TIPO3, TIPO2),
+                 TIPO3 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, TIPO2, TIPO3),
+                 other.serious.accident.age1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.age2, other.serious.accident.age1),
+                 other.serious.accident.age2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.age1, other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.where.hurt2, other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.where.hurt1, other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.activity2, other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.activity1, other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.injured.yesno2, other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.injured.yesno1, other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.days.disabled2, other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.days.disabled1, other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.almost.died2, other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.almost.died1, other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.still.bothers2, other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.still.bothers1, other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, TIPO4, TIPO3),
+                 TIPO4 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, TIPO3, TIPO4),
+                 other.serious.accident.age2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.age3, other.serious.accident.age2),
+                 other.serious.accident.age3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.age2, other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.where.hurt3, other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.where.hurt2, other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.activity3, other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.activity2, other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.injured3, other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.injured.yesno2, other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.days.disabled3, other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.days.disabled2, other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.almost.died3, other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.almost.died2, other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.still.bothers3, other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.still.bothers2, other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, TIPO5, TIPO4),
+                 TIPO5 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, TIPO4, TIPO5),
+                 other.serious.accident.age3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.age4, other.serious.accident.age3),
+                 other.serious.accident.age4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.age3, other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.where.hurt4, other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.where.hurt3, other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.activity4, other.serious.accident.activity3),
+                 other.serious.accident.activity4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.activity3, other.serious.accident.activity4),
+                 other.serious.accident.injured3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.injured4, other.serious.accident.injured3),
+                 other.serious.accident.injured4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.injured3, other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.days.disabled4, other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.days.disabled3, other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.almost.died4, other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.almost.died3, other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.still.bothers4, other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.still.bothers3, other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, TIPO6, TIPO5),
+                 TIPO6 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, TIPO5, TIPO6),
+                 other.serious.accident.age4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.age5, other.serious.accident.age4),
+                 other.serious.accident.age5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.age4, other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.where.hurt5, other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.where.hurt4, other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.activity5, other.serious.accident.activity4),
+                 other.serious.accident.activity5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.activity4, other.serious.accident.activity5),
+                 other.serious.accident.injured4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.injured5, other.serious.accident.injured4),
+                 other.serious.accident.injured5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.injured4, other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.days.disabled5, other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.days.disabled4, other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.almost.died5, other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.almost.died4, other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.still.bothers5, other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.still.bothers4, other.serious.accident.still.bothers5))
+
+# Iteration 5/5
+raw <- transform(raw, TIPO1 = ifelse(other.serious.accident.age > other.serious.accident.age1, TIPO2, TIPO1),
+                 TIPO2 = ifelse(other.serious.accident.age > other.serious.accident.age1, TIPO1, TIPO2),
+                 other.serious.accident.age = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.age1, other.serious.accident.age),
+                 other.serious.accident.age1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.age, other.serious.accident.age1),
+                 other.serious.accident.where.hurt = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.where.hurt1, other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.where.hurt, other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.activity1, other.serious.accident.activity),
+                 other.serious.accident.activity1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.activity, other.serious.accident.activity1),
+                 other.serious.accident.injured = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.injured.yesno1, other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.injured, other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.days.disabled1, other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.days.disabled, other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.almost.died1, other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.almost.died, other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.still.bothers1, other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = ifelse(other.serious.accident.age > other.serious.accident.age1, other.serious.accident.still.bothers, other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, TIPO3, TIPO2),
+                 TIPO3 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, TIPO2, TIPO3),
+                 other.serious.accident.age1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.age2, other.serious.accident.age1),
+                 other.serious.accident.age2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.age1, other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.where.hurt2, other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.where.hurt1, other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.activity2, other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.activity1, other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accidents.injured.yesno2, other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.injured.yesno1, other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.days.disabled2, other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.days.disabled1, other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.almost.died2, other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.almost.died1, other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.still.bothers2, other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = ifelse(other.serious.accident.age1 > other.serious.accident.age2, other.serious.accident.still.bothers1, other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, TIPO4, TIPO3),
+                 TIPO4 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, TIPO3, TIPO4),
+                 other.serious.accident.age2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.age3, other.serious.accident.age2),
+                 other.serious.accident.age3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.age2, other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.where.hurt3, other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.where.hurt2, other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.activity3, other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.activity2, other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.injured3, other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accidents.injured.yesno2, other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.days.disabled3, other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.days.disabled2, other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.almost.died3, other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.almost.died2, other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.still.bothers3, other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = ifelse(other.serious.accident.age2 > other.serious.accident.age3, other.serious.accident.still.bothers2, other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, TIPO5, TIPO4),
+                 TIPO5 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, TIPO4, TIPO5),
+                 other.serious.accident.age3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.age4, other.serious.accident.age3),
+                 other.serious.accident.age4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.age3, other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.where.hurt4, other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.where.hurt3, other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.activity4, other.serious.accident.activity3),
+                 other.serious.accident.activity4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.activity3, other.serious.accident.activity4),
+                 other.serious.accident.injured3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.injured4, other.serious.accident.injured3),
+                 other.serious.accident.injured4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.injured3, other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.days.disabled4, other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.days.disabled3, other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.almost.died4, other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.almost.died3, other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.still.bothers4, other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = ifelse(other.serious.accident.age3 > other.serious.accident.age4, other.serious.accident.still.bothers3, other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, TIPO6, TIPO5),
+                 TIPO6 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, TIPO5, TIPO6),
+                 other.serious.accident.age4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.age5, other.serious.accident.age4),
+                 other.serious.accident.age5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.age4, other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.where.hurt5, other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.where.hurt4, other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.activity5, other.serious.accident.activity4),
+                 other.serious.accident.activity5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.activity4, other.serious.accident.activity5),
+                 other.serious.accident.injured4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.injured5, other.serious.accident.injured4),
+                 other.serious.accident.injured5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.injured4, other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.days.disabled5, other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.days.disabled4, other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.almost.died5, other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.almost.died4, other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.still.bothers5, other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = ifelse(other.serious.accident.age4 > other.serious.accident.age5, other.serious.accident.still.bothers4, other.serious.accident.still.bothers5))
+
+
+## Merging with df ----
+raw <- raw %>% dplyr::rename("other.serious.accident.where.hurt2" = "other.serious.accidents.where.hurt2")
+raw <- raw %>% dplyr::rename("other.serious.accident.activity2" = "other.serious.accidents.activity2")
+raw <- raw %>% dplyr::rename("other.serious.accident.injured1" = "other.serious.accident.injured.yesno1")
+raw <- raw %>% dplyr::rename("other.serious.accident.injured2" = "other.serious.accidents.injured.yesno2")
+
 raw <- subset(raw, select = -c(other.serious.accident.age, other.serious.accident.age1,
                                other.serious.accident.age2, other.serious.accident.age3,
-                               other.serious.accident.age4))
+                               other.serious.accident.age4, other.serious.accident.age5))
+
 dx <- left_join(df, raw)
 
 dx <- dx %>%
@@ -366,6 +828,10 @@ dx <- dx %>%
   group_by(pid) %>%
   mutate(index = 1:n())
 dx <- relocate(dx, index, .after = event)
+dx <- relocate(dx, other.serious.accident.activity3, .after = other.serious.accident.where.hurt3)
+dx <- relocate(dx, other.serious.accident.activity4, .after = other.serious.accident.where.hurt4)
+dx <- relocate(dx, other.serious.accident.activity5, .after = other.serious.accident.where.hurt5)
+dx <- subset(dx, select = c(pid, exit, index, n.tree.fall, TIPO1:other.serious.accident.still.bothers5))
 
 # Tree fall occurs maximum thrice in an interval
 # plyr::count(raw$TIPO1)
@@ -375,5 +841,13 @@ dx <- relocate(dx, index, .after = event)
 # plyr::count(raw$TIPO5)
 # plyr::count(raw$TIPO6)
 
-### Where hurt? ----
+
+## Where hurt? ----
+
+
+
+
+
+
+
 
