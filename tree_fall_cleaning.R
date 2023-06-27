@@ -348,6 +348,8 @@ rm(df1, df6, dx, dy, h_id)
 
 
 
+
+
 # Adding columns for cause, etc. ------------------------------------------
 # Note that this is all highly context-specific, meaning that each risk has a
 # different number of reported ages, which means that the code to add these
@@ -809,6 +811,7 @@ raw <- transform(raw, TIPO5 = case_when(other.serious.accident.age4 > other.seri
                  other.serious.accident.still.bothers5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers5))
 
 
+
 ## Applying same algorithm to get ascending order of tree fall ages ----
 # Iteration 1/5
 raw <- transform(raw, TIPO1 = case_when(!(TIPO1 %in% "b") & (TIPO2 %in% "b") ~ TIPO2, T ~ TIPO1),
@@ -1251,6 +1254,7 @@ raw <- subset(raw, select = -c(other.serious.accident.age, other.serious.acciden
                                other.serious.accident.age2, other.serious.accident.age3,
                                other.serious.accident.age4, other.serious.accident.age5))
 
+
 ## Merging with df ----
 dx <- left_join(df, raw)
 
@@ -1495,6 +1499,7 @@ dx <- subset(dx, select = -c(TIPO1, TIPO2, TIPO3, TIPO4, TIPO5, TIPO6))
 df <- left_join(df, dx)
 df <- relocate(df, c(tree_fall_where_hurt_1:tree_fall_still_bothers_2), .after = time.since.last.tree.fall)
 df <- subset(df, select = -c(index))
+
 
 # Export final table to csv -----------------------------------------------
 write.csv(df, "tree_fall_final_table.csv", row.names = F)
