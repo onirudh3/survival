@@ -63,12 +63,12 @@ df1 <- df1 %>%
   filter(age == max(age)) %>%
   ungroup()
 
-View(subset(df1, cut.age1 > cut.age2))
-View(subset(df1, cut.age2 > cut.age3))
-View(subset(df1, cut.age3 > cut.age4))
-View(subset(df1, cut.age4 > cut.age5))
-View(subset(df1, cut.age5 > cut.age6))
-# God this one is a mess
+# View(subset(df1, cut.age1 > cut.age2))
+# View(subset(df1, cut.age2 > cut.age3))
+# View(subset(df1, cut.age3 > cut.age4))
+# View(subset(df1, cut.age4 > cut.age5))
+# View(subset(df1, cut.age5 > cut.age6))
+# God this is a mess
 
 # Region df
 region_df <- df[c("pid", "region")]
@@ -352,8 +352,1482 @@ df <- subset(df, select = -c(cut.age1, cut.age2, cut.age3, cut.age4, cut.age5,
 h_id <- read_xls("add household ids_a.xls")
 df <- left_join(df, h_id)
 df <- relocate(df, house.id, .after = pid)
+rm(df1, df3, df6, dx, dy, h_id)
+
+# Adding columns for cause, etc. ------------------------------------------
+# Note that this is all highly context-specific, meaning that each risk has a
+# different number of reported ages, which means that the code to add these
+# columns is slightly modified for every risk.
+
+raw <- read.csv("raw_data_no_duplicates.csv")
+raw <- select(raw, c(7, TIPO1:other.serious.accident.age5))
+
+## Arrange the instances in ascending order, implementing bubble sort algorithm ----
+# Very tedious but could not find a better way
+
+raw$other.serious.accident.activity3 <- NA_character_
+raw$other.serious.accident.activity4 <- NA_character_
+raw$other.serious.accident.activity5 <- NA_character_
+raw$other.serious.accident.days.disabled3 <- as.numeric(raw$other.serious.accident.days.disabled3)
+
+# Iteration 1/5
+raw <- transform(raw, TIPO1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ TIPO2, T ~ TIPO1),
+                 TIPO2 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ TIPO1, T ~ TIPO2),
+                 other.serious.accident.age = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.age1, T ~ other.serious.accident.age),
+                 other.serious.accident.age1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.age, T ~ other.serious.accident.age1),
+                 other.serious.accident.where.hurt = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.where.hurt1, T ~ other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.where.hurt, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.activity1, T ~ other.serious.accident.activity),
+                 other.serious.accident.activity1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.activity, T ~ other.serious.accident.activity1),
+                 other.serious.accident.injured = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.injured.yesno1, T ~ other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.injured, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.days.disabled, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.almost.died, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.still.bothers, T ~ other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ TIPO3, T ~ TIPO2),
+                 TIPO3 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ TIPO2, T ~ TIPO3),
+                 other.serious.accident.age1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.age2, T ~ other.serious.accident.age1),
+                 other.serious.accident.age2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.age1, T ~ other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.where.hurt1, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.activity1, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.injured.yesno1, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ TIPO4, T ~ TIPO3),
+                 TIPO4 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ TIPO3, T ~ TIPO4),
+                 other.serious.accident.age2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.age3, T ~ other.serious.accident.age2),
+                 other.serious.accident.age3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.age2, T ~ other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.where.hurt3, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.activity3, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.injured3, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ TIPO5, T ~ TIPO4),
+                 TIPO5 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ TIPO4, T ~ TIPO5),
+                 other.serious.accident.age3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.age4, T ~ other.serious.accident.age3),
+                 other.serious.accident.age4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.age3, T ~ other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.where.hurt3, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.activity4, T ~ other.serious.accident.activity3),
+                 other.serious.accident.activity4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.activity3, T ~ other.serious.accident.activity4),
+                 other.serious.accident.injured3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.injured4, T ~ other.serious.accident.injured3),
+                 other.serious.accident.injured4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.injured3, T ~ other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ TIPO6, T ~ TIPO5),
+                 TIPO6 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ TIPO5, T ~ TIPO6),
+                 other.serious.accident.age4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.age5, T ~ other.serious.accident.age4),
+                 other.serious.accident.age5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.age4, T ~ other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.where.hurt5, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.activity5, T ~ other.serious.accident.activity4),
+                 other.serious.accident.activity5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.activity4, T ~ other.serious.accident.activity5),
+                 other.serious.accident.injured4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.injured5, T ~ other.serious.accident.injured4),
+                 other.serious.accident.injured5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.injured4, T ~ other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.days.disabled5, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.almost.died5, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.still.bothers5, T ~ other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers5))
+
+# Iteration 2/5
+raw <- transform(raw, TIPO1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ TIPO2, T ~ TIPO1),
+                 TIPO2 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ TIPO1, T ~ TIPO2),
+                 other.serious.accident.age = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.age1, T ~ other.serious.accident.age),
+                 other.serious.accident.age1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.age, T ~ other.serious.accident.age1),
+                 other.serious.accident.where.hurt = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.where.hurt1, T ~ other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.where.hurt, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.activity1, T ~ other.serious.accident.activity),
+                 other.serious.accident.activity1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.activity, T ~ other.serious.accident.activity1),
+                 other.serious.accident.injured = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.injured.yesno1, T ~ other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.injured, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.days.disabled, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.almost.died, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.still.bothers, T ~ other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ TIPO3, T ~ TIPO2),
+                 TIPO3 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ TIPO2, T ~ TIPO3),
+                 other.serious.accident.age1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.age2, T ~ other.serious.accident.age1),
+                 other.serious.accident.age2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.age1, T ~ other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.where.hurt1, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.activity1, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.injured.yesno1, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ TIPO4, T ~ TIPO3),
+                 TIPO4 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ TIPO3, T ~ TIPO4),
+                 other.serious.accident.age2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.age3, T ~ other.serious.accident.age2),
+                 other.serious.accident.age3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.age2, T ~ other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.where.hurt3, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.activity3, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.injured3, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ TIPO5, T ~ TIPO4),
+                 TIPO5 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ TIPO4, T ~ TIPO5),
+                 other.serious.accident.age3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.age4, T ~ other.serious.accident.age3),
+                 other.serious.accident.age4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.age3, T ~ other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.where.hurt3, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.activity4, T ~ other.serious.accident.activity3),
+                 other.serious.accident.activity4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.activity3, T ~ other.serious.accident.activity4),
+                 other.serious.accident.injured3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.injured4, T ~ other.serious.accident.injured3),
+                 other.serious.accident.injured4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.injured3, T ~ other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ TIPO6, T ~ TIPO5),
+                 TIPO6 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ TIPO5, T ~ TIPO6),
+                 other.serious.accident.age4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.age5, T ~ other.serious.accident.age4),
+                 other.serious.accident.age5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.age4, T ~ other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.where.hurt5, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.activity5, T ~ other.serious.accident.activity4),
+                 other.serious.accident.activity5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.activity4, T ~ other.serious.accident.activity5),
+                 other.serious.accident.injured4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.injured5, T ~ other.serious.accident.injured4),
+                 other.serious.accident.injured5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.injured4, T ~ other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.days.disabled5, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.almost.died5, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.still.bothers5, T ~ other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers5))
+
+# Iteration 3/5
+raw <- transform(raw, TIPO1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ TIPO2, T ~ TIPO1),
+                 TIPO2 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ TIPO1, T ~ TIPO2),
+                 other.serious.accident.age = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.age1, T ~ other.serious.accident.age),
+                 other.serious.accident.age1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.age, T ~ other.serious.accident.age1),
+                 other.serious.accident.where.hurt = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.where.hurt1, T ~ other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.where.hurt, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.activity1, T ~ other.serious.accident.activity),
+                 other.serious.accident.activity1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.activity, T ~ other.serious.accident.activity1),
+                 other.serious.accident.injured = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.injured.yesno1, T ~ other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.injured, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.days.disabled, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.almost.died, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.still.bothers, T ~ other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ TIPO3, T ~ TIPO2),
+                 TIPO3 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ TIPO2, T ~ TIPO3),
+                 other.serious.accident.age1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.age2, T ~ other.serious.accident.age1),
+                 other.serious.accident.age2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.age1, T ~ other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.where.hurt1, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.activity1, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.injured.yesno1, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ TIPO4, T ~ TIPO3),
+                 TIPO4 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ TIPO3, T ~ TIPO4),
+                 other.serious.accident.age2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.age3, T ~ other.serious.accident.age2),
+                 other.serious.accident.age3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.age2, T ~ other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.where.hurt3, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.activity3, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.injured3, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ TIPO5, T ~ TIPO4),
+                 TIPO5 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ TIPO4, T ~ TIPO5),
+                 other.serious.accident.age3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.age4, T ~ other.serious.accident.age3),
+                 other.serious.accident.age4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.age3, T ~ other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.where.hurt3, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.activity4, T ~ other.serious.accident.activity3),
+                 other.serious.accident.activity4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.activity3, T ~ other.serious.accident.activity4),
+                 other.serious.accident.injured3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.injured4, T ~ other.serious.accident.injured3),
+                 other.serious.accident.injured4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.injured3, T ~ other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ TIPO6, T ~ TIPO5),
+                 TIPO6 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ TIPO5, T ~ TIPO6),
+                 other.serious.accident.age4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.age5, T ~ other.serious.accident.age4),
+                 other.serious.accident.age5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.age4, T ~ other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.where.hurt5, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.activity5, T ~ other.serious.accident.activity4),
+                 other.serious.accident.activity5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.activity4, T ~ other.serious.accident.activity5),
+                 other.serious.accident.injured4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.injured5, T ~ other.serious.accident.injured4),
+                 other.serious.accident.injured5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.injured4, T ~ other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.days.disabled5, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.almost.died5, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.still.bothers5, T ~ other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers5))
+
+# Iteration 4/5
+raw <- transform(raw, TIPO1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ TIPO2, T ~ TIPO1),
+                 TIPO2 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ TIPO1, T ~ TIPO2),
+                 other.serious.accident.age = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.age1, T ~ other.serious.accident.age),
+                 other.serious.accident.age1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.age, T ~ other.serious.accident.age1),
+                 other.serious.accident.where.hurt = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.where.hurt1, T ~ other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.where.hurt, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.activity1, T ~ other.serious.accident.activity),
+                 other.serious.accident.activity1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.activity, T ~ other.serious.accident.activity1),
+                 other.serious.accident.injured = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.injured.yesno1, T ~ other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.injured, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.days.disabled, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.almost.died, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.still.bothers, T ~ other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ TIPO3, T ~ TIPO2),
+                 TIPO3 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ TIPO2, T ~ TIPO3),
+                 other.serious.accident.age1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.age2, T ~ other.serious.accident.age1),
+                 other.serious.accident.age2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.age1, T ~ other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.where.hurt1, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.activity1, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.injured.yesno1, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ TIPO4, T ~ TIPO3),
+                 TIPO4 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ TIPO3, T ~ TIPO4),
+                 other.serious.accident.age2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.age3, T ~ other.serious.accident.age2),
+                 other.serious.accident.age3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.age2, T ~ other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.where.hurt3, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.activity3, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.injured3, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ TIPO5, T ~ TIPO4),
+                 TIPO5 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ TIPO4, T ~ TIPO5),
+                 other.serious.accident.age3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.age4, T ~ other.serious.accident.age3),
+                 other.serious.accident.age4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.age3, T ~ other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.where.hurt3, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.activity4, T ~ other.serious.accident.activity3),
+                 other.serious.accident.activity4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.activity3, T ~ other.serious.accident.activity4),
+                 other.serious.accident.injured3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.injured4, T ~ other.serious.accident.injured3),
+                 other.serious.accident.injured4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.injured3, T ~ other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ TIPO6, T ~ TIPO5),
+                 TIPO6 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ TIPO5, T ~ TIPO6),
+                 other.serious.accident.age4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.age5, T ~ other.serious.accident.age4),
+                 other.serious.accident.age5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.age4, T ~ other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.where.hurt5, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.activity5, T ~ other.serious.accident.activity4),
+                 other.serious.accident.activity5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.activity4, T ~ other.serious.accident.activity5),
+                 other.serious.accident.injured4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.injured5, T ~ other.serious.accident.injured4),
+                 other.serious.accident.injured5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.injured4, T ~ other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.days.disabled5, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.almost.died5, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.still.bothers5, T ~ other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers5))
+
+# Iteration 5/5
+raw <- transform(raw, TIPO1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ TIPO2, T ~ TIPO1),
+                 TIPO2 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ TIPO1, T ~ TIPO2),
+                 other.serious.accident.age = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.age1, T ~ other.serious.accident.age),
+                 other.serious.accident.age1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.age, T ~ other.serious.accident.age1),
+                 other.serious.accident.where.hurt = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.where.hurt1, T ~ other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.where.hurt, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.activity1, T ~ other.serious.accident.activity),
+                 other.serious.accident.activity1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.activity, T ~ other.serious.accident.activity1),
+                 other.serious.accident.injured = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.injured.yesno1, T ~ other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.injured, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.days.disabled, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.almost.died, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = case_when(other.serious.accident.age > other.serious.accident.age1 ~ other.serious.accident.still.bothers, T ~ other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ TIPO3, T ~ TIPO2),
+                 TIPO3 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ TIPO2, T ~ TIPO3),
+                 other.serious.accident.age1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.age2, T ~ other.serious.accident.age1),
+                 other.serious.accident.age2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.age1, T ~ other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.where.hurt1, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.activity1, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.injured.yesno1, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = case_when(other.serious.accident.age1 > other.serious.accident.age2 ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ TIPO4, T ~ TIPO3),
+                 TIPO4 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ TIPO3, T ~ TIPO4),
+                 other.serious.accident.age2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.age3, T ~ other.serious.accident.age2),
+                 other.serious.accident.age3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.age2, T ~ other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.where.hurt3, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.activity3, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.injured3, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = case_when(other.serious.accident.age2 > other.serious.accident.age3 ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ TIPO5, T ~ TIPO4),
+                 TIPO5 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ TIPO4, T ~ TIPO5),
+                 other.serious.accident.age3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.age4, T ~ other.serious.accident.age3),
+                 other.serious.accident.age4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.age3, T ~ other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.where.hurt3, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.activity4, T ~ other.serious.accident.activity3),
+                 other.serious.accident.activity4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.activity3, T ~ other.serious.accident.activity4),
+                 other.serious.accident.injured3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.injured4, T ~ other.serious.accident.injured3),
+                 other.serious.accident.injured4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.injured3, T ~ other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = case_when(other.serious.accident.age3 > other.serious.accident.age4 ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ TIPO6, T ~ TIPO5),
+                 TIPO6 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ TIPO5, T ~ TIPO6),
+                 other.serious.accident.age4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.age5, T ~ other.serious.accident.age4),
+                 other.serious.accident.age5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.age4, T ~ other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.where.hurt5, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.activity5, T ~ other.serious.accident.activity4),
+                 other.serious.accident.activity5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.activity4, T ~ other.serious.accident.activity5),
+                 other.serious.accident.injured4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.injured5, T ~ other.serious.accident.injured4),
+                 other.serious.accident.injured5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.injured4, T ~ other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.days.disabled5, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.almost.died5, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.still.bothers5, T ~ other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = case_when(other.serious.accident.age4 > other.serious.accident.age5 ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers5))
+
+
+
+
+
+## Applying same algorithm to get ascending order of cut self ages ----
+# Iteration 1/5
+raw <- transform(raw, TIPO1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ TIPO2, T ~ TIPO1),
+                 TIPO2 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ TIPO1, T ~ TIPO2),
+                 other.serious.accident.age = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.age1, T ~ other.serious.accident.age),
+                 other.serious.accident.age1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.age, T ~ other.serious.accident.age1),
+                 other.serious.accident.where.hurt = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.where.hurt1, T ~ other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.where.hurt, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.activity1, T ~ other.serious.accident.activity),
+                 other.serious.accident.activity1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.activity, T ~ other.serious.accident.activity1),
+                 other.serious.accident.injured = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.injured.yesno1, T ~ other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.injured, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.days.disabled, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.almost.died, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.still.bothers, T ~ other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ TIPO3, T ~ TIPO2),
+                 TIPO3 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ TIPO2, T ~ TIPO3),
+                 other.serious.accident.age1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.age2, T ~ other.serious.accident.age1),
+                 other.serious.accident.age2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.age1, T ~ other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.where.hurt1, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.activity1, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.injured.yesno1, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ TIPO4, T ~ TIPO3),
+                 TIPO4 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ TIPO3, T ~ TIPO4),
+                 other.serious.accident.age2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.age3, T ~ other.serious.accident.age2),
+                 other.serious.accident.age3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.age2, T ~ other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.where.hurt3, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.activity3, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.injured3, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ TIPO5, T ~ TIPO4),
+                 TIPO5 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ TIPO4, T ~ TIPO5),
+                 other.serious.accident.age3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.age4, T ~ other.serious.accident.age3),
+                 other.serious.accident.age4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.age3, T ~ other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.where.hurt3, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.activity4, T ~ other.serious.accident.activity3),
+                 other.serious.accident.activity4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.activity3, T ~ other.serious.accident.activity4),
+                 other.serious.accident.injured3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.injured4, T ~ other.serious.accident.injured3),
+                 other.serious.accident.injured4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.injured3, T ~ other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ TIPO6, T ~ TIPO5),
+                 TIPO6 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ TIPO5, T ~ TIPO6),
+                 other.serious.accident.age4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.age5, T ~ other.serious.accident.age4),
+                 other.serious.accident.age5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.age4, T ~ other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.where.hurt5, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.activity5, T ~ other.serious.accident.activity4),
+                 other.serious.accident.activity5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.activity4, T ~ other.serious.accident.activity5),
+                 other.serious.accident.injured4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.injured5, T ~ other.serious.accident.injured4),
+                 other.serious.accident.injured5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.injured4, T ~ other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.days.disabled5, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.almost.died5, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.still.bothers5, T ~ other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers5))
+
+# Iteration 2/5
+raw <- transform(raw, TIPO1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ TIPO2, T ~ TIPO1),
+                 TIPO2 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ TIPO1, T ~ TIPO2),
+                 other.serious.accident.age = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.age1, T ~ other.serious.accident.age),
+                 other.serious.accident.age1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.age, T ~ other.serious.accident.age1),
+                 other.serious.accident.where.hurt = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.where.hurt1, T ~ other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.where.hurt, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.activity1, T ~ other.serious.accident.activity),
+                 other.serious.accident.activity1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.activity, T ~ other.serious.accident.activity1),
+                 other.serious.accident.injured = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.injured.yesno1, T ~ other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.injured, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.days.disabled, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.almost.died, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.still.bothers, T ~ other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ TIPO3, T ~ TIPO2),
+                 TIPO3 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ TIPO2, T ~ TIPO3),
+                 other.serious.accident.age1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.age2, T ~ other.serious.accident.age1),
+                 other.serious.accident.age2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.age1, T ~ other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.where.hurt1, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.activity1, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.injured.yesno1, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ TIPO4, T ~ TIPO3),
+                 TIPO4 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ TIPO3, T ~ TIPO4),
+                 other.serious.accident.age2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.age3, T ~ other.serious.accident.age2),
+                 other.serious.accident.age3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.age2, T ~ other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.where.hurt3, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.activity3, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.injured3, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ TIPO5, T ~ TIPO4),
+                 TIPO5 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ TIPO4, T ~ TIPO5),
+                 other.serious.accident.age3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.age4, T ~ other.serious.accident.age3),
+                 other.serious.accident.age4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.age3, T ~ other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.where.hurt3, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.activity4, T ~ other.serious.accident.activity3),
+                 other.serious.accident.activity4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.activity3, T ~ other.serious.accident.activity4),
+                 other.serious.accident.injured3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.injured4, T ~ other.serious.accident.injured3),
+                 other.serious.accident.injured4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.injured3, T ~ other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ TIPO6, T ~ TIPO5),
+                 TIPO6 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ TIPO5, T ~ TIPO6),
+                 other.serious.accident.age4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.age5, T ~ other.serious.accident.age4),
+                 other.serious.accident.age5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.age4, T ~ other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.where.hurt5, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.activity5, T ~ other.serious.accident.activity4),
+                 other.serious.accident.activity5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.activity4, T ~ other.serious.accident.activity5),
+                 other.serious.accident.injured4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.injured5, T ~ other.serious.accident.injured4),
+                 other.serious.accident.injured5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.injured4, T ~ other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.days.disabled5, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.almost.died5, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.still.bothers5, T ~ other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers5))
+
+# Iteration 3/5
+raw <- transform(raw, TIPO1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ TIPO2, T ~ TIPO1),
+                 TIPO2 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ TIPO1, T ~ TIPO2),
+                 other.serious.accident.age = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.age1, T ~ other.serious.accident.age),
+                 other.serious.accident.age1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.age, T ~ other.serious.accident.age1),
+                 other.serious.accident.where.hurt = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.where.hurt1, T ~ other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.where.hurt, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.activity1, T ~ other.serious.accident.activity),
+                 other.serious.accident.activity1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.activity, T ~ other.serious.accident.activity1),
+                 other.serious.accident.injured = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.injured.yesno1, T ~ other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.injured, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.days.disabled, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.almost.died, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.still.bothers, T ~ other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ TIPO3, T ~ TIPO2),
+                 TIPO3 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ TIPO2, T ~ TIPO3),
+                 other.serious.accident.age1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.age2, T ~ other.serious.accident.age1),
+                 other.serious.accident.age2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.age1, T ~ other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.where.hurt1, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.activity1, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.injured.yesno1, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ TIPO4, T ~ TIPO3),
+                 TIPO4 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ TIPO3, T ~ TIPO4),
+                 other.serious.accident.age2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.age3, T ~ other.serious.accident.age2),
+                 other.serious.accident.age3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.age2, T ~ other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.where.hurt3, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.activity3, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.injured3, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ TIPO5, T ~ TIPO4),
+                 TIPO5 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ TIPO4, T ~ TIPO5),
+                 other.serious.accident.age3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.age4, T ~ other.serious.accident.age3),
+                 other.serious.accident.age4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.age3, T ~ other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.where.hurt3, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.activity4, T ~ other.serious.accident.activity3),
+                 other.serious.accident.activity4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.activity3, T ~ other.serious.accident.activity4),
+                 other.serious.accident.injured3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.injured4, T ~ other.serious.accident.injured3),
+                 other.serious.accident.injured4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.injured3, T ~ other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ TIPO6, T ~ TIPO5),
+                 TIPO6 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ TIPO5, T ~ TIPO6),
+                 other.serious.accident.age4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.age5, T ~ other.serious.accident.age4),
+                 other.serious.accident.age5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.age4, T ~ other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.where.hurt5, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.activity5, T ~ other.serious.accident.activity4),
+                 other.serious.accident.activity5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.activity4, T ~ other.serious.accident.activity5),
+                 other.serious.accident.injured4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.injured5, T ~ other.serious.accident.injured4),
+                 other.serious.accident.injured5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.injured4, T ~ other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.days.disabled5, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.almost.died5, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.still.bothers5, T ~ other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers5))
+
+# Iteration 4/5
+raw <- transform(raw, TIPO1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ TIPO2, T ~ TIPO1),
+                 TIPO2 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ TIPO1, T ~ TIPO2),
+                 other.serious.accident.age = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.age1, T ~ other.serious.accident.age),
+                 other.serious.accident.age1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.age, T ~ other.serious.accident.age1),
+                 other.serious.accident.where.hurt = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.where.hurt1, T ~ other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.where.hurt, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.activity1, T ~ other.serious.accident.activity),
+                 other.serious.accident.activity1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.activity, T ~ other.serious.accident.activity1),
+                 other.serious.accident.injured = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.injured.yesno1, T ~ other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.injured, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.days.disabled, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.almost.died, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.still.bothers, T ~ other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ TIPO3, T ~ TIPO2),
+                 TIPO3 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ TIPO2, T ~ TIPO3),
+                 other.serious.accident.age1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.age2, T ~ other.serious.accident.age1),
+                 other.serious.accident.age2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.age1, T ~ other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.where.hurt1, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.activity1, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.injured.yesno1, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ TIPO4, T ~ TIPO3),
+                 TIPO4 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ TIPO3, T ~ TIPO4),
+                 other.serious.accident.age2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.age3, T ~ other.serious.accident.age2),
+                 other.serious.accident.age3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.age2, T ~ other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.where.hurt3, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.activity3, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.injured3, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ TIPO5, T ~ TIPO4),
+                 TIPO5 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ TIPO4, T ~ TIPO5),
+                 other.serious.accident.age3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.age4, T ~ other.serious.accident.age3),
+                 other.serious.accident.age4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.age3, T ~ other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.where.hurt3, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.activity4, T ~ other.serious.accident.activity3),
+                 other.serious.accident.activity4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.activity3, T ~ other.serious.accident.activity4),
+                 other.serious.accident.injured3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.injured4, T ~ other.serious.accident.injured3),
+                 other.serious.accident.injured4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.injured3, T ~ other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ TIPO6, T ~ TIPO5),
+                 TIPO6 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ TIPO5, T ~ TIPO6),
+                 other.serious.accident.age4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.age5, T ~ other.serious.accident.age4),
+                 other.serious.accident.age5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.age4, T ~ other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.where.hurt5, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.activity5, T ~ other.serious.accident.activity4),
+                 other.serious.accident.activity5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.activity4, T ~ other.serious.accident.activity5),
+                 other.serious.accident.injured4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.injured5, T ~ other.serious.accident.injured4),
+                 other.serious.accident.injured5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.injured4, T ~ other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.days.disabled5, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.almost.died5, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.still.bothers5, T ~ other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers5))
+
+# Iteration 5/5
+raw <- transform(raw, TIPO1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ TIPO2, T ~ TIPO1),
+                 TIPO2 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ TIPO1, T ~ TIPO2),
+                 other.serious.accident.age = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.age1, T ~ other.serious.accident.age),
+                 other.serious.accident.age1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.age, T ~ other.serious.accident.age1),
+                 other.serious.accident.where.hurt = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.where.hurt1, T ~ other.serious.accident.where.hurt),
+                 other.serious.accident.where.hurt1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.where.hurt, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accident.activity = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.activity1, T ~ other.serious.accident.activity),
+                 other.serious.accident.activity1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.activity, T ~ other.serious.accident.activity1),
+                 other.serious.accident.injured = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.injured.yesno1, T ~ other.serious.accident.injured),
+                 other.serious.accident.injured.yesno1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.injured, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accident.days.disabled = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled),
+                 other.serious.accident.days.disabled1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.days.disabled, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.almost.died = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died),
+                 other.serious.accident.almost.died1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.almost.died, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.still.bothers = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers),
+                 other.serious.accident.still.bothers1 = case_when(!(TIPO1 %in% "c") & (TIPO2 %in% "c") ~ other.serious.accident.still.bothers, T ~ other.serious.accident.still.bothers1))
+
+raw <- transform(raw, TIPO2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ TIPO3, T ~ TIPO2),
+                 TIPO3 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ TIPO2, T ~ TIPO3),
+                 other.serious.accident.age1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.age2, T ~ other.serious.accident.age1),
+                 other.serious.accident.age2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.age1, T ~ other.serious.accident.age2),
+                 other.serious.accident.where.hurt1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt1),
+                 other.serious.accidents.where.hurt2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.where.hurt1, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.activity1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity1),
+                 other.serious.accidents.activity2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.activity1, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.injured.yesno1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured.yesno1),
+                 other.serious.accidents.injured.yesno2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.injured.yesno1, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.days.disabled1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled1),
+                 other.serious.accident.days.disabled2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.days.disabled1, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.almost.died1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died1),
+                 other.serious.accident.almost.died2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.almost.died1, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.still.bothers1 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers1),
+                 other.serious.accident.still.bothers2 = case_when(!(TIPO2 %in% "c") & (TIPO3 %in% "c") ~ other.serious.accident.still.bothers1, T ~ other.serious.accident.still.bothers2))
+
+raw <- transform(raw, TIPO3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ TIPO4, T ~ TIPO3),
+                 TIPO4 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ TIPO3, T ~ TIPO4),
+                 other.serious.accident.age2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.age3, T ~ other.serious.accident.age2),
+                 other.serious.accident.age3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.age2, T ~ other.serious.accident.age3),
+                 other.serious.accidents.where.hurt2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.where.hurt3, T ~ other.serious.accidents.where.hurt2),
+                 other.serious.accident.where.hurt3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.where.hurt2, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accidents.activity2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.activity3, T ~ other.serious.accidents.activity2),
+                 other.serious.accident.activity3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.activity2, T ~ other.serious.accident.activity3),
+                 other.serious.accidents.injured.yesno2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.injured3, T ~ other.serious.accidents.injured.yesno2),
+                 other.serious.accident.injured3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accidents.injured.yesno2, T ~ other.serious.accident.injured3),
+                 other.serious.accident.days.disabled2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled2),
+                 other.serious.accident.days.disabled3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.days.disabled2, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.almost.died2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died2),
+                 other.serious.accident.almost.died3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.almost.died2, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.still.bothers2 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers2),
+                 other.serious.accident.still.bothers3 = case_when(!(TIPO3 %in% "c") & (TIPO4 %in% "c") ~ other.serious.accident.still.bothers2, T ~ other.serious.accident.still.bothers3))
+
+raw <- transform(raw, TIPO4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ TIPO5, T ~ TIPO4),
+                 TIPO5 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ TIPO4, T ~ TIPO5),
+                 other.serious.accident.age3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.age4, T ~ other.serious.accident.age3),
+                 other.serious.accident.age4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.age3, T ~ other.serious.accident.age4),
+                 other.serious.accident.where.hurt3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt3),
+                 other.serious.accident.where.hurt4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.where.hurt3, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.activity3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.activity4, T ~ other.serious.accident.activity3),
+                 other.serious.accident.activity4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.activity3, T ~ other.serious.accident.activity4),
+                 other.serious.accident.injured3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.injured4, T ~ other.serious.accident.injured3),
+                 other.serious.accident.injured4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.injured3, T ~ other.serious.accident.injured4),
+                 other.serious.accident.days.disabled3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled3),
+                 other.serious.accident.days.disabled4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.days.disabled3, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.almost.died3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died3),
+                 other.serious.accident.almost.died4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.almost.died3, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.still.bothers3 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers3),
+                 other.serious.accident.still.bothers4 = case_when(!(TIPO4 %in% "c") & (TIPO5 %in% "c") ~ other.serious.accident.still.bothers3, T ~ other.serious.accident.still.bothers4))
+
+raw <- transform(raw, TIPO5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ TIPO6, T ~ TIPO5),
+                 TIPO6 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ TIPO5, T ~ TIPO6),
+                 other.serious.accident.age4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.age5, T ~ other.serious.accident.age4),
+                 other.serious.accident.age5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.age4, T ~ other.serious.accident.age5),
+                 other.serious.accident.where.hurt4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.where.hurt5, T ~ other.serious.accident.where.hurt4),
+                 other.serious.accident.where.hurt5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.where.hurt4, T ~ other.serious.accident.where.hurt5),
+                 other.serious.accident.activity4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.activity5, T ~ other.serious.accident.activity4),
+                 other.serious.accident.activity5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.activity4, T ~ other.serious.accident.activity5),
+                 other.serious.accident.injured4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.injured5, T ~ other.serious.accident.injured4),
+                 other.serious.accident.injured5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.injured4, T ~ other.serious.accident.injured5),
+                 other.serious.accident.days.disabled4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.days.disabled5, T ~ other.serious.accident.days.disabled4),
+                 other.serious.accident.days.disabled5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.days.disabled4, T ~ other.serious.accident.days.disabled5),
+                 other.serious.accident.almost.died4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.almost.died5, T ~ other.serious.accident.almost.died4),
+                 other.serious.accident.almost.died5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.almost.died4, T ~ other.serious.accident.almost.died5),
+                 other.serious.accident.still.bothers4 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.still.bothers5, T ~ other.serious.accident.still.bothers4),
+                 other.serious.accident.still.bothers5 = case_when(!(TIPO5 %in% "c") & (TIPO6 %in% "c") ~ other.serious.accident.still.bothers4, T ~ other.serious.accident.still.bothers5))
+
+
+## Some additional steps ----
+raw <- raw %>% dplyr::rename("other.serious.accident.where.hurt2" = "other.serious.accidents.where.hurt2")
+raw <- raw %>% dplyr::rename("other.serious.accident.activity2" = "other.serious.accidents.activity2")
+raw <- raw %>% dplyr::rename("other.serious.accident.injured1" = "other.serious.accident.injured.yesno1")
+raw <- raw %>% dplyr::rename("other.serious.accident.injured2" = "other.serious.accidents.injured.yesno2")
+
+raw <- subset(raw, select = -c(other.serious.accident.age, other.serious.accident.age1,
+                               other.serious.accident.age2, other.serious.accident.age3,
+                               other.serious.accident.age4, other.serious.accident.age5))
+
+
+## Merging with df ----
+dx <- left_join(df, raw)
+
+dx <- dx %>%
+  filter(event == 1)
+dx <- dx %>%
+  group_by(pid) %>%
+  mutate(index = 1:n())
+dx <- relocate(dx, index, .after = event)
+dx <- relocate(dx, other.serious.accident.activity3, .after = other.serious.accident.where.hurt3)
+dx <- relocate(dx, other.serious.accident.activity4, .after = other.serious.accident.where.hurt4)
+dx <- relocate(dx, other.serious.accident.activity5, .after = other.serious.accident.where.hurt5)
+dx <- subset(dx, select = c(pid, exit, index, n.cut.self, TIPO1:other.serious.accident.still.bothers5))
+
+
+plyr::count(dx$TIPO1)
+plyr::count(dx$TIPO2)
+plyr::count(dx$TIPO3)
+plyr::count(dx$TIPO4)
+plyr::count(dx$TIPO5)
+plyr::count(dx$TIPO6)
+
+### Where hurt? ----
+dx$cut_self_where_hurt_1 <- NA_character_
+dx$cut_self_where_hurt_2 <- NA_character_
+dx$cut_self_where_hurt_3 <- NA_character_
+
+dx <- relocate(dx, c(cut_self_where_hurt_1, cut_self_where_hurt_2,
+                     cut_self_where_hurt_3), .after = n.cut.self)
+
+# index = 1
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 1 & n.cut.self == 1 ~ other.serious.accident.where.hurt, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 1 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 1 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 1 & n.cut.self == 2 ~ other.serious.accident.where.hurt, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 1 & n.cut.self == 2 ~ other.serious.accident.where.hurt1, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 1 & n.cut.self == 2 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.where.hurt, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.where.hurt1, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.where.hurt2, T ~ as.character(cut_self_where_hurt_3)))
+
+# index = 2
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 2 & n.cut.self == 1 ~ other.serious.accident.where.hurt1, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 2 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 2 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.where.hurt1, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.where.hurt2, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 2 & n.cut.self == 2 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.where.hurt1, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.where.hurt2, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_3)))
+
+# index = 3
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 3 & n.cut.self == 1 ~ other.serious.accident.where.hurt2, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 3 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 3 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.where.hurt2, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 3 & n.cut.self == 2 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.where.hurt2, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.where.hurt4, T ~ as.character(cut_self_where_hurt_3)))
+
+# index = 4
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 4 & n.cut.self == 1 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 4 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 4 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.where.hurt4, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 4 & n.cut.self == 2 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.where.hurt4, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.where.hurt5, T ~ as.character(cut_self_where_hurt_3)))
+
+# index = 5
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 5 & n.cut.self == 1 ~ other.serious.accident.where.hurt4, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 5 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 5 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+# index = 6
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 6 & n.cut.self == 1 ~ other.serious.accident.where.hurt5, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 6 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 6 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(other.serious.accident.where.hurt,
+                             other.serious.accident.where.hurt1,
+                             other.serious.accident.where.hurt2,
+                             other.serious.accident.where.hurt3,
+                             other.serious.accident.where.hurt4,
+                             other.serious.accident.where.hurt5))
+
+### Activity ----
+dx$cut_self_activity_1 <- NA_character_
+dx$cut_self_activity_2 <- NA_character_
+dx$cut_self_activity_3 <- NA_character_
+
+dx <- relocate(dx, c(cut_self_activity_1, cut_self_activity_2,
+                     cut_self_activity_3), .after = cut_self_where_hurt_3)
+
+# index = 1
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 1 & n.cut.self == 1 ~ other.serious.accident.activity, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 1 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 1 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 1 & n.cut.self == 2 ~ other.serious.accident.activity, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 1 & n.cut.self == 2 ~ other.serious.accident.activity1, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 1 & n.cut.self == 2 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.activity, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.activity1, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.activity2, T ~ as.character(cut_self_activity_3)))
+
+# index = 2
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 2 & n.cut.self == 1 ~ other.serious.accident.activity1, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 2 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 2 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.activity1, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.activity2, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 2 & n.cut.self == 2 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.activity1, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.activity2, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_3)))
+
+# index = 3
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 3 & n.cut.self == 1 ~ other.serious.accident.activity2, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 3 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 3 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.activity2, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 3 & n.cut.self == 2 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.activity2, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.activity4, T ~ as.character(cut_self_activity_3)))
+
+# index = 4
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 4 & n.cut.self == 1 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 4 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 4 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.activity4, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 4 & n.cut.self == 2 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.activity4, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.activity5, T ~ as.character(cut_self_activity_3)))
+
+# index = 5
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 5 & n.cut.self == 1 ~ other.serious.accident.activity4, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 5 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 5 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+# index = 6
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 6 & n.cut.self == 1 ~ other.serious.accident.activity5, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 6 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 6 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(other.serious.accident.activity,
+                             other.serious.accident.activity1,
+                             other.serious.accident.activity2,
+                             other.serious.accident.activity3,
+                             other.serious.accident.activity4,
+                             other.serious.accident.activity5))
+
+### Injured? ----
+dx$cut_self_injured_1 <- NA_integer_
+dx$cut_self_injured_2 <- NA_integer_
+dx$cut_self_injured_3 <- NA_integer_
+
+dx <- relocate(dx, c(cut_self_injured_1, cut_self_injured_2,
+                     cut_self_injured_3), .after = cut_self_activity_3)
+
+# index = 1
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 1 & n.cut.self == 1 ~ other.serious.accident.injured, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 1 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 1 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 1 & n.cut.self == 2 ~ other.serious.accident.injured, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 1 & n.cut.self == 2 ~ other.serious.accident.injured1, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 1 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.injured, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.injured1, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.injured2, T ~ as.integer(cut_self_injured_3)))
+
+# index = 2
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 2 & n.cut.self == 1 ~ other.serious.accident.injured1, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 2 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 2 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.injured1, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.injured2, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 2 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.injured1, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.injured2, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_3)))
+
+# index = 3
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 3 & n.cut.self == 1 ~ other.serious.accident.injured2, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 3 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 3 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.injured2, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 3 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.injured2, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.injured4, T ~ as.integer(cut_self_injured_3)))
+
+# index = 4
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 4 & n.cut.self == 1 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 4 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 4 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.injured4, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 4 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.injured4, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.injured5, T ~ as.integer(cut_self_injured_3)))
+
+# index = 5
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 5 & n.cut.self == 1 ~ other.serious.accident.injured4, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 5 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 5 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+# index = 6
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 6 & n.cut.self == 1 ~ other.serious.accident.injured5, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 6 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 6 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(other.serious.accident.injured,
+                             other.serious.accident.injured1,
+                             other.serious.accident.injured2,
+                             other.serious.accident.injured3,
+                             other.serious.accident.injured4,
+                             other.serious.accident.injured5))
+
+### Days disabled? ----
+dx$cut_self_days_disabled_1 <- NA_real_
+dx$cut_self_days_disabled_2 <- NA_real_
+dx$cut_self_days_disabled_3 <- NA_real_
+
+dx <- relocate(dx, c(cut_self_days_disabled_1, cut_self_days_disabled_2,
+                     cut_self_days_disabled_3), .after = cut_self_injured_3)
+
+# index = 1
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 1 & n.cut.self == 1 ~ other.serious.accident.days.disabled, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 1 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 1 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 1 & n.cut.self == 2 ~ other.serious.accident.days.disabled, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 1 & n.cut.self == 2 ~ other.serious.accident.days.disabled1, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 1 & n.cut.self == 2 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.days.disabled, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.days.disabled1, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.days.disabled2, T ~ as.numeric(cut_self_days_disabled_3)))
+
+# index = 2
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 2 & n.cut.self == 1 ~ other.serious.accident.days.disabled1, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 2 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 2 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.days.disabled1, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.days.disabled2, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 2 & n.cut.self == 2 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.days.disabled1, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.days.disabled2, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_3)))
+
+# index = 3
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 3 & n.cut.self == 1 ~ other.serious.accident.days.disabled2, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 3 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 3 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.days.disabled2, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 3 & n.cut.self == 2 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.days.disabled2, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.days.disabled4, T ~ as.numeric(cut_self_days_disabled_3)))
+
+# index = 4
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 4 & n.cut.self == 1 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 4 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 4 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.days.disabled4, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 4 & n.cut.self == 2 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.days.disabled4, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.days.disabled5, T ~ as.numeric(cut_self_days_disabled_3)))
+
+# index = 5
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 5 & n.cut.self == 1 ~ other.serious.accident.days.disabled4, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 5 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 5 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+# index = 6
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 6 & n.cut.self == 1 ~ other.serious.accident.days.disabled5, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 6 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 6 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(other.serious.accident.days.disabled,
+                             other.serious.accident.days.disabled1,
+                             other.serious.accident.days.disabled2,
+                             other.serious.accident.days.disabled3,
+                             other.serious.accident.days.disabled4,
+                             other.serious.accident.days.disabled5))
+
+### Almost died? ----
+dx$cut_self_almost_died_1 <- NA_integer_
+dx$cut_self_almost_died_2 <- NA_integer_
+dx$cut_self_almost_died_3 <- NA_integer_
+
+dx <- relocate(dx, c(cut_self_almost_died_1, cut_self_almost_died_2,
+                     cut_self_almost_died_3), .after = cut_self_days_disabled_3)
+
+# index = 1
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 1 & n.cut.self == 1 ~ other.serious.accident.almost.died, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 1 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 1 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 1 & n.cut.self == 2 ~ other.serious.accident.almost.died, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 1 & n.cut.self == 2 ~ other.serious.accident.almost.died1, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 1 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.almost.died, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.almost.died1, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.almost.died2, T ~ as.integer(cut_self_almost_died_3)))
+
+# index = 2
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 2 & n.cut.self == 1 ~ other.serious.accident.almost.died1, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 2 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 2 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.almost.died1, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.almost.died2, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 2 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.almost.died1, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.almost.died2, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_3)))
+
+# index = 3
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 3 & n.cut.self == 1 ~ other.serious.accident.almost.died2, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 3 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 3 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.almost.died2, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 3 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.almost.died2, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.almost.died4, T ~ as.integer(cut_self_almost_died_3)))
+
+# index = 4
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 4 & n.cut.self == 1 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 4 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 4 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.almost.died4, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 4 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.almost.died4, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.almost.died5, T ~ as.integer(cut_self_almost_died_3)))
+
+# index = 5
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 5 & n.cut.self == 1 ~ other.serious.accident.almost.died4, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 5 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 5 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+# index = 6
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 6 & n.cut.self == 1 ~ other.serious.accident.almost.died5, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 6 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 6 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(other.serious.accident.almost.died,
+                             other.serious.accident.almost.died1,
+                             other.serious.accident.almost.died2,
+                             other.serious.accident.almost.died3,
+                             other.serious.accident.almost.died4,
+                             other.serious.accident.almost.died5))
+
+### Still bothers ----
+dx$cut_self_still_bothers_1 <- NA_integer_
+dx$cut_self_still_bothers_2 <- NA_integer_
+dx$cut_self_still_bothers_3 <- NA_integer_
+
+dx <- relocate(dx, c(cut_self_still_bothers_1, cut_self_still_bothers_2,
+                     cut_self_still_bothers_3), .after = cut_self_almost_died_3)
+
+# index = 1
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 1 & n.cut.self == 1 ~ other.serious.accident.still.bothers, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 1 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 1 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 1 & n.cut.self == 2 ~ other.serious.accident.still.bothers, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 1 & n.cut.self == 2 ~ other.serious.accident.still.bothers1, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 1 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.still.bothers, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.still.bothers1, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 1 & n.cut.self == 3 ~ other.serious.accident.still.bothers2, T ~ as.integer(cut_self_still_bothers_3)))
+
+# index = 2
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 2 & n.cut.self == 1 ~ other.serious.accident.still.bothers1, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 2 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 2 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.still.bothers1, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.still.bothers2, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 2 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.still.bothers1, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.still.bothers2, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_3)))
+
+# index = 3
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 3 & n.cut.self == 1 ~ other.serious.accident.still.bothers2, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 3 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 3 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.still.bothers2, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 3 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.still.bothers2, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 3 & n.cut.self == 3 ~ other.serious.accident.still.bothers4, T ~ as.integer(cut_self_still_bothers_3)))
+
+# index = 4
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 4 & n.cut.self == 1 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 4 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 4 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.still.bothers4, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 4 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.still.bothers4, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.still.bothers5, T ~ as.integer(cut_self_still_bothers_3)))
+
+# index = 5
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 5 & n.cut.self == 1 ~ other.serious.accident.still.bothers4, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 5 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 5 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+# index = 6
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 6 & n.cut.self == 1 ~ other.serious.accident.still.bothers5, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 6 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 6 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(other.serious.accident.still.bothers,
+                             other.serious.accident.still.bothers1,
+                             other.serious.accident.still.bothers2,
+                             other.serious.accident.still.bothers3,
+                             other.serious.accident.still.bothers4,
+                             other.serious.accident.still.bothers5))
+
+dx <- subset(dx, select = -c(TIPO1, TIPO2, TIPO3, TIPO4, TIPO5, TIPO6))
+
+## Get back to original data frame
+df <- left_join(df, dx)
+df <- relocate(df, c(cut_self_where_hurt_1:cut_self_still_bothers_3), .after = time.since.last.cut.self)
+df <- subset(df, select = -c(index))
 
 # Export final table to csv -----------------------------------------------
 
-write.csv(df6, "cut_self_final_table.csv", row.names = F)
-
+write.csv(df, "cut_self_final_table.csv", row.names = F)

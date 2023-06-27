@@ -1277,6 +1277,7 @@ dx <- subset(dx, select = c(pid, exit, index, n.tree.fall, TIPO1:other.serious.a
 # plyr::count(dx$TIPO5)
 # plyr::count(dx$TIPO6)
 
+
 ### Where hurt? ----
 dx$tree_fall_where_hurt_1 <- NA_character_
 dx$tree_fall_where_hurt_2 <- NA_character_
