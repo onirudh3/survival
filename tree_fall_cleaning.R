@@ -329,9 +329,6 @@ df <- relocate(df, house.id, .after = pid)
 
 rm(df1, df6, dx, dy, h_id)
 
-# Export final table to csv -----------------------------------------------
-write.csv(df, "tree_fall_final_table.csv", row.names = F)
-
 
 # Who reported experiencing the risk but did not report any ages? ---------
 
@@ -1269,27 +1266,218 @@ dx <- relocate(dx, other.serious.accident.activity5, .after = other.serious.acci
 dx <- subset(dx, select = c(pid, exit, index, n.tree.fall, TIPO1:other.serious.accident.still.bothers5))
 
 # Tree fall occurs maximum thrice in an interval
-# plyr::count(raw$TIPO1)
-# plyr::count(raw$TIPO2)
-# plyr::count(raw$TIPO3)
-# plyr::count(raw$TIPO4)
-# plyr::count(raw$TIPO5)
-# plyr::count(raw$TIPO6)
+# plyr::count(dx$TIPO1)
+# plyr::count(dx$TIPO2)
+# plyr::count(dx$TIPO3)
+# plyr::count(dx$TIPO4)
+# plyr::count(dx$TIPO5)
+# plyr::count(dx$TIPO6)
 
+### Where hurt? ----
+dx$tree_fall_where_hurt_1 <- NA_character_
+dx$tree_fall_where_hurt_2 <- NA_character_
 
-## Where hurt? ----
+dx <- relocate(dx, c(tree_fall_where_hurt_1, tree_fall_where_hurt_2),
+               .after = n.tree.fall)
 
-## Activity ----
+# index = 1
+dx <- dx %>%
+  mutate(tree_fall_where_hurt_1 = case_when(index == 1 & n.tree.fall == 1 ~ other.serious.accident.where.hurt, T ~ as.character(tree_fall_where_hurt_1)),
+         tree_fall_where_hurt_2 = case_when(index == 1 & n.tree.fall == 1 ~ NA_character_, T ~ as.character(tree_fall_where_hurt_2)))
 
-## Injured ----
+dx <- dx %>%
+  mutate(tree_fall_where_hurt_1 = case_when(index == 1 & n.tree.fall == 2 ~ other.serious.accident.where.hurt, T ~ as.character(tree_fall_where_hurt_1)),
+         tree_fall_where_hurt_2 = case_when(index == 1 & n.tree.fall == 2 ~ other.serious.accident.where.hurt1, T ~ as.character(tree_fall_where_hurt_2)))
 
-## Days disabled ----
+# index = 2
+dx <- dx %>%
+  mutate(tree_fall_where_hurt_1 = case_when(index == 2 & n.tree.fall == 1 ~ other.serious.accident.where.hurt1, T ~ as.character(tree_fall_where_hurt_1)),
+         tree_fall_where_hurt_2 = case_when(index == 2 & n.tree.fall == 1 ~ NA_character_, T ~ as.character(tree_fall_where_hurt_2)))
 
-## Almost died ----
+# index = 3
+dx <- dx %>%
+  mutate(tree_fall_where_hurt_1 = case_when(index == 3 & n.tree.fall == 1 ~ other.serious.accident.where.hurt2, T ~ as.character(tree_fall_where_hurt_1)),
+         tree_fall_where_hurt_2 = case_when(index == 3 & n.tree.fall == 1 ~ NA_character_, T ~ as.character(tree_fall_where_hurt_2)))
 
-## Still bothers ----
+# Remove the old columns
+dx <- subset(dx, select = -c(other.serious.accident.where.hurt,
+                             other.serious.accident.where.hurt1,
+                             other.serious.accident.where.hurt2,
+                             other.serious.accident.where.hurt3,
+                             other.serious.accident.where.hurt4,
+                             other.serious.accident.where.hurt5))
 
+### Activity ----
+dx$tree_fall_activity_1 <- NA_character_
+dx$tree_fall_activity_2 <- NA_character_
 
+dx <- relocate(dx, c(tree_fall_activity_1, tree_fall_activity_2),
+               .after = tree_fall_where_hurt_2)
+
+# index = 1
+dx <- dx %>%
+  mutate(tree_fall_activity_1 = case_when(index == 1 & n.tree.fall == 1 ~ other.serious.accident.activity, T ~ as.character(tree_fall_activity_1)),
+         tree_fall_activity_2 = case_when(index == 1 & n.tree.fall == 1 ~ NA_character_, T ~ as.character(tree_fall_activity_2)))
+
+dx <- dx %>%
+  mutate(tree_fall_activity_1 = case_when(index == 1 & n.tree.fall == 2 ~ other.serious.accident.activity, T ~ as.character(tree_fall_activity_1)),
+         tree_fall_activity_2 = case_when(index == 1 & n.tree.fall == 2 ~ other.serious.accident.activity1, T ~ as.character(tree_fall_activity_2)))
+
+# index = 2
+dx <- dx %>%
+  mutate(tree_fall_activity_1 = case_when(index == 2 & n.tree.fall == 1 ~ other.serious.accident.activity1, T ~ as.character(tree_fall_activity_1)),
+         tree_fall_activity_2 = case_when(index == 2 & n.tree.fall == 1 ~ NA_character_, T ~ as.character(tree_fall_activity_2)))
+
+# index = 3
+dx <- dx %>%
+  mutate(tree_fall_activity_1 = case_when(index == 3 & n.tree.fall == 1 ~ other.serious.accident.activity2, T ~ as.character(tree_fall_activity_1)),
+         tree_fall_activity_2 = case_when(index == 3 & n.tree.fall == 1 ~ NA_character_, T ~ as.character(tree_fall_activity_2)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(other.serious.accident.activity,
+                             other.serious.accident.activity1,
+                             other.serious.accident.activity2,
+                             other.serious.accident.activity3,
+                             other.serious.accident.activity4,
+                             other.serious.accident.activity5))
+
+### Injured ----
+dx$tree_fall_injured_1 <- NA_integer_
+dx$tree_fall_injured_2 <- NA_integer_
+
+dx <- relocate(dx, c(tree_fall_injured_1, tree_fall_injured_2),
+               .after = tree_fall_activity_2)
+
+# index = 1
+dx <- dx %>%
+  mutate(tree_fall_injured_1 = case_when(index == 1 & n.tree.fall == 1 ~ other.serious.accident.injured, T ~ as.integer(tree_fall_injured_1)),
+         tree_fall_injured_2 = case_when(index == 1 & n.tree.fall == 1 ~ NA_integer_, T ~ as.integer(tree_fall_injured_2)))
+
+dx <- dx %>%
+  mutate(tree_fall_injured_1 = case_when(index == 1 & n.tree.fall == 2 ~ other.serious.accident.injured, T ~ as.integer(tree_fall_injured_1)),
+         tree_fall_injured_2 = case_when(index == 1 & n.tree.fall == 2 ~ other.serious.accident.injured1, T ~ as.integer(tree_fall_injured_2)))
+
+# index = 2
+dx <- dx %>%
+  mutate(tree_fall_injured_1 = case_when(index == 2 & n.tree.fall == 1 ~ other.serious.accident.injured1, T ~ as.integer(tree_fall_injured_1)),
+         tree_fall_injured_2 = case_when(index == 2 & n.tree.fall == 1 ~ NA_integer_, T ~ as.integer(tree_fall_injured_2)))
+
+# index = 3
+dx <- dx %>%
+  mutate(tree_fall_injured_1 = case_when(index == 3 & n.tree.fall == 1 ~ other.serious.accident.injured2, T ~ as.integer(tree_fall_injured_1)),
+         tree_fall_injured_2 = case_when(index == 3 & n.tree.fall == 1 ~ NA_integer_, T ~ as.integer(tree_fall_injured_2)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(other.serious.accident.injured,
+                             other.serious.accident.injured1,
+                             other.serious.accident.injured2,
+                             other.serious.accident.injured3,
+                             other.serious.accident.injured4,
+                             other.serious.accident.injured5))
+
+### Days disabled ----
+dx$tree_fall_days_disabled_1 <- NA_real_
+dx$tree_fall_days_disabled_2 <- NA_real_
+
+dx <- relocate(dx, c(tree_fall_days_disabled_1, tree_fall_days_disabled_2),
+               .after = tree_fall_injured_2)
+
+# index = 1
+dx <- dx %>%
+  mutate(tree_fall_days_disabled_1 = case_when(index == 1 & n.tree.fall == 1 ~ other.serious.accident.days.disabled, T ~ as.numeric(tree_fall_days_disabled_1)),
+         tree_fall_days_disabled_2 = case_when(index == 1 & n.tree.fall == 1 ~ NA_real_, T ~ as.numeric(tree_fall_days_disabled_2)))
+
+dx <- dx %>%
+  mutate(tree_fall_days_disabled_1 = case_when(index == 1 & n.tree.fall == 2 ~ other.serious.accident.days.disabled, T ~ as.numeric(tree_fall_days_disabled_1)),
+         tree_fall_days_disabled_2 = case_when(index == 1 & n.tree.fall == 2 ~ other.serious.accident.days.disabled1, T ~ as.numeric(tree_fall_days_disabled_2)))
+
+# index = 2
+dx <- dx %>%
+  mutate(tree_fall_days_disabled_1 = case_when(index == 2 & n.tree.fall == 1 ~ other.serious.accident.days.disabled1, T ~ as.numeric(tree_fall_days_disabled_1)),
+         tree_fall_days_disabled_2 = case_when(index == 2 & n.tree.fall == 1 ~ NA_real_, T ~ as.numeric(tree_fall_days_disabled_2)))
+
+# index = 3
+dx <- dx %>%
+  mutate(tree_fall_days_disabled_1 = case_when(index == 3 & n.tree.fall == 1 ~ other.serious.accident.days.disabled2, T ~ as.numeric(tree_fall_days_disabled_1)),
+         tree_fall_days_disabled_2 = case_when(index == 3 & n.tree.fall == 1 ~ NA_real_, T ~ as.numeric(tree_fall_days_disabled_2)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(other.serious.accident.days.disabled,
+                             other.serious.accident.days.disabled1,
+                             other.serious.accident.days.disabled2,
+                             other.serious.accident.days.disabled3,
+                             other.serious.accident.days.disabled4,
+                             other.serious.accident.days.disabled5))
+
+### Almost died ----
+dx$tree_fall_almost_died_1 <- NA_integer_
+dx$tree_fall_almost_died_2 <- NA_integer_
+
+dx <- relocate(dx, c(tree_fall_almost_died_1, tree_fall_almost_died_2),
+               .after = tree_fall_days_disabled_2)
+
+# index = 1
+dx <- dx %>%
+  mutate(tree_fall_almost_died_1 = case_when(index == 1 & n.tree.fall == 1 ~ other.serious.accident.almost.died, T ~ as.integer(tree_fall_almost_died_1)),
+         tree_fall_almost_died_2 = case_when(index == 1 & n.tree.fall == 1 ~ NA_integer_, T ~ as.integer(tree_fall_almost_died_2)))
+
+dx <- dx %>%
+  mutate(tree_fall_almost_died_1 = case_when(index == 1 & n.tree.fall == 2 ~ other.serious.accident.almost.died, T ~ as.integer(tree_fall_almost_died_1)),
+         tree_fall_almost_died_2 = case_when(index == 1 & n.tree.fall == 2 ~ other.serious.accident.almost.died1, T ~ as.integer(tree_fall_almost_died_2)))
+
+# index = 2
+dx <- dx %>%
+  mutate(tree_fall_almost_died_1 = case_when(index == 2 & n.tree.fall == 1 ~ other.serious.accident.almost.died1, T ~ as.integer(tree_fall_almost_died_1)),
+         tree_fall_almost_died_2 = case_when(index == 2 & n.tree.fall == 1 ~ NA_integer_, T ~ as.integer(tree_fall_almost_died_2)))
+
+# index = 3
+dx <- dx %>%
+  mutate(tree_fall_almost_died_1 = case_when(index == 3 & n.tree.fall == 1 ~ other.serious.accident.almost.died2, T ~ as.integer(tree_fall_almost_died_1)),
+         tree_fall_almost_died_2 = case_when(index == 3 & n.tree.fall == 1 ~ NA_integer_, T ~ as.integer(tree_fall_almost_died_2)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(other.serious.accident.almost.died,
+                             other.serious.accident.almost.died1,
+                             other.serious.accident.almost.died2,
+                             other.serious.accident.almost.died3,
+                             other.serious.accident.almost.died4,
+                             other.serious.accident.almost.died5))
+
+### Still bothers ----
+dx$tree_fall_still_bothers_1 <- NA_integer_
+dx$tree_fall_still_bothers_2 <- NA_integer_
+
+dx <- relocate(dx, c(tree_fall_still_bothers_1, tree_fall_still_bothers_2),
+               .after = tree_fall_almost_died_2)
+
+# index = 1
+dx <- dx %>%
+  mutate(tree_fall_still_bothers_1 = case_when(index == 1 & n.tree.fall == 1 ~ other.serious.accident.still.bothers, T ~ as.integer(tree_fall_still_bothers_1)),
+         tree_fall_still_bothers_2 = case_when(index == 1 & n.tree.fall == 1 ~ NA_integer_, T ~ as.integer(tree_fall_still_bothers_2)))
+
+dx <- dx %>%
+  mutate(tree_fall_still_bothers_1 = case_when(index == 1 & n.tree.fall == 2 ~ other.serious.accident.still.bothers, T ~ as.integer(tree_fall_still_bothers_1)),
+         tree_fall_still_bothers_2 = case_when(index == 1 & n.tree.fall == 2 ~ other.serious.accident.still.bothers1, T ~ as.integer(tree_fall_still_bothers_2)))
+
+# index = 2
+dx <- dx %>%
+  mutate(tree_fall_still_bothers_1 = case_when(index == 2 & n.tree.fall == 1 ~ other.serious.accident.still.bothers1, T ~ as.integer(tree_fall_still_bothers_1)),
+         tree_fall_still_bothers_2 = case_when(index == 2 & n.tree.fall == 1 ~ NA_integer_, T ~ as.integer(tree_fall_still_bothers_2)))
+
+# index = 3
+dx <- dx %>%
+  mutate(tree_fall_still_bothers_1 = case_when(index == 3 & n.tree.fall == 1 ~ other.serious.accident.still.bothers2, T ~ as.integer(tree_fall_still_bothers_1)),
+         tree_fall_still_bothers_2 = case_when(index == 3 & n.tree.fall == 1 ~ NA_integer_, T ~ as.integer(tree_fall_still_bothers_2)))
+
+# Remove the old columns
+dx <- subset(dx, select = -c(other.serious.accident.still.bothers,
+                             other.serious.accident.still.bothers1,
+                             other.serious.accident.still.bothers2,
+                             other.serious.accident.still.bothers3,
+                             other.serious.accident.still.bothers4,
+                             other.serious.accident.still.bothers5))
+
+dx <- subset(dx, select = -c(TIPO1, TIPO2, TIPO3, TIPO4, TIPO5, TIPO6))
 
 # x1 <- c("a", "a", "c", "b", "b")
 # y1 <- c(1, 3, NA, 6, 8)
@@ -1303,6 +1491,12 @@ dx <- subset(dx, select = c(pid, exit, index, n.tree.fall, TIPO1:other.serious.a
 # df <- transform(df, x1 = case_when(x1 !== "b" & x2 == "b" ~ x2, T ~ x1),
 #                 x2 = case_when(x1 !== "b" & x2 == "b" ~ x1, T ~ x2))
 
+## Get back to original data frame
+df <- left_join(df, dx)
+df <- relocate(df, c(tree_fall_where_hurt_1:tree_fall_still_bothers_2), .after = time.since.last.tree.fall)
+df <- subset(df, select = -c(index))
 
+# Export final table to csv -----------------------------------------------
+write.csv(df, "tree_fall_final_table.csv", row.names = F)
 
 
