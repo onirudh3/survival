@@ -626,10 +626,3 @@ df <- subset(df, select = -c(index))
 write.csv(df, "sickness_final_table.csv", row.names = F)
 
 
-
-# Dealing with cases where reported age is larger than subsequent reported ages,
-# meaning the ages are not in order. Happens only twice here, XVJK and DDLL.
-# df <- left_join(df, ref_df)
-#
-# View(subset(df, sickness.age > exit))
-

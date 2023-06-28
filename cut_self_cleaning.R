@@ -1831,3 +1831,7 @@ df <- subset(df, select = -c(index))
 # Export final table to csv -----------------------------------------------
 
 write.csv(df, "cut_self_final_table.csv", row.names = F)
+
+
+
+

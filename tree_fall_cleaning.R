@@ -1506,3 +1506,4 @@ df <- subset(df, select = -c(index))
 write.csv(df, "tree_fall_final_table.csv", row.names = F)
 
 
+
