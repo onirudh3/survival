@@ -624,5 +624,3 @@ df <- subset(df, select = -c(index))
 # Export final table to csv -----------------------------------------------
 
 write.csv(df, "sickness_final_table.csv", row.names = F)
-
-
