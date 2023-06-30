@@ -638,3 +638,5 @@ df <- subset(df, select = -c(index, cum))
 
 write.csv(df, "snake_ray_bite_final_table.csv", row.names = F)
 
+
+
