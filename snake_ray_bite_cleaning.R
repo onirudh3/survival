@@ -317,7 +317,8 @@ dx <- dx %>%
   filter(event == 1)
 dx <- dx %>%
   group_by(pid) %>%
-  mutate(index = 1:n())
+  mutate(index = 1:n(),
+         cum = cumsum(n.snake.ray.bite))
 dx <- relocate(dx, index, .after = event)
 
 
@@ -349,9 +350,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(what_bit_you_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 ~ what.bit.you1, T ~ as.character(what_bit_you_snake_ray_1)),
-         what_bit_you_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_character_, T ~ as.character(what_bit_you_snake_ray_2)),
-         what_bit_you_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_character_, T ~ as.character(what_bit_you_snake_ray_3)))
+  mutate(what_bit_you_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ what.bit.you1, T ~ as.character(what_bit_you_snake_ray_1)),
+         what_bit_you_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_character_, T ~ as.character(what_bit_you_snake_ray_2)),
+         what_bit_you_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_character_, T ~ as.character(what_bit_you_snake_ray_3)))
+
+dx <- dx %>%
+  mutate(what_bit_you_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ what.bit.you2, T ~ as.character(what_bit_you_snake_ray_1)),
+         what_bit_you_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_character_, T ~ as.character(what_bit_you_snake_ray_2)),
+         what_bit_you_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_character_, T ~ as.character(what_bit_you_snake_ray_3)))
 
 dx <- dx %>%
   mutate(what_bit_you_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 2 ~ what.bit.you1, T ~ as.character(what_bit_you_snake_ray_1)),
@@ -395,9 +401,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(where_bit_body_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 ~ where.bit.body1, T ~ as.character(where_bit_body_snake_ray_1)),
-         where_bit_body_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_character_, T ~ as.character(where_bit_body_snake_ray_2)),
-         where_bit_body_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_character_, T ~ as.character(where_bit_body_snake_ray_3)))
+  mutate(where_bit_body_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ where.bit.body1, T ~ as.character(where_bit_body_snake_ray_1)),
+         where_bit_body_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_character_, T ~ as.character(where_bit_body_snake_ray_2)),
+         where_bit_body_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_character_, T ~ as.character(where_bit_body_snake_ray_3)))
+
+dx <- dx %>%
+  mutate(where_bit_body_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ where.bit.body2, T ~ as.character(where_bit_body_snake_ray_1)),
+         where_bit_body_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_character_, T ~ as.character(where_bit_body_snake_ray_2)),
+         where_bit_body_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_character_, T ~ as.character(where_bit_body_snake_ray_3)))
 
 dx <- dx %>%
   mutate(where_bit_body_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 2 ~ where.bit.body1, T ~ as.character(where_bit_body_snake_ray_1)),
@@ -441,9 +452,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(activity_when_bit_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 ~ activity.when.bit1...25, T ~ as.character(activity_when_bit_snake_ray_1)),
-         activity_when_bit_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_character_, T ~ as.character(activity_when_bit_snake_ray_2)),
-         activity_when_bit_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_character_, T ~ as.character(activity_when_bit_snake_ray_3)))
+  mutate(activity_when_bit_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ activity.when.bit1...25, T ~ as.character(activity_when_bit_snake_ray_1)),
+         activity_when_bit_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_character_, T ~ as.character(activity_when_bit_snake_ray_2)),
+         activity_when_bit_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_character_, T ~ as.character(activity_when_bit_snake_ray_3)))
+
+dx <- dx %>%
+  mutate(activity_when_bit_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ activity.when.bit2, T ~ as.character(activity_when_bit_snake_ray_1)),
+         activity_when_bit_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_character_, T ~ as.character(activity_when_bit_snake_ray_2)),
+         activity_when_bit_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_character_, T ~ as.character(activity_when_bit_snake_ray_3)))
 
 dx <- dx %>%
   mutate(activity_when_bit_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 2 ~ activity.when.bit1...25, T ~ as.character(activity_when_bit_snake_ray_1)),
@@ -487,9 +503,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(days_disabled_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 ~ days.disabled.bite1, T ~ as.numeric(days_disabled_snake_ray_1)),
-         days_disabled_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_real_, T ~ as.numeric(days_disabled_snake_ray_2)),
-         days_disabled_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_real_, T ~ as.numeric(days_disabled_snake_ray_3)))
+  mutate(days_disabled_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ days.disabled.bite1, T ~ as.numeric(days_disabled_snake_ray_1)),
+         days_disabled_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_real_, T ~ as.numeric(days_disabled_snake_ray_2)),
+         days_disabled_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_real_, T ~ as.numeric(days_disabled_snake_ray_3)))
+
+dx <- dx %>%
+  mutate(days_disabled_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ days.disabled.bite2, T ~ as.numeric(days_disabled_snake_ray_1)),
+         days_disabled_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_real_, T ~ as.numeric(days_disabled_snake_ray_2)),
+         days_disabled_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_real_, T ~ as.numeric(days_disabled_snake_ray_3)))
 
 dx <- dx %>%
   mutate(days_disabled_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 2 ~ days.disabled.bite1, T ~ as.numeric(days_disabled_snake_ray_1)),
@@ -533,9 +554,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(almost_died_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 ~ almost.died.bite1, T ~ as.integer(almost_died_snake_ray_1)),
-         almost_died_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_integer_, T ~ as.integer(almost_died_snake_ray_2)),
-         almost_died_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_integer_, T ~ as.integer(almost_died_snake_ray_3)))
+  mutate(almost_died_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ almost.died.bite1, T ~ as.integer(almost_died_snake_ray_1)),
+         almost_died_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(almost_died_snake_ray_2)),
+         almost_died_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(almost_died_snake_ray_3)))
+
+dx <- dx %>%
+  mutate(almost_died_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ almost.died.bite2, T ~ as.integer(almost_died_snake_ray_1)),
+         almost_died_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(almost_died_snake_ray_2)),
+         almost_died_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(almost_died_snake_ray_3)))
 
 dx <- dx %>%
   mutate(almost_died_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 2 ~ almost.died.bite1, T ~ as.integer(almost_died_snake_ray_1)),
@@ -579,9 +605,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(still_bothers_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 ~ still.bothers.bite1, T ~ as.integer(still_bothers_snake_ray_1)),
-         still_bothers_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_integer_, T ~ as.integer(still_bothers_snake_ray_2)),
-         still_bothers_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_integer_, T ~ as.integer(still_bothers_snake_ray_3)))
+  mutate(still_bothers_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ still.bothers.bite1, T ~ as.integer(still_bothers_snake_ray_1)),
+         still_bothers_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(still_bothers_snake_ray_2)),
+         still_bothers_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(still_bothers_snake_ray_3)))
+
+dx <- dx %>%
+  mutate(still_bothers_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ still.bothers.bite2, T ~ as.integer(still_bothers_snake_ray_1)),
+         still_bothers_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(still_bothers_snake_ray_2)),
+         still_bothers_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(still_bothers_snake_ray_3)))
 
 dx <- dx %>%
   mutate(still_bothers_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 2 ~ still.bothers.bite1, T ~ as.integer(still_bothers_snake_ray_1)),
@@ -601,7 +632,7 @@ dx <- subset(dx, select = -c(still.bothers.bite, still.bothers.bite1, still.both
 ## Get back to original dataframe
 df <- left_join(df, dx)
 df <- relocate(df, c(what_bit_you_snake_ray_1:still_bothers_snake_ray_3), .after = time.since.last.bite)
-df <- subset(df, select = -c(index))
+df <- subset(df, select = -c(index, cum))
 
 # Export final table to csv -----------------------------------------------
 

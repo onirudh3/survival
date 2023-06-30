@@ -45,7 +45,6 @@ df$activity.when.bit4 <- NA
 df <- relocate(df, activity.when.bit4, .after = where.bit.body4)
 
 # Counting Process Format -------------------------------------------------
-View(subset(df, sickness.age > sickness.age1))
 
 dg <- read.csv("data_new_format.csv")
 

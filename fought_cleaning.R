@@ -313,7 +313,8 @@ dx <- dx %>%
   filter(event == 1)
 dx <- dx %>%
   group_by(pid) %>%
-  mutate(index = 1:n())
+  mutate(index = 1:n(),
+         cum = cumsum(n.fought))
 dx <- relocate(dx, index, .after = event)
 
 ### Fought whom ----
@@ -342,9 +343,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_whom_1 = case_when(index == 2 & n.fought == 1 ~ Fought.whom1, T ~ as.character(fought_whom_1)),
-         fought_whom_2 = case_when(index == 2 & n.fought == 1 ~ NA_character_, T ~ as.character(fought_whom_2)),
-         fought_whom_3 = case_when(index == 2 & n.fought == 1 ~ NA_character_, T ~ as.character(fought_whom_3)))
+  mutate(fought_whom_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.whom1, T ~ as.character(fought_whom_1)),
+         fought_whom_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_character_, T ~ as.character(fought_whom_2)),
+         fought_whom_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_character_, T ~ as.character(fought_whom_3)))
+
+dx <- dx %>%
+  mutate(fought_whom_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.whom2, T ~ as.character(fought_whom_1)),
+         fought_whom_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_character_, T ~ as.character(fought_whom_2)),
+         fought_whom_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_character_, T ~ as.character(fought_whom_3)))
 
 dx <- dx %>%
   mutate(fought_whom_1 = case_when(index == 2 & n.fought == 2 ~ Fought.whom1, T ~ as.character(fought_whom_1)),
@@ -385,9 +391,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_cause_1 = case_when(index == 2 & n.fought == 1 ~ Fought.cause1, T ~ as.character(fought_cause_1)),
-         fought_cause_2 = case_when(index == 2 & n.fought == 1 ~ NA_character_, T ~ as.character(fought_cause_2)),
-         fought_cause_3 = case_when(index == 2 & n.fought == 1 ~ NA_character_, T ~ as.character(fought_cause_3)))
+  mutate(fought_cause_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.cause1, T ~ as.character(fought_cause_1)),
+         fought_cause_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_character_, T ~ as.character(fought_cause_2)),
+         fought_cause_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_character_, T ~ as.character(fought_cause_3)))
+
+dx <- dx %>%
+  mutate(fought_cause_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.cause2, T ~ as.character(fought_cause_1)),
+         fought_cause_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_character_, T ~ as.character(fought_cause_2)),
+         fought_cause_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_character_, T ~ as.character(fought_cause_3)))
 
 dx <- dx %>%
   mutate(fought_cause_1 = case_when(index == 2 & n.fought == 2 ~ Fought.cause1, T ~ as.character(fought_cause_1)),
@@ -428,9 +439,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_injured_1 = case_when(index == 2 & n.fought == 1 ~ Fought.injured1, T ~ as.integer(fought_injured_1)),
-         fought_injured_2 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_injured_2)),
-         fought_injured_3 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_injured_3)))
+  mutate(fought_injured_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.injured1, T ~ as.integer(fought_injured_1)),
+         fought_injured_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_injured_2)),
+         fought_injured_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_injured_3)))
+
+dx <- dx %>%
+  mutate(fought_injured_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.injured2, T ~ as.integer(fought_injured_1)),
+         fought_injured_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_injured_2)),
+         fought_injured_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_injured_3)))
 
 dx <- dx %>%
   mutate(fought_injured_1 = case_when(index == 2 & n.fought == 2 ~ Fought.injured1, T ~ as.integer(fought_injured_1)),
@@ -471,9 +487,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_days_injured_1 = case_when(index == 2 & n.fought == 1 ~ Fought.days.injured1, T ~ as.integer(fought_days_injured_1)),
-         fought_days_injured_2 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_days_injured_2)),
-         fought_days_injured_3 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_days_injured_3)))
+  mutate(fought_days_injured_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.days.injured1, T ~ as.integer(fought_days_injured_1)),
+         fought_days_injured_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_days_injured_2)),
+         fought_days_injured_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_days_injured_3)))
+
+dx <- dx %>%
+  mutate(fought_days_injured_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.days.injured2, T ~ as.integer(fought_days_injured_1)),
+         fought_days_injured_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_days_injured_2)),
+         fought_days_injured_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_days_injured_3)))
 
 dx <- dx %>%
   mutate(fought_days_injured_1 = case_when(index == 2 & n.fought == 2 ~ Fought.days.injured1, T ~ as.integer(fought_days_injured_1)),
@@ -514,9 +535,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_almost_died_1 = case_when(index == 2 & n.fought == 1 ~ Fought.almost.died1, T ~ as.integer(fought_almost_died_1)),
-         fought_almost_died_2 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_almost_died_2)),
-         fought_almost_died_3 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_almost_died_3)))
+  mutate(fought_almost_died_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.almost.died1, T ~ as.integer(fought_almost_died_1)),
+         fought_almost_died_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_almost_died_2)),
+         fought_almost_died_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_almost_died_3)))
+
+dx <- dx %>%
+  mutate(fought_almost_died_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.almost.died2, T ~ as.integer(fought_almost_died_1)),
+         fought_almost_died_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_almost_died_2)),
+         fought_almost_died_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_almost_died_3)))
 
 dx <- dx %>%
   mutate(fought_almost_died_1 = case_when(index == 2 & n.fought == 2 ~ Fought.almost.died1, T ~ as.integer(fought_almost_died_1)),
@@ -557,9 +583,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_still_bother_1 = case_when(index == 2 & n.fought == 1 ~ Fought.still.bother1, T ~ as.integer(fought_still_bother_1)),
-         fought_still_bother_2 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_still_bother_2)),
-         fought_still_bother_3 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_still_bother_3)))
+  mutate(fought_still_bother_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.still.bother1, T ~ as.integer(fought_still_bother_1)),
+         fought_still_bother_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_still_bother_2)),
+         fought_still_bother_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_still_bother_3)))
+
+dx <- dx %>%
+  mutate(fought_still_bother_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.still.bother2, T ~ as.integer(fought_still_bother_1)),
+         fought_still_bother_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_still_bother_2)),
+         fought_still_bother_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_still_bother_3)))
 
 dx <- dx %>%
   mutate(fought_still_bother_1 = case_when(index == 2 & n.fought == 2 ~ Fought.still.bother1, T ~ as.integer(fought_still_bother_1)),
@@ -600,9 +631,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_either_drunk_1 = case_when(index == 2 & n.fought == 1 ~ Fought.either.drunk1, T ~ as.integer(fought_either_drunk_1)),
-         fought_either_drunk_2 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_either_drunk_2)),
-         fought_either_drunk_3 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_either_drunk_3)))
+  mutate(fought_either_drunk_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.either.drunk1, T ~ as.integer(fought_either_drunk_1)),
+         fought_either_drunk_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_either_drunk_2)),
+         fought_either_drunk_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_either_drunk_3)))
+
+dx <- dx %>%
+  mutate(fought_either_drunk_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.either.drunk2, T ~ as.integer(fought_either_drunk_1)),
+         fought_either_drunk_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_either_drunk_2)),
+         fought_either_drunk_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_either_drunk_3)))
 
 dx <- dx %>%
   mutate(fought_either_drunk_1 = case_when(index == 2 & n.fought == 2 ~ Fought.either.drunk1, T ~ as.integer(fought_either_drunk_1)),
@@ -621,10 +657,12 @@ dx <- subset(dx, select = -c(Fought.either.drunk, Fought.either.drunk1, Fought.e
 ## Get back to original data frame
 df <- left_join(df, dx)
 df <- relocate(df, c(fought_whom_1:fought_either_drunk_3), .after = time.since.last.fight)
-df <- subset(df, select = -c(index))
+df <- subset(df, select = -c(index, cum))
+
 
 
 
 # Export final table to csv -----------------------------------------------
 
 write.csv(df, "fought_final_table.csv", row.names = F)
+

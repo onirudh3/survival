@@ -496,10 +496,11 @@ dx <- dx %>%
   filter(bite.during.interval == 1)
 dx <- dx %>%
   group_by(pid) %>%
-  mutate(index = 1:n())
+  mutate(index = 1:n(),
+         cum = cumsum(n.snake.ray.bite))
 dx <- relocate(dx, index, .after = bite.during.interval)
 
-### What bit you, snake or ray? ----
+## What bit you, snake or ray? ----
 
 dx$what_bit_you_snake_ray_1 <- NA_character_
 dx$what_bit_you_snake_ray_2 <- NA_character_
@@ -526,9 +527,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(what_bit_you_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 ~ what.bit.you1, T ~ as.character(what_bit_you_snake_ray_1)),
-         what_bit_you_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_character_, T ~ as.character(what_bit_you_snake_ray_2)),
-         what_bit_you_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_character_, T ~ as.character(what_bit_you_snake_ray_3)))
+  mutate(what_bit_you_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ what.bit.you1, T ~ as.character(what_bit_you_snake_ray_1)),
+         what_bit_you_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_character_, T ~ as.character(what_bit_you_snake_ray_2)),
+         what_bit_you_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_character_, T ~ as.character(what_bit_you_snake_ray_3)))
+
+dx <- dx %>%
+  mutate(what_bit_you_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ what.bit.you2, T ~ as.character(what_bit_you_snake_ray_1)),
+         what_bit_you_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_character_, T ~ as.character(what_bit_you_snake_ray_2)),
+         what_bit_you_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_character_, T ~ as.character(what_bit_you_snake_ray_3)))
 
 dx <- dx %>%
   mutate(what_bit_you_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 2 ~ what.bit.you1, T ~ as.character(what_bit_you_snake_ray_1)),
@@ -545,7 +551,7 @@ dx <- dx %>%
 dx <- subset(dx, select = -c(what.bit.you, what.bit.you1, what.bit.you2))
 
 
-### Where bit body? ----
+## Where bit body? ----
 
 dx$where_bit_body_snake_ray_1 <- NA_character_
 dx$where_bit_body_snake_ray_2 <- NA_character_
@@ -572,9 +578,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(where_bit_body_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 ~ where.bit.body1, T ~ as.character(where_bit_body_snake_ray_1)),
-         where_bit_body_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_character_, T ~ as.character(where_bit_body_snake_ray_2)),
-         where_bit_body_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_character_, T ~ as.character(where_bit_body_snake_ray_3)))
+  mutate(where_bit_body_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ where.bit.body1, T ~ as.character(where_bit_body_snake_ray_1)),
+         where_bit_body_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_character_, T ~ as.character(where_bit_body_snake_ray_2)),
+         where_bit_body_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_character_, T ~ as.character(where_bit_body_snake_ray_3)))
+
+dx <- dx %>%
+  mutate(where_bit_body_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ where.bit.body2, T ~ as.character(where_bit_body_snake_ray_1)),
+         where_bit_body_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_character_, T ~ as.character(where_bit_body_snake_ray_2)),
+         where_bit_body_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_character_, T ~ as.character(where_bit_body_snake_ray_3)))
 
 dx <- dx %>%
   mutate(where_bit_body_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 2 ~ where.bit.body1, T ~ as.character(where_bit_body_snake_ray_1)),
@@ -591,7 +602,7 @@ dx <- dx %>%
 dx <- subset(dx, select = -c(where.bit.body, where.bit.body1, where.bit.body2))
 
 
-### Activity when bit? ----
+## Activity when bit? ----
 
 dx$activity_when_bit_snake_ray_1 <- NA_character_
 dx$activity_when_bit_snake_ray_2 <- NA_character_
@@ -618,9 +629,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(activity_when_bit_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 ~ activity.when.bit1...25, T ~ as.character(activity_when_bit_snake_ray_1)),
-         activity_when_bit_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_character_, T ~ as.character(activity_when_bit_snake_ray_2)),
-         activity_when_bit_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_character_, T ~ as.character(activity_when_bit_snake_ray_3)))
+  mutate(activity_when_bit_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ activity.when.bit1...25, T ~ as.character(activity_when_bit_snake_ray_1)),
+         activity_when_bit_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_character_, T ~ as.character(activity_when_bit_snake_ray_2)),
+         activity_when_bit_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_character_, T ~ as.character(activity_when_bit_snake_ray_3)))
+
+dx <- dx %>%
+  mutate(activity_when_bit_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ activity.when.bit2, T ~ as.character(activity_when_bit_snake_ray_1)),
+         activity_when_bit_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_character_, T ~ as.character(activity_when_bit_snake_ray_2)),
+         activity_when_bit_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_character_, T ~ as.character(activity_when_bit_snake_ray_3)))
 
 dx <- dx %>%
   mutate(activity_when_bit_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 2 ~ activity.when.bit1...25, T ~ as.character(activity_when_bit_snake_ray_1)),
@@ -637,7 +653,7 @@ dx <- dx %>%
 dx <- subset(dx, select = -c(activity.when.bit, activity.when.bit1...25, activity.when.bit2))
 
 
-### Days disabled ----
+## Days disabled ----
 
 dx$days_disabled_snake_ray_1 <- NA_real_
 dx$days_disabled_snake_ray_2 <- NA_real_
@@ -664,9 +680,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(days_disabled_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 ~ days.disabled.bite1, T ~ as.numeric(days_disabled_snake_ray_1)),
-         days_disabled_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_real_, T ~ as.numeric(days_disabled_snake_ray_2)),
-         days_disabled_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_real_, T ~ as.numeric(days_disabled_snake_ray_3)))
+  mutate(days_disabled_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ days.disabled.bite1, T ~ as.numeric(days_disabled_snake_ray_1)),
+         days_disabled_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_real_, T ~ as.numeric(days_disabled_snake_ray_2)),
+         days_disabled_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_real_, T ~ as.numeric(days_disabled_snake_ray_3)))
+
+dx <- dx %>%
+  mutate(days_disabled_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ days.disabled.bite2, T ~ as.numeric(days_disabled_snake_ray_1)),
+         days_disabled_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_real_, T ~ as.numeric(days_disabled_snake_ray_2)),
+         days_disabled_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_real_, T ~ as.numeric(days_disabled_snake_ray_3)))
 
 dx <- dx %>%
   mutate(days_disabled_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 2 ~ days.disabled.bite1, T ~ as.numeric(days_disabled_snake_ray_1)),
@@ -683,7 +704,7 @@ dx <- dx %>%
 dx <- subset(dx, select = -c(days.disabled.bite, days.disabled.bite1, days.disabled.bite2))
 
 
-### Days disabled ----
+## Days disabled ----
 
 dx$almost_died_snake_ray_1 <- NA_integer_
 dx$almost_died_snake_ray_2 <- NA_integer_
@@ -710,9 +731,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(almost_died_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 ~ almost.died.bite1, T ~ as.integer(almost_died_snake_ray_1)),
-         almost_died_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_integer_, T ~ as.integer(almost_died_snake_ray_2)),
-         almost_died_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_integer_, T ~ as.integer(almost_died_snake_ray_3)))
+  mutate(almost_died_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ almost.died.bite1, T ~ as.integer(almost_died_snake_ray_1)),
+         almost_died_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(almost_died_snake_ray_2)),
+         almost_died_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(almost_died_snake_ray_3)))
+
+dx <- dx %>%
+  mutate(almost_died_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ almost.died.bite2, T ~ as.integer(almost_died_snake_ray_1)),
+         almost_died_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(almost_died_snake_ray_2)),
+         almost_died_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(almost_died_snake_ray_3)))
 
 dx <- dx %>%
   mutate(almost_died_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 2 ~ almost.died.bite1, T ~ as.integer(almost_died_snake_ray_1)),
@@ -729,7 +755,7 @@ dx <- dx %>%
 dx <- subset(dx, select = -c(almost.died.bite, almost.died.bite1, almost.died.bite2))
 
 
-### Still bothers ----
+## Still bothers ----
 
 dx$still_bothers_snake_ray_1 <- NA_integer_
 dx$still_bothers_snake_ray_2 <- NA_integer_
@@ -756,9 +782,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(still_bothers_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 ~ still.bothers.bite1, T ~ as.integer(still_bothers_snake_ray_1)),
-         still_bothers_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_integer_, T ~ as.integer(still_bothers_snake_ray_2)),
-         still_bothers_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 ~ NA_integer_, T ~ as.integer(still_bothers_snake_ray_3)))
+  mutate(still_bothers_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ still.bothers.bite1, T ~ as.integer(still_bothers_snake_ray_1)),
+         still_bothers_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(still_bothers_snake_ray_2)),
+         still_bothers_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(still_bothers_snake_ray_3)))
+
+dx <- dx %>%
+  mutate(still_bothers_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ still.bothers.bite2, T ~ as.integer(still_bothers_snake_ray_1)),
+         still_bothers_snake_ray_2 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(still_bothers_snake_ray_2)),
+         still_bothers_snake_ray_3 = case_when(index == 2 & n.snake.ray.bite == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(still_bothers_snake_ray_3)))
 
 dx <- dx %>%
   mutate(still_bothers_snake_ray_1 = case_when(index == 2 & n.snake.ray.bite == 2 ~ still.bothers.bite1, T ~ as.integer(still_bothers_snake_ray_1)),
@@ -775,10 +806,10 @@ dx <- dx %>%
 dx <- subset(dx, select = -c(still.bothers.bite, still.bothers.bite1, still.bothers.bite2))
 
 
-# Get back to original dataframe
+## Get back to original dataframe
 df <- left_join(df, dx)
 df <- relocate(df, c(what_bit_you_snake_ray_1:still_bothers_snake_ray_3), .after = n.snake.ray.bite)
-df <- subset(df, select = -c(index))
+df <- subset(df, select = -c(index, cum))
 
 
 
@@ -888,7 +919,8 @@ dx <- dx %>%
   filter(sickness.during.interval == 1)
 dx <- dx %>%
   group_by(pid) %>%
-  mutate(index = 1:n())
+  mutate(index = 1:n(),
+         cum = cumsum(n.sickness))
 dx <- relocate(dx, index, .after = sickness.during.interval)
 
 ### Sickness what ----
@@ -917,9 +949,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(sickness_what_1 = case_when(index == 2 & n.sickness == 1 ~ sickness.what1, T ~ as.character(sickness_what_1)),
-         sickness_what_2 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_what_2)),
-         sickness_what_3 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_what_3)))
+  mutate(sickness_what_1 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ sickness.what1, T ~ as.character(sickness_what_1)),
+         sickness_what_2 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ NA_character_, T ~ as.character(sickness_what_2)),
+         sickness_what_3 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ NA_character_, T ~ as.character(sickness_what_3)))
+
+dx <- dx %>%
+  mutate(sickness_what_1 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ sickness.what2, T ~ as.character(sickness_what_1)),
+         sickness_what_2 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ NA_character_, T ~ as.character(sickness_what_2)),
+         sickness_what_3 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ NA_character_, T ~ as.character(sickness_what_3)))
 
 dx <- dx %>%
   mutate(sickness_what_1 = case_when(index == 2 & n.sickness == 2 ~ sickness.what1, T ~ as.character(sickness_what_1)),
@@ -961,9 +998,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(days_disabled_sickness_1 = case_when(index == 2 & n.sickness == 1 ~ days.disabled.sickness1, T ~ as.integer(days_disabled_sickness_1)),
-         days_disabled_sickness_2 = case_when(index == 2 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_2)),
-         days_disabled_sickness_3 = case_when(index == 2 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_3)))
+  mutate(days_disabled_sickness_1 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ days.disabled.sickness1, T ~ as.integer(days_disabled_sickness_1)),
+         days_disabled_sickness_2 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_2)),
+         days_disabled_sickness_3 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_3)))
+
+dx <- dx %>%
+  mutate(days_disabled_sickness_1 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ days.disabled.sickness2, T ~ as.integer(days_disabled_sickness_1)),
+         days_disabled_sickness_2 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_2)),
+         days_disabled_sickness_3 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(days_disabled_sickness_3)))
 
 dx <- dx %>%
   mutate(days_disabled_sickness_1 = case_when(index == 2 & n.sickness == 2 ~ days.disabled.sickness1, T ~ as.integer(days_disabled_sickness_1)),
@@ -1004,9 +1046,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(almost_died_sickness_1 = case_when(index == 2 & n.sickness == 1 ~ almost.died.sickness1, T ~ as.integer(almost_died_sickness_1)),
-         almost_died_sickness_2 = case_when(index == 2 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(almost_died_sickness_2)),
-         almost_died_sickness_3 = case_when(index == 2 & n.sickness == 1 ~ NA_integer_, T ~ as.integer(almost_died_sickness_3)))
+  mutate(almost_died_sickness_1 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ almost.died.sickness1, T ~ as.integer(almost_died_sickness_1)),
+         almost_died_sickness_2 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(almost_died_sickness_2)),
+         almost_died_sickness_3 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(almost_died_sickness_3)))
+
+dx <- dx %>%
+  mutate(almost_died_sickness_1 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ almost.died.sickness2, T ~ as.integer(almost_died_sickness_1)),
+         almost_died_sickness_2 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(almost_died_sickness_2)),
+         almost_died_sickness_3 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(almost_died_sickness_3)))
 
 dx <- dx %>%
   mutate(almost_died_sickness_1 = case_when(index == 2 & n.sickness == 2 ~ almost.died.sickness1, T ~ as.integer(almost_died_sickness_1)),
@@ -1047,9 +1094,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(how_cured_sickness_1 = case_when(index == 2 & n.sickness == 1 ~ how.cured.sickness1, T ~ as.character(how_cured_sickness_1)),
-         how_cured_sickness_2 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(how_cured_sickness_2)),
-         how_cured_sickness_3 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(how_cured_sickness_3)))
+  mutate(how_cured_sickness_1 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ how.cured.sickness1, T ~ as.character(how_cured_sickness_1)),
+         how_cured_sickness_2 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ NA_character_, T ~ as.character(how_cured_sickness_2)),
+         how_cured_sickness_3 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ NA_character_, T ~ as.character(how_cured_sickness_3)))
+
+dx <- dx %>%
+  mutate(how_cured_sickness_1 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ how.cured.sickness2, T ~ as.character(how_cured_sickness_1)),
+         how_cured_sickness_2 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ NA_character_, T ~ as.character(how_cured_sickness_2)),
+         how_cured_sickness_3 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ NA_character_, T ~ as.character(how_cured_sickness_3)))
 
 dx <- dx %>%
   mutate(how_cured_sickness_1 = case_when(index == 2 & n.sickness == 2 ~ how.cured.sickness1, T ~ as.character(how_cured_sickness_1)),
@@ -1090,9 +1142,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(who_helped_sickness_1 = case_when(index == 2 & n.sickness == 1 ~ who.helped.sickness1, T ~ as.character(who_helped_sickness_1)),
-         who_helped_sickness_2 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(who_helped_sickness_2)),
-         who_helped_sickness_3 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(who_helped_sickness_3)))
+  mutate(who_helped_sickness_1 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ who.helped.sickness1, T ~ as.character(who_helped_sickness_1)),
+         who_helped_sickness_2 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ NA_character_, T ~ as.character(who_helped_sickness_2)),
+         who_helped_sickness_3 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ NA_character_, T ~ as.character(who_helped_sickness_3)))
+
+dx <- dx %>%
+  mutate(who_helped_sickness_1 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ who.helped.sickness2, T ~ as.character(who_helped_sickness_1)),
+         who_helped_sickness_2 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ NA_character_, T ~ as.character(who_helped_sickness_2)),
+         who_helped_sickness_3 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ NA_character_, T ~ as.character(who_helped_sickness_3)))
 
 dx <- dx %>%
   mutate(who_helped_sickness_1 = case_when(index == 2 & n.sickness == 2 ~ who.helped.sickness1, T ~ as.character(who_helped_sickness_1)),
@@ -1133,9 +1190,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(sickness_cause_1 = case_when(index == 2 & n.sickness == 1 ~ sickness.cause1, T ~ as.character(sickness_cause_1)),
-         sickness_cause_2 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_cause_2)),
-         sickness_cause_3 = case_when(index == 2 & n.sickness == 1 ~ NA_character_, T ~ as.character(sickness_cause_3)))
+  mutate(sickness_cause_1 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ sickness.cause1, T ~ as.character(sickness_cause_1)),
+         sickness_cause_2 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ NA_character_, T ~ as.character(sickness_cause_2)),
+         sickness_cause_3 = case_when(index == 2 & n.sickness == 1 & cum == 2 ~ NA_character_, T ~ as.character(sickness_cause_3)))
+
+dx <- dx %>%
+  mutate(sickness_cause_1 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ sickness.cause2, T ~ as.character(sickness_cause_1)),
+         sickness_cause_2 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ NA_character_, T ~ as.character(sickness_cause_2)),
+         sickness_cause_3 = case_when(index == 2 & n.sickness == 1 & cum == 3 ~ NA_character_, T ~ as.character(sickness_cause_3)))
 
 dx <- dx %>%
   mutate(sickness_cause_1 = case_when(index == 2 & n.sickness == 2 ~ sickness.cause1, T ~ as.character(sickness_cause_1)),
@@ -1154,11 +1216,7 @@ dx <- subset(dx, select = -c(sickness.cause, sickness.cause1, sickness.cause2))
 ## Get back to original data frame
 df <- left_join(df, dx)
 df <- relocate(df, c(sickness_what_1:sickness_cause_3), .after = n.sickness)
-df <- subset(df, select = -c(index))
-
-
-
-
+df <- subset(df, select = -c(index, cum))
 
 ## Fight ----
 raw <- read.csv("raw_data_no_duplicates.csv")
@@ -1171,7 +1229,8 @@ dx <- dx %>%
   filter(fought.during.interval == 1)
 dx <- dx %>%
   group_by(pid) %>%
-  mutate(index = 1:n())
+  mutate(index = 1:n(),
+         cum = cumsum(n.fought))
 dx <- relocate(dx, index, .after = fought.during.interval)
 
 ### Fought whom ----
@@ -1200,9 +1259,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_whom_1 = case_when(index == 2 & n.fought == 1 ~ Fought.whom1, T ~ as.character(fought_whom_1)),
-         fought_whom_2 = case_when(index == 2 & n.fought == 1 ~ NA_character_, T ~ as.character(fought_whom_2)),
-         fought_whom_3 = case_when(index == 2 & n.fought == 1 ~ NA_character_, T ~ as.character(fought_whom_3)))
+  mutate(fought_whom_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.whom1, T ~ as.character(fought_whom_1)),
+         fought_whom_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_character_, T ~ as.character(fought_whom_2)),
+         fought_whom_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_character_, T ~ as.character(fought_whom_3)))
+
+dx <- dx %>%
+  mutate(fought_whom_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.whom2, T ~ as.character(fought_whom_1)),
+         fought_whom_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_character_, T ~ as.character(fought_whom_2)),
+         fought_whom_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_character_, T ~ as.character(fought_whom_3)))
 
 dx <- dx %>%
   mutate(fought_whom_1 = case_when(index == 2 & n.fought == 2 ~ Fought.whom1, T ~ as.character(fought_whom_1)),
@@ -1243,9 +1307,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_cause_1 = case_when(index == 2 & n.fought == 1 ~ Fought.cause1, T ~ as.character(fought_cause_1)),
-         fought_cause_2 = case_when(index == 2 & n.fought == 1 ~ NA_character_, T ~ as.character(fought_cause_2)),
-         fought_cause_3 = case_when(index == 2 & n.fought == 1 ~ NA_character_, T ~ as.character(fought_cause_3)))
+  mutate(fought_cause_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.cause1, T ~ as.character(fought_cause_1)),
+         fought_cause_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_character_, T ~ as.character(fought_cause_2)),
+         fought_cause_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_character_, T ~ as.character(fought_cause_3)))
+
+dx <- dx %>%
+  mutate(fought_cause_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.cause2, T ~ as.character(fought_cause_1)),
+         fought_cause_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_character_, T ~ as.character(fought_cause_2)),
+         fought_cause_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_character_, T ~ as.character(fought_cause_3)))
 
 dx <- dx %>%
   mutate(fought_cause_1 = case_when(index == 2 & n.fought == 2 ~ Fought.cause1, T ~ as.character(fought_cause_1)),
@@ -1286,9 +1355,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_injured_1 = case_when(index == 2 & n.fought == 1 ~ Fought.injured1, T ~ as.integer(fought_injured_1)),
-         fought_injured_2 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_injured_2)),
-         fought_injured_3 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_injured_3)))
+  mutate(fought_injured_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.injured1, T ~ as.integer(fought_injured_1)),
+         fought_injured_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_injured_2)),
+         fought_injured_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_injured_3)))
+
+dx <- dx %>%
+  mutate(fought_injured_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.injured2, T ~ as.integer(fought_injured_1)),
+         fought_injured_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_injured_2)),
+         fought_injured_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_injured_3)))
 
 dx <- dx %>%
   mutate(fought_injured_1 = case_when(index == 2 & n.fought == 2 ~ Fought.injured1, T ~ as.integer(fought_injured_1)),
@@ -1329,9 +1403,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_days_injured_1 = case_when(index == 2 & n.fought == 1 ~ Fought.days.injured1, T ~ as.integer(fought_days_injured_1)),
-         fought_days_injured_2 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_days_injured_2)),
-         fought_days_injured_3 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_days_injured_3)))
+  mutate(fought_days_injured_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.days.injured1, T ~ as.integer(fought_days_injured_1)),
+         fought_days_injured_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_days_injured_2)),
+         fought_days_injured_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_days_injured_3)))
+
+dx <- dx %>%
+  mutate(fought_days_injured_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.days.injured2, T ~ as.integer(fought_days_injured_1)),
+         fought_days_injured_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_days_injured_2)),
+         fought_days_injured_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_days_injured_3)))
 
 dx <- dx %>%
   mutate(fought_days_injured_1 = case_when(index == 2 & n.fought == 2 ~ Fought.days.injured1, T ~ as.integer(fought_days_injured_1)),
@@ -1372,9 +1451,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_almost_died_1 = case_when(index == 2 & n.fought == 1 ~ Fought.almost.died1, T ~ as.integer(fought_almost_died_1)),
-         fought_almost_died_2 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_almost_died_2)),
-         fought_almost_died_3 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_almost_died_3)))
+  mutate(fought_almost_died_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.almost.died1, T ~ as.integer(fought_almost_died_1)),
+         fought_almost_died_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_almost_died_2)),
+         fought_almost_died_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_almost_died_3)))
+
+dx <- dx %>%
+  mutate(fought_almost_died_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.almost.died2, T ~ as.integer(fought_almost_died_1)),
+         fought_almost_died_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_almost_died_2)),
+         fought_almost_died_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_almost_died_3)))
 
 dx <- dx %>%
   mutate(fought_almost_died_1 = case_when(index == 2 & n.fought == 2 ~ Fought.almost.died1, T ~ as.integer(fought_almost_died_1)),
@@ -1415,9 +1499,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_still_bother_1 = case_when(index == 2 & n.fought == 1 ~ Fought.still.bother1, T ~ as.integer(fought_still_bother_1)),
-         fought_still_bother_2 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_still_bother_2)),
-         fought_still_bother_3 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_still_bother_3)))
+  mutate(fought_still_bother_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.still.bother1, T ~ as.integer(fought_still_bother_1)),
+         fought_still_bother_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_still_bother_2)),
+         fought_still_bother_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_still_bother_3)))
+
+dx <- dx %>%
+  mutate(fought_still_bother_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.still.bother2, T ~ as.integer(fought_still_bother_1)),
+         fought_still_bother_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_still_bother_2)),
+         fought_still_bother_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_still_bother_3)))
 
 dx <- dx %>%
   mutate(fought_still_bother_1 = case_when(index == 2 & n.fought == 2 ~ Fought.still.bother1, T ~ as.integer(fought_still_bother_1)),
@@ -1458,9 +1547,14 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(fought_either_drunk_1 = case_when(index == 2 & n.fought == 1 ~ Fought.either.drunk1, T ~ as.integer(fought_either_drunk_1)),
-         fought_either_drunk_2 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_either_drunk_2)),
-         fought_either_drunk_3 = case_when(index == 2 & n.fought == 1 ~ NA_integer_, T ~ as.integer(fought_either_drunk_3)))
+  mutate(fought_either_drunk_1 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ Fought.either.drunk1, T ~ as.integer(fought_either_drunk_1)),
+         fought_either_drunk_2 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_either_drunk_2)),
+         fought_either_drunk_3 = case_when(index == 2 & n.fought == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(fought_either_drunk_3)))
+
+dx <- dx %>%
+  mutate(fought_either_drunk_1 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ Fought.either.drunk2, T ~ as.integer(fought_either_drunk_1)),
+         fought_either_drunk_2 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_either_drunk_2)),
+         fought_either_drunk_3 = case_when(index == 2 & n.fought == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(fought_either_drunk_3)))
 
 dx <- dx %>%
   mutate(fought_either_drunk_1 = case_when(index == 2 & n.fought == 2 ~ Fought.either.drunk1, T ~ as.integer(fought_either_drunk_1)),
@@ -1479,17 +1573,7 @@ dx <- subset(dx, select = -c(Fought.either.drunk, Fought.either.drunk1, Fought.e
 ## Get back to original data frame
 df <- left_join(df, dx)
 df <- relocate(df, c(fought_whom_1:fought_either_drunk_3), .after = n.fought)
-df <- subset(df, select = -c(index))
-
-
-
-
-
-
-
-
-
-
+df <- subset(df, select = -c(index, cum))
 
 
 
@@ -5290,6 +5374,7 @@ df$still_bothers_Animal_Attacked_3 <- df$still_bothers_snake_ray_3
 # Export as csv -----------------------------------------------------------
 
 write.csv(df, "data_new_format.csv", row.names = F)
+
 
 
 
