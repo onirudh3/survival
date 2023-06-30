@@ -1262,20 +1262,21 @@ dx <- dx %>%
   filter(event == 1)
 dx <- dx %>%
   group_by(pid) %>%
-  mutate(index = 1:n())
+  mutate(index = 1:n(),
+         cum = cumsum(n.tree.fall))
 dx <- relocate(dx, index, .after = event)
 dx <- relocate(dx, other.serious.accident.activity3, .after = other.serious.accident.where.hurt3)
 dx <- relocate(dx, other.serious.accident.activity4, .after = other.serious.accident.where.hurt4)
 dx <- relocate(dx, other.serious.accident.activity5, .after = other.serious.accident.where.hurt5)
-dx <- subset(dx, select = c(pid, exit, index, n.tree.fall, TIPO1:other.serious.accident.still.bothers5))
+dx <- subset(dx, select = c(pid, exit, index, cum, n.tree.fall, TIPO1:other.serious.accident.still.bothers5))
 
 # Tree fall occurs maximum thrice in an interval
-# plyr::count(dx$TIPO1)
-# plyr::count(dx$TIPO2)
-# plyr::count(dx$TIPO3)
-# plyr::count(dx$TIPO4)
-# plyr::count(dx$TIPO5)
-# plyr::count(dx$TIPO6)
+plyr::count(dx$TIPO1)
+plyr::count(dx$TIPO2)
+plyr::count(dx$TIPO3)
+plyr::count(dx$TIPO4)
+plyr::count(dx$TIPO5)
+plyr::count(dx$TIPO6)
 
 
 ### Where hurt? ----
@@ -1296,8 +1297,12 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(tree_fall_where_hurt_1 = case_when(index == 2 & n.tree.fall == 1 ~ other.serious.accident.where.hurt1, T ~ as.character(tree_fall_where_hurt_1)),
-         tree_fall_where_hurt_2 = case_when(index == 2 & n.tree.fall == 1 ~ NA_character_, T ~ as.character(tree_fall_where_hurt_2)))
+  mutate(tree_fall_where_hurt_1 = case_when(index == 2 & n.tree.fall == 1 & cum == 2 ~ other.serious.accident.where.hurt1, T ~ as.character(tree_fall_where_hurt_1)),
+         tree_fall_where_hurt_2 = case_when(index == 2 & n.tree.fall == 1 & cum == 2 ~ NA_character_, T ~ as.character(tree_fall_where_hurt_2)))
+
+dx <- dx %>%
+  mutate(tree_fall_where_hurt_1 = case_when(index == 2 & n.tree.fall == 1 & cum == 3 ~ other.serious.accident.where.hurt2, T ~ as.character(tree_fall_where_hurt_1)),
+         tree_fall_where_hurt_2 = case_when(index == 2 & n.tree.fall == 1 & cum == 3 ~ NA_character_, T ~ as.character(tree_fall_where_hurt_2)))
 
 # index = 3
 dx <- dx %>%
@@ -1330,8 +1335,12 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(tree_fall_activity_1 = case_when(index == 2 & n.tree.fall == 1 ~ other.serious.accident.activity1, T ~ as.character(tree_fall_activity_1)),
-         tree_fall_activity_2 = case_when(index == 2 & n.tree.fall == 1 ~ NA_character_, T ~ as.character(tree_fall_activity_2)))
+  mutate(tree_fall_activity_1 = case_when(index == 2 & n.tree.fall == 1 & cum == 2 ~ other.serious.accident.activity1, T ~ as.character(tree_fall_activity_1)),
+         tree_fall_activity_2 = case_when(index == 2 & n.tree.fall == 1 & cum == 2 ~ NA_character_, T ~ as.character(tree_fall_activity_2)))
+
+dx <- dx %>%
+  mutate(tree_fall_activity_1 = case_when(index == 2 & n.tree.fall == 1 & cum == 3 ~ other.serious.accident.activity2, T ~ as.character(tree_fall_activity_1)),
+         tree_fall_activity_2 = case_when(index == 2 & n.tree.fall == 1 & cum == 3 ~ NA_character_, T ~ as.character(tree_fall_activity_2)))
 
 # index = 3
 dx <- dx %>%
@@ -1364,8 +1373,12 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(tree_fall_injured_1 = case_when(index == 2 & n.tree.fall == 1 ~ other.serious.accident.injured1, T ~ as.integer(tree_fall_injured_1)),
-         tree_fall_injured_2 = case_when(index == 2 & n.tree.fall == 1 ~ NA_integer_, T ~ as.integer(tree_fall_injured_2)))
+  mutate(tree_fall_injured_1 = case_when(index == 2 & n.tree.fall == 1 & cum == 2 ~ other.serious.accident.injured1, T ~ as.integer(tree_fall_injured_1)),
+         tree_fall_injured_2 = case_when(index == 2 & n.tree.fall == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(tree_fall_injured_2)))
+
+dx <- dx %>%
+  mutate(tree_fall_injured_1 = case_when(index == 2 & n.tree.fall == 1 & cum == 3 ~ other.serious.accident.injured2, T ~ as.integer(tree_fall_injured_1)),
+         tree_fall_injured_2 = case_when(index == 2 & n.tree.fall == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(tree_fall_injured_2)))
 
 # index = 3
 dx <- dx %>%
@@ -1398,8 +1411,12 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(tree_fall_days_disabled_1 = case_when(index == 2 & n.tree.fall == 1 ~ other.serious.accident.days.disabled1, T ~ as.numeric(tree_fall_days_disabled_1)),
-         tree_fall_days_disabled_2 = case_when(index == 2 & n.tree.fall == 1 ~ NA_real_, T ~ as.numeric(tree_fall_days_disabled_2)))
+  mutate(tree_fall_days_disabled_1 = case_when(index == 2 & n.tree.fall == 1 & cum == 2 ~ other.serious.accident.days.disabled1, T ~ as.numeric(tree_fall_days_disabled_1)),
+         tree_fall_days_disabled_2 = case_when(index == 2 & n.tree.fall == 1 & cum == 2 ~ NA_real_, T ~ as.numeric(tree_fall_days_disabled_2)))
+
+dx <- dx %>%
+  mutate(tree_fall_days_disabled_1 = case_when(index == 2 & n.tree.fall == 1 & cum == 3 ~ other.serious.accident.days.disabled2, T ~ as.numeric(tree_fall_days_disabled_1)),
+         tree_fall_days_disabled_2 = case_when(index == 2 & n.tree.fall == 1 & cum == 3 ~ NA_real_, T ~ as.numeric(tree_fall_days_disabled_2)))
 
 # index = 3
 dx <- dx %>%
@@ -1432,8 +1449,12 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(tree_fall_almost_died_1 = case_when(index == 2 & n.tree.fall == 1 ~ other.serious.accident.almost.died1, T ~ as.integer(tree_fall_almost_died_1)),
-         tree_fall_almost_died_2 = case_when(index == 2 & n.tree.fall == 1 ~ NA_integer_, T ~ as.integer(tree_fall_almost_died_2)))
+  mutate(tree_fall_almost_died_1 = case_when(index == 2 & n.tree.fall == 1 & cum == 2 ~ other.serious.accident.almost.died1, T ~ as.integer(tree_fall_almost_died_1)),
+         tree_fall_almost_died_2 = case_when(index == 2 & n.tree.fall == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(tree_fall_almost_died_2)))
+
+dx <- dx %>%
+  mutate(tree_fall_almost_died_1 = case_when(index == 2 & n.tree.fall == 1 & cum == 3 ~ other.serious.accident.almost.died2, T ~ as.integer(tree_fall_almost_died_1)),
+         tree_fall_almost_died_2 = case_when(index == 2 & n.tree.fall == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(tree_fall_almost_died_2)))
 
 # index = 3
 dx <- dx %>%
@@ -1466,8 +1487,12 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(tree_fall_still_bothers_1 = case_when(index == 2 & n.tree.fall == 1 ~ other.serious.accident.still.bothers1, T ~ as.integer(tree_fall_still_bothers_1)),
-         tree_fall_still_bothers_2 = case_when(index == 2 & n.tree.fall == 1 ~ NA_integer_, T ~ as.integer(tree_fall_still_bothers_2)))
+  mutate(tree_fall_still_bothers_1 = case_when(index == 2 & n.tree.fall == 1 & cum == 2 ~ other.serious.accident.still.bothers1, T ~ as.integer(tree_fall_still_bothers_1)),
+         tree_fall_still_bothers_2 = case_when(index == 2 & n.tree.fall == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(tree_fall_still_bothers_2)))
+
+dx <- dx %>%
+  mutate(tree_fall_still_bothers_1 = case_when(index == 2 & n.tree.fall == 1 & cum == 3 ~ other.serious.accident.still.bothers2, T ~ as.integer(tree_fall_still_bothers_1)),
+         tree_fall_still_bothers_2 = case_when(index == 2 & n.tree.fall == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(tree_fall_still_bothers_2)))
 
 # index = 3
 dx <- dx %>%
@@ -1499,7 +1524,7 @@ dx <- subset(dx, select = -c(TIPO1, TIPO2, TIPO3, TIPO4, TIPO5, TIPO6))
 ## Get back to original data frame
 df <- left_join(df, dx)
 df <- relocate(df, c(tree_fall_where_hurt_1:tree_fall_still_bothers_2), .after = time.since.last.tree.fall)
-df <- subset(df, select = -c(index))
+df <- subset(df, select = -c(index, cum))
 
 
 # Export final table to csv -----------------------------------------------

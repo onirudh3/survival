@@ -1254,13 +1254,13 @@ dx <- dx %>%
   filter(event == 1)
 dx <- dx %>%
   group_by(pid) %>%
-  mutate(index = 1:n())
+  mutate(index = 1:n(),
+         cum = cumsum(n.cut.self))
 dx <- relocate(dx, index, .after = event)
 dx <- relocate(dx, other.serious.accident.activity3, .after = other.serious.accident.where.hurt3)
 dx <- relocate(dx, other.serious.accident.activity4, .after = other.serious.accident.where.hurt4)
 dx <- relocate(dx, other.serious.accident.activity5, .after = other.serious.accident.where.hurt5)
-dx <- subset(dx, select = c(pid, exit, index, n.cut.self, TIPO1:other.serious.accident.still.bothers5))
-
+dx <- subset(dx, select = c(pid, exit, index, cum, n.cut.self, TIPO1:other.serious.accident.still.bothers5))
 
 plyr::count(dx$TIPO1)
 plyr::count(dx$TIPO2)
@@ -1295,14 +1295,29 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(cut_self_where_hurt_1 = case_when(index == 2 & n.cut.self == 1 ~ other.serious.accident.where.hurt1, T ~ as.character(cut_self_where_hurt_1)),
-         cut_self_where_hurt_2 = case_when(index == 2 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
-         cut_self_where_hurt_3 = case_when(index == 2 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+  mutate(cut_self_where_hurt_1 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ other.serious.accident.where.hurt1, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
 
 dx <- dx %>%
-  mutate(cut_self_where_hurt_1 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.where.hurt1, T ~ as.character(cut_self_where_hurt_1)),
-         cut_self_where_hurt_2 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.where.hurt2, T ~ as.character(cut_self_where_hurt_2)),
-         cut_self_where_hurt_3 = case_when(index == 2 & n.cut.self == 2 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+  mutate(cut_self_where_hurt_1 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ other.serious.accident.where.hurt2, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ other.serious.accident.where.hurt1, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ other.serious.accident.where.hurt2, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ other.serious.accident.where.hurt2, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
 
 dx <- dx %>%
   mutate(cut_self_where_hurt_1 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.where.hurt1, T ~ as.character(cut_self_where_hurt_1)),
@@ -1311,9 +1326,19 @@ dx <- dx %>%
 
 # index = 3
 dx <- dx %>%
-  mutate(cut_self_where_hurt_1 = case_when(index == 3 & n.cut.self == 1 ~ other.serious.accident.where.hurt2, T ~ as.character(cut_self_where_hurt_1)),
-         cut_self_where_hurt_2 = case_when(index == 3 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
-         cut_self_where_hurt_3 = case_when(index == 3 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+  mutate(cut_self_where_hurt_1 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ other.serious.accident.where.hurt2, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.where.hurt4, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
 
 dx <- dx %>%
   mutate(cut_self_where_hurt_1 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.where.hurt2, T ~ as.character(cut_self_where_hurt_1)),
@@ -1327,14 +1352,29 @@ dx <- dx %>%
 
 # index = 4
 dx <- dx %>%
-  mutate(cut_self_where_hurt_1 = case_when(index == 4 & n.cut.self == 1 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_1)),
-         cut_self_where_hurt_2 = case_when(index == 4 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
-         cut_self_where_hurt_3 = case_when(index == 4 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+  mutate(cut_self_where_hurt_1 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
 
 dx <- dx %>%
-  mutate(cut_self_where_hurt_1 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_1)),
-         cut_self_where_hurt_2 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.where.hurt4, T ~ as.character(cut_self_where_hurt_2)),
-         cut_self_where_hurt_3 = case_when(index == 4 & n.cut.self == 2 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+  mutate(cut_self_where_hurt_1 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.where.hurt4, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ other.serious.accident.where.hurt5, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ other.serious.accident.where.hurt4, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ other.serious.accident.where.hurt4, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ other.serious.accident.where.hurt5, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
 
 dx <- dx %>%
   mutate(cut_self_where_hurt_1 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.where.hurt3, T ~ as.character(cut_self_where_hurt_1)),
@@ -1343,9 +1383,14 @@ dx <- dx %>%
 
 # index = 5
 dx <- dx %>%
-  mutate(cut_self_where_hurt_1 = case_when(index == 5 & n.cut.self == 1 ~ other.serious.accident.where.hurt4, T ~ as.character(cut_self_where_hurt_1)),
-         cut_self_where_hurt_2 = case_when(index == 5 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
-         cut_self_where_hurt_3 = case_when(index == 5 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+  mutate(cut_self_where_hurt_1 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.where.hurt4, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
+
+dx <- dx %>%
+  mutate(cut_self_where_hurt_1 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ other.serious.accident.where.hurt5, T ~ as.character(cut_self_where_hurt_1)),
+         cut_self_where_hurt_2 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ NA_character_, T ~ as.character(cut_self_where_hurt_2)),
+         cut_self_where_hurt_3 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ NA_character_, T ~ as.character(cut_self_where_hurt_3)))
 
 # index = 6
 dx <- dx %>%
@@ -1387,14 +1432,29 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(cut_self_activity_1 = case_when(index == 2 & n.cut.self == 1 ~ other.serious.accident.activity1, T ~ as.character(cut_self_activity_1)),
-         cut_self_activity_2 = case_when(index == 2 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
-         cut_self_activity_3 = case_when(index == 2 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+  mutate(cut_self_activity_1 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ other.serious.accident.activity1, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
 
 dx <- dx %>%
-  mutate(cut_self_activity_1 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.activity1, T ~ as.character(cut_self_activity_1)),
-         cut_self_activity_2 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.activity2, T ~ as.character(cut_self_activity_2)),
-         cut_self_activity_3 = case_when(index == 2 & n.cut.self == 2 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+  mutate(cut_self_activity_1 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ other.serious.accident.activity2, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ other.serious.accident.activity1, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ other.serious.accident.activity2, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ other.serious.accident.activity2, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
 
 dx <- dx %>%
   mutate(cut_self_activity_1 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.activity1, T ~ as.character(cut_self_activity_1)),
@@ -1403,9 +1463,19 @@ dx <- dx %>%
 
 # index = 3
 dx <- dx %>%
-  mutate(cut_self_activity_1 = case_when(index == 3 & n.cut.self == 1 ~ other.serious.accident.activity2, T ~ as.character(cut_self_activity_1)),
-         cut_self_activity_2 = case_when(index == 3 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
-         cut_self_activity_3 = case_when(index == 3 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+  mutate(cut_self_activity_1 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ other.serious.accident.activity2, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.activity4, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
 
 dx <- dx %>%
   mutate(cut_self_activity_1 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.activity2, T ~ as.character(cut_self_activity_1)),
@@ -1419,14 +1489,29 @@ dx <- dx %>%
 
 # index = 4
 dx <- dx %>%
-  mutate(cut_self_activity_1 = case_when(index == 4 & n.cut.self == 1 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_1)),
-         cut_self_activity_2 = case_when(index == 4 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
-         cut_self_activity_3 = case_when(index == 4 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+  mutate(cut_self_activity_1 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
 
 dx <- dx %>%
-  mutate(cut_self_activity_1 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_1)),
-         cut_self_activity_2 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.activity4, T ~ as.character(cut_self_activity_2)),
-         cut_self_activity_3 = case_when(index == 4 & n.cut.self == 2 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+  mutate(cut_self_activity_1 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.activity4, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ other.serious.accident.activity5, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ other.serious.accident.activity4, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ other.serious.accident.activity4, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ other.serious.accident.activity5, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
 
 dx <- dx %>%
   mutate(cut_self_activity_1 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.activity3, T ~ as.character(cut_self_activity_1)),
@@ -1435,9 +1520,14 @@ dx <- dx %>%
 
 # index = 5
 dx <- dx %>%
-  mutate(cut_self_activity_1 = case_when(index == 5 & n.cut.self == 1 ~ other.serious.accident.activity4, T ~ as.character(cut_self_activity_1)),
-         cut_self_activity_2 = case_when(index == 5 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
-         cut_self_activity_3 = case_when(index == 5 & n.cut.self == 1 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+  mutate(cut_self_activity_1 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.activity4, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
+
+dx <- dx %>%
+  mutate(cut_self_activity_1 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ other.serious.accident.activity5, T ~ as.character(cut_self_activity_1)),
+         cut_self_activity_2 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ NA_character_, T ~ as.character(cut_self_activity_2)),
+         cut_self_activity_3 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ NA_character_, T ~ as.character(cut_self_activity_3)))
 
 # index = 6
 dx <- dx %>%
@@ -1479,14 +1569,29 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(cut_self_injured_1 = case_when(index == 2 & n.cut.self == 1 ~ other.serious.accident.injured1, T ~ as.integer(cut_self_injured_1)),
-         cut_self_injured_2 = case_when(index == 2 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
-         cut_self_injured_3 = case_when(index == 2 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+  mutate(cut_self_injured_1 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ other.serious.accident.injured1, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
 
 dx <- dx %>%
-  mutate(cut_self_injured_1 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.injured1, T ~ as.integer(cut_self_injured_1)),
-         cut_self_injured_2 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.injured2, T ~ as.integer(cut_self_injured_2)),
-         cut_self_injured_3 = case_when(index == 2 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+  mutate(cut_self_injured_1 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ other.serious.accident.injured2, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ other.serious.accident.injured1, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ other.serious.accident.injured2, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ other.serious.accident.injured2, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
 
 dx <- dx %>%
   mutate(cut_self_injured_1 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.injured1, T ~ as.integer(cut_self_injured_1)),
@@ -1495,9 +1600,19 @@ dx <- dx %>%
 
 # index = 3
 dx <- dx %>%
-  mutate(cut_self_injured_1 = case_when(index == 3 & n.cut.self == 1 ~ other.serious.accident.injured2, T ~ as.integer(cut_self_injured_1)),
-         cut_self_injured_2 = case_when(index == 3 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
-         cut_self_injured_3 = case_when(index == 3 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+  mutate(cut_self_injured_1 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ other.serious.accident.injured2, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.injured4, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
 
 dx <- dx %>%
   mutate(cut_self_injured_1 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.injured2, T ~ as.integer(cut_self_injured_1)),
@@ -1511,14 +1626,29 @@ dx <- dx %>%
 
 # index = 4
 dx <- dx %>%
-  mutate(cut_self_injured_1 = case_when(index == 4 & n.cut.self == 1 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_1)),
-         cut_self_injured_2 = case_when(index == 4 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
-         cut_self_injured_3 = case_when(index == 4 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+  mutate(cut_self_injured_1 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
 
 dx <- dx %>%
-  mutate(cut_self_injured_1 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_1)),
-         cut_self_injured_2 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.injured4, T ~ as.integer(cut_self_injured_2)),
-         cut_self_injured_3 = case_when(index == 4 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+  mutate(cut_self_injured_1 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.injured4, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ other.serious.accident.injured5, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ other.serious.accident.injured4, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ other.serious.accident.injured4, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ other.serious.accident.injured5, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
 
 dx <- dx %>%
   mutate(cut_self_injured_1 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.injured3, T ~ as.integer(cut_self_injured_1)),
@@ -1527,9 +1657,14 @@ dx <- dx %>%
 
 # index = 5
 dx <- dx %>%
-  mutate(cut_self_injured_1 = case_when(index == 5 & n.cut.self == 1 ~ other.serious.accident.injured4, T ~ as.integer(cut_self_injured_1)),
-         cut_self_injured_2 = case_when(index == 5 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
-         cut_self_injured_3 = case_when(index == 5 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+  mutate(cut_self_injured_1 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.injured4, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
+
+dx <- dx %>%
+  mutate(cut_self_injured_1 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ other.serious.accident.injured5, T ~ as.integer(cut_self_injured_1)),
+         cut_self_injured_2 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_injured_2)),
+         cut_self_injured_3 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_injured_3)))
 
 # index = 6
 dx <- dx %>%
@@ -1571,14 +1706,29 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(cut_self_days_disabled_1 = case_when(index == 2 & n.cut.self == 1 ~ other.serious.accident.days.disabled1, T ~ as.numeric(cut_self_days_disabled_1)),
-         cut_self_days_disabled_2 = case_when(index == 2 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
-         cut_self_days_disabled_3 = case_when(index == 2 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+  mutate(cut_self_days_disabled_1 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ other.serious.accident.days.disabled1, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
 
 dx <- dx %>%
-  mutate(cut_self_days_disabled_1 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.days.disabled1, T ~ as.numeric(cut_self_days_disabled_1)),
-         cut_self_days_disabled_2 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.days.disabled2, T ~ as.numeric(cut_self_days_disabled_2)),
-         cut_self_days_disabled_3 = case_when(index == 2 & n.cut.self == 2 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+  mutate(cut_self_days_disabled_1 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ other.serious.accident.days.disabled2, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ other.serious.accident.days.disabled1, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ other.serious.accident.days.disabled2, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ other.serious.accident.days.disabled2, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
 
 dx <- dx %>%
   mutate(cut_self_days_disabled_1 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.days.disabled1, T ~ as.numeric(cut_self_days_disabled_1)),
@@ -1587,9 +1737,19 @@ dx <- dx %>%
 
 # index = 3
 dx <- dx %>%
-  mutate(cut_self_days_disabled_1 = case_when(index == 3 & n.cut.self == 1 ~ other.serious.accident.days.disabled2, T ~ as.numeric(cut_self_days_disabled_1)),
-         cut_self_days_disabled_2 = case_when(index == 3 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
-         cut_self_days_disabled_3 = case_when(index == 3 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+  mutate(cut_self_days_disabled_1 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ other.serious.accident.days.disabled2, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.days.disabled4, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
 
 dx <- dx %>%
   mutate(cut_self_days_disabled_1 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.days.disabled2, T ~ as.numeric(cut_self_days_disabled_1)),
@@ -1603,14 +1763,29 @@ dx <- dx %>%
 
 # index = 4
 dx <- dx %>%
-  mutate(cut_self_days_disabled_1 = case_when(index == 4 & n.cut.self == 1 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_1)),
-         cut_self_days_disabled_2 = case_when(index == 4 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
-         cut_self_days_disabled_3 = case_when(index == 4 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+  mutate(cut_self_days_disabled_1 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
 
 dx <- dx %>%
-  mutate(cut_self_days_disabled_1 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_1)),
-         cut_self_days_disabled_2 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.days.disabled4, T ~ as.numeric(cut_self_days_disabled_2)),
-         cut_self_days_disabled_3 = case_when(index == 4 & n.cut.self == 2 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+  mutate(cut_self_days_disabled_1 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.days.disabled4, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ other.serious.accident.days.disabled5, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ other.serious.accident.days.disabled4, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ other.serious.accident.days.disabled4, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ other.serious.accident.days.disabled5, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
 
 dx <- dx %>%
   mutate(cut_self_days_disabled_1 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.days.disabled3, T ~ as.numeric(cut_self_days_disabled_1)),
@@ -1619,9 +1794,14 @@ dx <- dx %>%
 
 # index = 5
 dx <- dx %>%
-  mutate(cut_self_days_disabled_1 = case_when(index == 5 & n.cut.self == 1 ~ other.serious.accident.days.disabled4, T ~ as.numeric(cut_self_days_disabled_1)),
-         cut_self_days_disabled_2 = case_when(index == 5 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
-         cut_self_days_disabled_3 = case_when(index == 5 & n.cut.self == 1 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+  mutate(cut_self_days_disabled_1 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.days.disabled4, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
+
+dx <- dx %>%
+  mutate(cut_self_days_disabled_1 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ other.serious.accident.days.disabled5, T ~ as.numeric(cut_self_days_disabled_1)),
+         cut_self_days_disabled_2 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_2)),
+         cut_self_days_disabled_3 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ NA_real_, T ~ as.numeric(cut_self_days_disabled_3)))
 
 # index = 6
 dx <- dx %>%
@@ -1663,14 +1843,29 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(cut_self_almost_died_1 = case_when(index == 2 & n.cut.self == 1 ~ other.serious.accident.almost.died1, T ~ as.integer(cut_self_almost_died_1)),
-         cut_self_almost_died_2 = case_when(index == 2 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
-         cut_self_almost_died_3 = case_when(index == 2 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+  mutate(cut_self_almost_died_1 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ other.serious.accident.almost.died1, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
 
 dx <- dx %>%
-  mutate(cut_self_almost_died_1 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.almost.died1, T ~ as.integer(cut_self_almost_died_1)),
-         cut_self_almost_died_2 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.almost.died2, T ~ as.integer(cut_self_almost_died_2)),
-         cut_self_almost_died_3 = case_when(index == 2 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+  mutate(cut_self_almost_died_1 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ other.serious.accident.almost.died2, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ other.serious.accident.almost.died1, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ other.serious.accident.almost.died2, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ other.serious.accident.almost.died2, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
 
 dx <- dx %>%
   mutate(cut_self_almost_died_1 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.almost.died1, T ~ as.integer(cut_self_almost_died_1)),
@@ -1679,9 +1874,19 @@ dx <- dx %>%
 
 # index = 3
 dx <- dx %>%
-  mutate(cut_self_almost_died_1 = case_when(index == 3 & n.cut.self == 1 ~ other.serious.accident.almost.died2, T ~ as.integer(cut_self_almost_died_1)),
-         cut_self_almost_died_2 = case_when(index == 3 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
-         cut_self_almost_died_3 = case_when(index == 3 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+  mutate(cut_self_almost_died_1 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ other.serious.accident.almost.died2, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.almost.died4, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
 
 dx <- dx %>%
   mutate(cut_self_almost_died_1 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.almost.died2, T ~ as.integer(cut_self_almost_died_1)),
@@ -1695,14 +1900,29 @@ dx <- dx %>%
 
 # index = 4
 dx <- dx %>%
-  mutate(cut_self_almost_died_1 = case_when(index == 4 & n.cut.self == 1 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_1)),
-         cut_self_almost_died_2 = case_when(index == 4 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
-         cut_self_almost_died_3 = case_when(index == 4 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+  mutate(cut_self_almost_died_1 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
 
 dx <- dx %>%
-  mutate(cut_self_almost_died_1 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_1)),
-         cut_self_almost_died_2 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.almost.died4, T ~ as.integer(cut_self_almost_died_2)),
-         cut_self_almost_died_3 = case_when(index == 4 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+  mutate(cut_self_almost_died_1 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.almost.died4, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ other.serious.accident.almost.died5, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ other.serious.accident.almost.died4, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ other.serious.accident.almost.died4, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ other.serious.accident.almost.died5, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
 
 dx <- dx %>%
   mutate(cut_self_almost_died_1 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.almost.died3, T ~ as.integer(cut_self_almost_died_1)),
@@ -1711,9 +1931,14 @@ dx <- dx %>%
 
 # index = 5
 dx <- dx %>%
-  mutate(cut_self_almost_died_1 = case_when(index == 5 & n.cut.self == 1 ~ other.serious.accident.almost.died4, T ~ as.integer(cut_self_almost_died_1)),
-         cut_self_almost_died_2 = case_when(index == 5 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
-         cut_self_almost_died_3 = case_when(index == 5 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+  mutate(cut_self_almost_died_1 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.almost.died4, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
+
+dx <- dx %>%
+  mutate(cut_self_almost_died_1 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ other.serious.accident.almost.died5, T ~ as.integer(cut_self_almost_died_1)),
+         cut_self_almost_died_2 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_2)),
+         cut_self_almost_died_3 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_almost_died_3)))
 
 # index = 6
 dx <- dx %>%
@@ -1755,14 +1980,29 @@ dx <- dx %>%
 
 # index = 2
 dx <- dx %>%
-  mutate(cut_self_still_bothers_1 = case_when(index == 2 & n.cut.self == 1 ~ other.serious.accident.still.bothers1, T ~ as.integer(cut_self_still_bothers_1)),
-         cut_self_still_bothers_2 = case_when(index == 2 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
-         cut_self_still_bothers_3 = case_when(index == 2 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+  mutate(cut_self_still_bothers_1 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ other.serious.accident.still.bothers1, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 2 & n.cut.self == 1 & cum == 2 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
 
 dx <- dx %>%
-  mutate(cut_self_still_bothers_1 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.still.bothers1, T ~ as.integer(cut_self_still_bothers_1)),
-         cut_self_still_bothers_2 = case_when(index == 2 & n.cut.self == 2 ~ other.serious.accident.still.bothers2, T ~ as.integer(cut_self_still_bothers_2)),
-         cut_self_still_bothers_3 = case_when(index == 2 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+  mutate(cut_self_still_bothers_1 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ other.serious.accident.still.bothers2, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 2 & n.cut.self == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 2 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ other.serious.accident.still.bothers1, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ other.serious.accident.still.bothers2, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 2 & n.cut.self == 2 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ other.serious.accident.still.bothers2, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 2 & n.cut.self == 2 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
 
 dx <- dx %>%
   mutate(cut_self_still_bothers_1 = case_when(index == 2 & n.cut.self == 3 ~ other.serious.accident.still.bothers1, T ~ as.integer(cut_self_still_bothers_1)),
@@ -1771,9 +2011,19 @@ dx <- dx %>%
 
 # index = 3
 dx <- dx %>%
-  mutate(cut_self_still_bothers_1 = case_when(index == 3 & n.cut.self == 1 ~ other.serious.accident.still.bothers2, T ~ as.integer(cut_self_still_bothers_1)),
-         cut_self_still_bothers_2 = case_when(index == 3 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
-         cut_self_still_bothers_3 = case_when(index == 3 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+  mutate(cut_self_still_bothers_1 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ other.serious.accident.still.bothers2, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 3 & n.cut.self == 1 & cum == 3 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 3 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.still.bothers4, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 3 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
 
 dx <- dx %>%
   mutate(cut_self_still_bothers_1 = case_when(index == 3 & n.cut.self == 2 ~ other.serious.accident.still.bothers2, T ~ as.integer(cut_self_still_bothers_1)),
@@ -1787,14 +2037,29 @@ dx <- dx %>%
 
 # index = 4
 dx <- dx %>%
-  mutate(cut_self_still_bothers_1 = case_when(index == 4 & n.cut.self == 1 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_1)),
-         cut_self_still_bothers_2 = case_when(index == 4 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
-         cut_self_still_bothers_3 = case_when(index == 4 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+  mutate(cut_self_still_bothers_1 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 4 & n.cut.self == 1 & cum == 4 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
 
 dx <- dx %>%
-  mutate(cut_self_still_bothers_1 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_1)),
-         cut_self_still_bothers_2 = case_when(index == 4 & n.cut.self == 2 ~ other.serious.accident.still.bothers4, T ~ as.integer(cut_self_still_bothers_2)),
-         cut_self_still_bothers_3 = case_when(index == 4 & n.cut.self == 2 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+  mutate(cut_self_still_bothers_1 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.still.bothers4, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 4 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ other.serious.accident.still.bothers5, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 4 & n.cut.self == 1 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ other.serious.accident.still.bothers4, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 4 & n.cut.self == 2 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ other.serious.accident.still.bothers4, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ other.serious.accident.still.bothers5, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 4 & n.cut.self == 2 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
 
 dx <- dx %>%
   mutate(cut_self_still_bothers_1 = case_when(index == 4 & n.cut.self == 3 ~ other.serious.accident.still.bothers3, T ~ as.integer(cut_self_still_bothers_1)),
@@ -1803,9 +2068,14 @@ dx <- dx %>%
 
 # index = 5
 dx <- dx %>%
-  mutate(cut_self_still_bothers_1 = case_when(index == 5 & n.cut.self == 1 ~ other.serious.accident.still.bothers4, T ~ as.integer(cut_self_still_bothers_1)),
-         cut_self_still_bothers_2 = case_when(index == 5 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
-         cut_self_still_bothers_3 = case_when(index == 5 & n.cut.self == 1 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+  mutate(cut_self_still_bothers_1 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ other.serious.accident.still.bothers4, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 5 & n.cut.self == 1 & cum == 5 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
+
+dx <- dx %>%
+  mutate(cut_self_still_bothers_1 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ other.serious.accident.still.bothers5, T ~ as.integer(cut_self_still_bothers_1)),
+         cut_self_still_bothers_2 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_2)),
+         cut_self_still_bothers_3 = case_when(index == 5 & n.cut.self == 1 & cum == 6 ~ NA_integer_, T ~ as.integer(cut_self_still_bothers_3)))
 
 # index = 6
 dx <- dx %>%
@@ -1826,7 +2096,7 @@ dx <- subset(dx, select = -c(TIPO1, TIPO2, TIPO3, TIPO4, TIPO5, TIPO6))
 ## Get back to original data frame
 df <- left_join(df, dx)
 df <- relocate(df, c(cut_self_where_hurt_1:cut_self_still_bothers_3), .after = time.since.last.cut.self)
-df <- subset(df, select = -c(index))
+df <- subset(df, select = -c(index, cum))
 
 # Export final table to csv -----------------------------------------------
 
