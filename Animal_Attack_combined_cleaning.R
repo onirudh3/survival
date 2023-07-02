@@ -540,7 +540,7 @@ rm(df2, df3, h_id)
 
 
 # Columns for cause, days disabled, etc. ----------------------------------
-raw <- select(df, c(pid, what.bit.you:still.bothers.bite, what.bit.you1:still.bothers.bite1,
+raw <- dplyr::select(df, c(pid, what.bit.you:still.bothers.bite, what.bit.you1:still.bothers.bite1,
                    what.bit.you2:still.bothers.bite2, what.bit.you3:still.bothers.bite3))
 dx <- left_join(df1, raw)
 rm(raw)
@@ -899,18 +899,7 @@ df1 <- subset(df1, select = -c(index, cum))
 
 # Export final table to csv -----------------------------------------------
 
-write.csv(df, "Animal_Attack_combined_final_table.csv", row.names = F)
-
-
-
-
-
-
-
-
-
-
-
+write.csv(df1, "Animal_Attack_combined_final_table.csv", row.names = F)
 
 
 

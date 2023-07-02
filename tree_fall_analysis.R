@@ -124,6 +124,20 @@ stargazer(model2f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                            c("No. of Risk Years", "13,254.94")),
           omit.stat = c("ll", "n"))
 
+## Model 2g: Sex + Animal Attack (c) ----
+model2g <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male +
+                    Animal_Attack.during.interval, data = df)
+summary(model2g)
+stargazer(model2g, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+          notes = "Standard errors in parentheses",
+          out = "Tree Fall Tables/model2g.tex",
+          dep.var.labels = "Hazard Rate",
+          covariate.labels = c("Male", "Animal Attack (c)"),
+          add.lines = list(c("No. of Individuals", "388"),
+                           c("No. of Intervals", "13,451"),
+                           c("No. of Risk Years", "13,254.94")),
+          omit.stat = c("ll", "n"))
+
 
 # Model 3: Sex + Region + Risk --------------------------------------------
 
@@ -294,6 +308,35 @@ legend("topleft", legend = c("Cut Self Did Not Occur", "Cut Self Occurred"),
        col = 1:2, lty = 1, bty = "n")
 dev.off()
 
+## Model 3g: Sex + Region + Animal Attack (c) ----
+model3g <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+                    Animal_Attack.during.interval, data = df)
+summary(model3g)
+
+stargazer(model3g, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+          notes = "Standard errors in parentheses",
+          out = "Tree Fall Tables/model3g.tex",
+          dep.var.labels = "Hazard Rate",
+          covariate.labels = c("Male", "Near San Borja", "Upriver",
+                               "Animal Attack (c)"),
+          add.lines = list(c("No. of Individuals", "388"),
+                           c("No. of Intervals", "13,451"),
+                           c("No. of Risk Years", "13,254.94")),
+          omit.stat = c("ll", "n"))
+
+# Plot
+pdf(file = "Tree Fall Plots/model3g.pdf", height = 5, width = 5)
+plot(coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+              strata(Animal_Attack.during.interval), data = df),
+     main = "Tree Fall (Controlling for Sex and Region)",
+     xlab = "Age in Years",
+     ylab = "Cumulative Hazard",
+     printLegend = F,
+     col = 1:2)
+legend("topleft", legend = c("Animal Attack (c) Did Not Occur", "Animal Attack (c) Occurred"),
+       col = 1:2, lty = 1, bty = "n")
+dev.off()
+
 # Model 4: Sex + Region + Risk + Sex*Risk ---------------------------------
 
 ## Model 4a: Sex + Region + Fight + Sex*Fight ----
@@ -393,6 +436,24 @@ stargazer(model4f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           covariate.labels = c("Male", "Near San Borja", "Upriver",
                                "Cut Self",
                                "Male \\texttimes\\ Cut Self"),
+          add.lines = list(c("No. of Individuals", "388"),
+                           c("No. of Intervals", "13,451"),
+                           c("No. of Risk Years", "13,254.94")),
+          omit.stat = c("ll", "n"))
+
+## Model 4g: Sex + Region + Animal Attack (c) + Sex*Animal Attack (c)----
+model4g <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+                    Animal_Attack.during.interval +
+                    male * Animal_Attack.during.interval,
+                  data = df)
+summary(model4g)
+stargazer(model4g, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+          notes = "Standard errors in parentheses",
+          out = "Tree Fall Tables/model4g.tex",
+          dep.var.labels = "Hazard Rate",
+          covariate.labels = c("Male", "Near San Borja", "Upriver",
+                               "Animal Attack (c)",
+                               "Male \\texttimes\\ Animal Attack (c)"),
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
@@ -544,7 +605,20 @@ stargazer(model5i, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
                            c("No. of Risk Years", "5,176.69")),
           omit.stat = c("ll", "n"))
 
-
+## Model 5j: Length of Prior Tree Fall + Animal Attack ----
+model5j <- coxreg(Surv(enter, exit, event) ~ length.of.last.tree.fall +
+                    Animal_Attack.during.interval, data = new_df)
+summary(model5j)
+stargazer(model5j, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+          notes = "Standard errors in parentheses",
+          out = "Tree Fall Tables/model5j.tex",
+          dep.var.labels = "Hazard Rate",
+          covariate.labels = c("Length of Prior Tree Fall Interval",
+                               "Animal Attack (c)"),
+          add.lines = list(c("No. of Individuals", "160"),
+                           c("No. of Intervals", "180"),
+                           c("No. of Risk Years", "5,176.69")),
+          omit.stat = c("ll", "n"))
 
 # Descriptive Plots -------------------------------------------------------
 # Make age.cat as factor
@@ -876,6 +950,43 @@ df_long %>%
 dev.off()
 
 
+### Animal Attack (c) ----
+# Distribution of co-occurring Animal Attack (c) within tree fall age intervals
+pdf(file = "Tree Fall Plots/co_occurrence7a.pdf", height = 5, width = 7)
+df_long %>%
+  count(Animal_Attack.co_occurrence.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(Animal_Attack.co_occurrence.interval)) %>%
+  ggplot() +
+  geom_col(aes(x = Animal_Attack.co_occurrence.interval, y = prop), fill = "#7c9b99", width = 0.9, show.legend = F) +
+  geom_text(aes(x = Animal_Attack.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .001, size = 4) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 15) +
+  ggtitle("TREE FALL and ANIMAL ATTACK (c)") +
+  theme(plot.title = element_text(size = 25)) +
+  xlab("Age of Co-occurrence") +
+  ylab("Percentage of Intervals") + labs(subtitle = "388 Individuals, 568 Intervals")
+dev.off()
+
+# By gender
+pdf(file = "Tree Fall Plots/co_occurrence7b.pdf", height = 5, width = 10)
+df_long %>%
+  count(Animal_Attack.co_occurrence.interval, male) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(!is.na(Animal_Attack.co_occurrence.interval)) %>%
+  ggplot() +
+  geom_col(aes(x = Animal_Attack.co_occurrence.interval, y = prop, fill = male), width = 0.9, show.legend = F) +
+  geom_text(aes(x = Animal_Attack.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .0005, size = 4) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 15) +
+  ggtitle("TREE FALL and ANIMAL ATTACK (c)") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Co-occurrence") +
+  ylab("Percentage of Intervals") + labs(subtitle = "388 Individuals, 568 Intervals") +
+  facet_wrap(~male) + theme(strip.text.x = element_text(size = 20)) +
+  theme(strip.background = element_blank())
+dev.off()
+
 ## Percentage co-occurrence of risks ----
 
 # Changing the 0's and 1's of the variables for the plots to be more understandable
@@ -895,11 +1006,14 @@ df_long$animal.attack.during.interval <- ifelse(df_long$animal.attack.during.int
 Occured", "Animal Attack Did
 Not Occur")
 df_long$canoe.capsize.during.interval <- ifelse(df_long$canoe.capsize.during.interval == 1, "Canoe Capsize
-Occured", "Canoe Capsize Did
-Not Occur")
+Occured", "Canoe Capsize
+Did Not Occur")
 df_long$cut.self.during.interval <- ifelse(df_long$cut.self.during.interval == 1, "Cut Self
 Occured", "Cut Self Did
 Not Occur")
+df_long$Animal_Attack.during.interval <- ifelse(df_long$Animal_Attack.during.interval == 1, "Animal Attack (c)
+Occured", "Animal Attack (c)
+Did Not Occur")
 
 
 ### Fight ----
@@ -1014,7 +1128,7 @@ df_long %>%
 dev.off()
 
 # By region
-pdf(file = "Tree Fall Plots/co_occurrence2e.pdf", height = 4, width = 7.5)
+pdf(file = "Tree Fall Plots/co_occurrence2f.pdf", height = 4, width = 7.5)
 df_long %>%
   count(sickness.during.interval, event, region) %>%
   group_by(sickness.during.interval, region) %>%
@@ -1308,6 +1422,74 @@ df_long %>%
   guides(x =  guide_axis(angle = 90))
 dev.off()
 
+### Animal Attack (c) ----
+# Compare intervals where event = 1 vs. intervals where event = 0,
+# what is the percentage in which animal attack (c)
+pdf(file = "Tree Fall Plots/co_occurrence7c.pdf", height = 4, width = 6)
+df_long %>%
+  count(Animal_Attack.during.interval, event) %>%
+  group_by(Animal_Attack.during.interval) %>%
+  mutate(pct = prop.table(n) * 100) %>%
+  ggplot(aes(Animal_Attack.during.interval, pct, fill = event)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
+            position = position_stack(vjust = 0.5), size = 3) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_classic(base_size = 12) +
+  ggtitle("TREE FALL and 
+  ANIMAL ATTACK (c)") +
+  theme(plot.title = element_text(size = 25)) +
+  xlab("") +
+  ylab("Percentage of Intervals") + labs(subtitle = "388 Individuals, 568 Intervals") +
+  scale_fill_manual(values = c("lightcyan2", "lightcoral")) +
+  labs(fill = "")
+dev.off()
+
+# For males and females
+pdf(file = "Tree Fall Plots/co_occurrence7d.pdf", height = 4, width = 7)
+df_long %>%
+  count(Animal_Attack.during.interval, event, male) %>%
+  group_by(Animal_Attack.during.interval, male) %>%
+  mutate(pct = prop.table(n) * 100) %>%
+  ggplot(aes(Animal_Attack.during.interval, pct, fill = event)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
+            position = position_stack(vjust = 0.5), size = 3) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_classic(base_size = 12) +
+  ggtitle("TREE FALL and
+  ANIMAL ATTACK (c)") +
+  theme(plot.title = element_text(size = 25)) +
+  xlab("") +
+  ylab("Percentage of Intervals") + labs(subtitle = "388 Individuals, 568 Intervals") +
+  labs(fill = "") +
+  facet_wrap(~male) + theme(strip.text.x = element_text(size = 20)) +
+  scale_fill_manual(values = c("lightcyan2", "lightcoral")) +
+  theme(strip.background = element_blank())
+dev.off()
+
+# By region
+pdf(file = "Tree Fall Plots/co_occurrence7e.pdf", height = 4.5, width = 7)
+df_long %>%
+  count(Animal_Attack.during.interval, event, region) %>%
+  group_by(Animal_Attack.during.interval, region) %>%
+  mutate(pct = prop.table(n) * 100) %>%
+  ggplot(aes(Animal_Attack.during.interval, pct, fill = event)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  geom_text(aes(label = paste0(sprintf("%1.1f", pct),"%")),
+            position = position_stack(vjust = 0.5), size = 3) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_classic(base_size = 12) +
+  ggtitle("TREE FALL and ANIMAL ATTACK (c)") +
+  theme(plot.title = element_text(size = 25)) +
+  xlab("") +
+  ylab("Percentage of Intervals") + labs(subtitle = "388 Individuals, 568 Intervals") +
+  labs(fill = "") +
+  facet_wrap(~region) + theme(strip.text.x = element_text(size = 15)) + theme(strip.text.x = element_text(size = 15)) +
+  theme(strip.background = element_blank()) +
+  scale_fill_manual(values = c("lightcyan2", "lightcoral")) +
+  guides(x =  guide_axis(angle = 90))
+dev.off()
 
 ## Survival Function ----
 fit <- survfit(Surv(enter, exit, tree.fall.during.interval) ~ 1, data = df)

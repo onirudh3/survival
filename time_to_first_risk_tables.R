@@ -22,7 +22,7 @@ dg <- df_short %>%
   group_by(pid) %>%
   mutate(y = cumall(lag(!tree.fall.during.interval))) %>%
   filter(is.na(y)) %>%
-  select(-y)
+  dplyr::select(-y)
 
 write.csv(dg, "tree_fall_time_to_first_risk_short_interval.csv", row.names = F)
 
@@ -43,7 +43,7 @@ dg <- df_short %>%
   group_by(pid) %>%
   mutate(y = cumall(lag(!bite.during.interval))) %>%
   filter(is.na(y)) %>%
-  select(-y)
+  dplyr::select(-y)
 
 write.csv(dg, "snake_ray_bite_time_to_first_risk_short_interval.csv", row.names = F)
 
@@ -63,7 +63,7 @@ dg <- df_short %>%
   group_by(pid) %>%
   mutate(y = cumall(lag(!sickness.during.interval))) %>%
   filter(is.na(y)) %>%
-  select(-y)
+  dplyr::select(-y)
 
 write.csv(dg, "sickness_time_to_first_risk_short_interval.csv", row.names = F)
 
@@ -83,7 +83,7 @@ dg <- df_short %>%
   group_by(pid) %>%
   mutate(y = cumall(lag(!fought.during.interval))) %>%
   filter(is.na(y)) %>%
-  select(-y)
+  dplyr::select(-y)
 
 write.csv(dg, "fought_time_to_first_risk_short_interval.csv", row.names = F)
 
@@ -103,7 +103,7 @@ dg <- df_short %>%
   group_by(pid) %>%
   mutate(y = cumall(lag(!animal.attack.during.interval))) %>%
   filter(is.na(y)) %>%
-  select(-y)
+  dplyr::select(-y)
 
 write.csv(dg, "animal_attack_time_to_first_risk_short_interval.csv", row.names = F)
 
@@ -123,7 +123,7 @@ dg <- df_short %>%
   group_by(pid) %>%
   mutate(y = cumall(lag(!canoe.capsize.during.interval))) %>%
   filter(is.na(y)) %>%
-  select(-y)
+  dplyr::select(-y)
 
 write.csv(dg, "canoe_capsize_time_to_first_risk_short_interval.csv", row.names = F)
 
@@ -143,9 +143,29 @@ dg <- df_short %>%
   group_by(pid) %>%
   mutate(y = cumall(lag(!cut.self.during.interval))) %>%
   filter(is.na(y)) %>%
-  select(-y)
+  dplyr::select(-y)
 
 write.csv(dg, "cut_self_time_to_first_risk_short_interval.csv", row.names = F)
+
+
+## Animal Attack (c) ----
+# Long intervals
+df_long <- read.csv("Animal_Attack_combined_final_table.csv")
+
+df <- subset(df_long, enter == 0)
+
+write.csv(df, "Animal_Attack_combined_time_to_first_risk_long_interval.csv", row.names = F)
+
+# Short intervals
+df_short <- read.csv("data_new_format.csv")
+
+dg <- df_short %>%
+  group_by(pid) %>%
+  mutate(y = cumall(lag(!Animal_Attack.during.interval))) %>%
+  filter(is.na(y)) %>%
+  dplyr::select(-y)
+
+write.csv(dg, "Animal_Attack_combined_time_to_first_risk_short_interval.csv", row.names = F)
 
 
 

@@ -173,6 +173,7 @@ sick_df3 <- read.csv("sickness_cleaned.csv")
 animal_attack_df3 <- read.csv("animal_attack_cleaned.csv")
 ds1 <- read.csv("canoe_capsize_cleaned.csv")
 fought_df3 <- read.csv("fought_cleaned.csv")
+dg <- read.csv("Animal_Attack_combined_cleaned.csv")
 
 ## Tree Fall ----
 df6 <- left_join(df6, db6)
@@ -215,14 +216,21 @@ df6$fought.during.interval <- ifelse((df6$enter < df6$fought.age & df6$fought.ag
                                        (df6$enter < df6$fought.age2 & df6$fought.age2 <= df6$exit), 1, 0)
 df6$fought.during.interval <- ifelse(is.na(df6$fought.during.interval), 0, df6$fought.during.interval)
 
+## Animal Attack (c) ----
+df6 <- left_join(df6, dg)
+df6$Animal_Attack.during.interval <- ifelse((df6$enter < df6$Animal_Attack_age & df6$Animal_Attack_age <= df6$exit) |
+                                              (df6$enter < df6$Animal_Attack_age1 & df6$Animal_Attack_age1 <= df6$exit), 1, 0)
+df6$Animal_Attack.during.interval <- ifelse(is.na(df6$Animal_Attack.during.interval), 0, df6$Animal_Attack.during.interval)
+
+
 # Final Table
 df6 <- df6[c("pid", "age", "male", "region", "enter", "exit", "event",
              "length.of.last.cut.self", "time.since.last.cut.self",
              "tree.fall.during.interval", "bite.during.interval",
              "sickness.during.interval", "animal.attack.during.interval",
-             "canoe.capsize.during.interval", "fought.during.interval")]
+             "canoe.capsize.during.interval", "fought.during.interval", "Animal_Attack.during.interval")]
 
-rm(db6, snake_df3, sick_df3, animal_attack_df3, ds1, fought_df3)
+rm(db6, snake_df3, sick_df3, animal_attack_df3, ds1, fought_df3, dg)
 
 
 # Adding columns for risk co-occurrences ----------------------------------
@@ -315,6 +323,21 @@ df6 <- df6 %>%
                                                    fought.during.interval == 1 & event == 1 & exit >= 60 & exit < 70 ~ "60-69",
                                                    fought.during.interval == 1 & event == 1 & exit >= 70 & exit < 80 ~ "70-79"))
 
+## Animal Attack (c) ----
+
+df6$Animal_Attack.co_occurrence <- ifelse(df6$event == 1 & df6$Animal_Attack.during.interval == 1, 1, 0)
+
+# Creating interval categories for co-occurrences of Animal_Attack
+df6 <- df6 %>%
+  mutate(Animal_Attack.co_occurrence.interval = case_when(Animal_Attack.during.interval == 1 & event == 1 & exit >= 0 & exit < 10 ~ "0-9",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 10 & exit < 20 ~ "10-19",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 20 & exit < 30 ~ "20-29",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 30 & exit < 40 ~ "30-39",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 40 & exit < 50 ~ "40-49",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 50 & exit < 60 ~ "50-59",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 60 & exit < 70 ~ "60-69",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 70 & exit < 80 ~ "70-79"))
+
 
 # Add column for number of occurrences per interval -----------------------
 df <- df6
@@ -360,7 +383,7 @@ rm(df1, df3, df6, dx, dy, h_id)
 # columns is slightly modified for every risk.
 
 raw <- read.csv("raw_data_no_duplicates.csv")
-raw <- select(raw, c(7, TIPO1:other.serious.accident.age5))
+raw <- dplyr::select(raw, c(7, TIPO1:other.serious.accident.age5))
 
 ## Arrange the instances in ascending order, implementing bubble sort algorithm ----
 # Very tedious but could not find a better way

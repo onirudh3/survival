@@ -148,6 +148,7 @@ sick_df3 <- read.csv("sickness_cleaned.csv")
 animal_attack_df3 <- read.csv("animal_attack_cleaned.csv")
 fought_df3 <- read.csv("fought_cleaned.csv")
 dc1 <- read.csv("cut_self_cleaned.csv")
+dg <- read.csv("Animal_Attack_combined_cleaned.csv")
 
 ## Canoe Capsize ----
 df6 <- left_join(df6, ds1)
@@ -176,6 +177,12 @@ df6$animal.attack.during.interval <- ifelse((df6$enter < df6$animal.attack.age &
                                               (df6$enter < df6$animal.attack.age1 & df6$animal.attack.age1 <= df6$exit), 1, 0)
 df6$animal.attack.during.interval <- ifelse(is.na(df6$animal.attack.during.interval), 0, df6$animal.attack.during.interval)
 
+## Animal Attack (c) ----
+df6 <- left_join(df6, dg)
+df6$Animal_Attack.during.interval <- ifelse((df6$enter < df6$Animal_Attack_age & df6$Animal_Attack_age <= df6$exit) |
+                                              (df6$enter < df6$Animal_Attack_age1 & df6$Animal_Attack_age1 <= df6$exit), 1, 0)
+df6$Animal_Attack.during.interval <- ifelse(is.na(df6$Animal_Attack.during.interval), 0, df6$Animal_Attack.during.interval)
+
 ## Fight ----
 df6 <- left_join(df6, fought_df3)
 df6$fought.during.interval <- ifelse((df6$enter < df6$fought.age & df6$fought.age <= df6$exit) |
@@ -198,9 +205,9 @@ df6 <- df6[c("pid", "age", "male", "region", "enter", "exit", "event",
              "length.of.last.tree.fall", "time.since.last.tree.fall",
              "canoe.capsize.during.interval", "bite.during.interval",
              "sickness.during.interval", "animal.attack.during.interval",
-             "fought.during.interval", "cut.self.during.interval")]
+             "fought.during.interval", "cut.self.during.interval", "Animal_Attack.during.interval")]
 
-rm(ds1, snake_df3, sick_df3, animal_attack_df3, fought_df3, dc1)
+rm(ds1, snake_df3, sick_df3, animal_attack_df3, fought_df3, dc1, dg)
 
 
 # Adding columns for risk co-occurrences ----------------------------------
@@ -262,6 +269,21 @@ df6 <- df6 %>%
                                                           animal.attack.during.interval == 1 & event == 1 & exit >= 50 & exit < 60 ~ "50-59",
                                                           animal.attack.during.interval == 1 & event == 1 & exit >= 60 & exit < 70 ~ "60-69",
                                                           animal.attack.during.interval == 1 & event == 1 & exit >= 70 & exit < 80 ~ "70-79"))
+
+## Animal Attack (c) ----
+
+df6$Animal_Attack.co_occurrence <- ifelse(df6$event == 1 & df6$Animal_Attack.during.interval == 1, 1, 0)
+
+# Creating interval categories for co-occurrences of Animal_Attack
+df6 <- df6 %>%
+  mutate(Animal_Attack.co_occurrence.interval = case_when(Animal_Attack.during.interval == 1 & event == 1 & exit >= 0 & exit < 10 ~ "0-9",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 10 & exit < 20 ~ "10-19",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 20 & exit < 30 ~ "20-29",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 30 & exit < 40 ~ "30-39",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 40 & exit < 50 ~ "40-49",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 50 & exit < 60 ~ "50-59",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 60 & exit < 70 ~ "60-69",
+                                                          Animal_Attack.during.interval == 1 & event == 1 & exit >= 70 & exit < 80 ~ "70-79"))
 
 ## Fight ----
 
@@ -356,7 +378,7 @@ rm(df1, df6, dx, dy, h_id)
 # columns is slightly modified for every risk.
 
 raw <- read.csv("raw_data_no_duplicates.csv")
-raw <- select(raw, c(7, TIPO1:other.serious.accident.age5))
+raw <- dplyr::select(raw, c(7, TIPO1:other.serious.accident.age5))
 
 # ref_df <- subset(raw, select = c(pid, other.serious.accident.age, other.serious.accident.age1,
 #                                other.serious.accident.age2, other.serious.accident.age3,

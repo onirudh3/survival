@@ -773,7 +773,7 @@ df_long %>%
   ggplot() +
   geom_col(aes(x = fought.co_occurrence.interval, y = prop), fill = "#7c9b99", width = 0.9, show.legend = F) +
   geom_text(aes(x = fought.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .001, size = 4) +
-  scale_y_continuous(labels = scales::percent, limits = c(0,0.004)) +
+  scale_y_continuous(labels = scales::percent, limits = c(0,NA)) +
   theme_classic(base_size = 15) +
   ggtitle("ANIMAL ATTACK and FIGHT") +
   theme(plot.title = element_text(size = 25)) +
@@ -790,7 +790,7 @@ df_long %>%
   ggplot() +
   geom_col(aes(x = fought.co_occurrence.interval, y = prop, fill = male), width = 0.9, show.legend = F) +
   geom_text(aes(x = fought.co_occurrence.interval, y = prop, label = scales::percent(prop)), vjust = 0, nudge_y = .001, size = 4) +
-  scale_y_continuous(labels = scales::percent, limits = c(0,0.004)) +
+  scale_y_continuous(labels = scales::percent, limits = c(0,NA)) +
   theme_classic(base_size = 15) +
   ggtitle("ANIMAL ATTACK and FIGHT") +
   theme(plot.title = element_text(size = 30)) +
