@@ -29,15 +29,18 @@ summary(model1)
 eha::logrank(Surv(enter, exit, bite.during.interval), group = male,
              data = df)
 
+# Testing Proportional Hazards for region
+eha::logrank(Surv(enter, exit, bite.during.interval), group = region, data = df)
+
 # Export results in table
-stargazer(model1, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model1, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model1.tex",
           dep.var.labels = "Hazard Rate", covariate.labels = "Male",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Model 2: Sex + Risk -----------------------------------------------------
 
@@ -45,7 +48,7 @@ stargazer(model1, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
 model2a <- coxreg(Surv(enter, exit, bite.during.interval) ~ male +
                     tree.fall.during.interval, data = df)
 summary(model2a)
-stargazer(model2a, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model2a, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model2a.tex",
           dep.var.labels = "Hazard Rate",
@@ -53,13 +56,13 @@ stargazer(model2a, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2b: Sex + Sickness ----
 model2b <- coxreg(Surv(enter, exit, bite.during.interval) ~ male +
                     sickness.during.interval, data = df)
 summary(model2b)
-stargazer(model2b, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model2b, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model2b.tex",
           dep.var.labels = "Hazard Rate",
@@ -67,13 +70,13 @@ stargazer(model2b, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2c: Sex + Fight ----
 model2c <- coxreg(Surv(enter, exit, bite.during.interval) ~ male +
                     fought.during.interval, data = df)
 summary(model2c)
-stargazer(model2c, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model2c, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model2c.tex",
           dep.var.labels = "Hazard Rate",
@@ -81,13 +84,13 @@ stargazer(model2c, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2d: Sex + Animal Attack ----
 model2d <- coxreg(Surv(enter, exit, bite.during.interval) ~ male +
                     animal.attack.during.interval, data = df)
 summary(model2d)
-stargazer(model2d, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model2d, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model2d.tex",
           dep.var.labels = "Hazard Rate",
@@ -95,13 +98,13 @@ stargazer(model2d, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2e: Sex + Canoe Capsize ----
 model2e <- coxreg(Surv(enter, exit, bite.during.interval) ~ male +
                     canoe.capsize.during.interval, data = df)
 summary(model2e)
-stargazer(model2e, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model2e, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model2e.tex",
           dep.var.labels = "Hazard Rate",
@@ -109,13 +112,13 @@ stargazer(model2e, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2f: Sex + Cut Self ----
 model2f <- coxreg(Surv(enter, exit, bite.during.interval) ~ male +
                     cut.self.during.interval, data = df)
 summary(model2f)
-stargazer(model2f, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model2f, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model2f.tex",
           dep.var.labels = "Hazard Rate",
@@ -123,7 +126,7 @@ stargazer(model2f, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 
 # Model 3: Sex + Region + Risk --------------------------------------------
@@ -132,7 +135,7 @@ stargazer(model2f, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
 model3a <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
                     tree.fall.during.interval, data = df)
 summary(model3a)
-stargazer(model3a, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model3a, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model3a.tex",
           dep.var.labels = "Hazard Rate",
@@ -141,7 +144,7 @@ stargazer(model3a, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Snake Bite Plots/model3a.pdf", height = 5, width = 5)
@@ -160,7 +163,7 @@ dev.off()
 model3b <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
                     sickness.during.interval, data = df)
 summary(model3b)
-stargazer(model3b, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model3b, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model3b.tex",
           dep.var.labels = "Hazard Rate",
@@ -169,7 +172,7 @@ stargazer(model3b, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Snake Bite Plots/model3b.pdf", height = 5, width = 5)
@@ -188,7 +191,7 @@ dev.off()
 model3c <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
                     fought.during.interval, data = df)
 summary(model3c)
-stargazer(model3c, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model3c, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model3c.tex",
           dep.var.labels = "Hazard Rate",
@@ -196,7 +199,7 @@ stargazer(model3c, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Snake Bite Plots/model3c.pdf", height = 5, width = 5)
@@ -219,7 +222,7 @@ model3d <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
 #                            Loglik converged before variable  4 ; beta may be infinite.
 summary(model3d)
 
-stargazer(model3d, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model3d, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model3d.tex",
           dep.var.labels = "Hazard Rate",
@@ -228,7 +231,7 @@ stargazer(model3d, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot (GIVES Error in x[[i]][1, 1] : subscript out of bounds)
 # pdf(file = "Snake Bite Plots/model3d.pdf", height = 5, width = 5)
@@ -247,7 +250,7 @@ stargazer(model3d, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
 model3e <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
                     canoe.capsize.during.interval, data = df)
 summary(model3e)
-stargazer(model3e, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model3e, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model3e.tex",
           dep.var.labels = "Hazard Rate",
@@ -256,7 +259,7 @@ stargazer(model3e, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Snake Bite Plots/model3e.pdf", height = 5, width = 5)
@@ -275,7 +278,7 @@ dev.off()
 model3f <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
                     cut.self.during.interval, data = df)
 summary(model3f)
-stargazer(model3f, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model3f, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model3f.tex",
           dep.var.labels = "Hazard Rate",
@@ -283,7 +286,7 @@ stargazer(model3f, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Snake Bite Plots/model3f.pdf", height = 5, width = 5)
@@ -305,7 +308,7 @@ model4a <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
                     tree.fall.during.interval +
                     male * tree.fall.during.interval, data = df)
 summary(model4a)
-stargazer(model4a, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model4a, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model4a.tex", dep.var.labels = "Hazard Rate",
           covariate.labels = c("Male", "Near San Borja", "Upriver", "Tree Fall",
@@ -313,14 +316,14 @@ stargazer(model4a, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4b: Sex + Region + Sickness + Sex*Sickness ----
 model4b <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
                     sickness.during.interval + male * sickness.during.interval,
                   data = df)
 summary(model4b)
-stargazer(model4b, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model4b, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model4b.tex",
           dep.var.labels = "Hazard Rate",
@@ -330,14 +333,14 @@ stargazer(model4b, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4c: Sex + Region + Fight + Sex*Fight ----
 model4c <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
                     fought.during.interval + male * fought.during.interval,
                   data = df)
 summary(model4c)
-stargazer(model4c, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model4c, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model4c.tex",
           dep.var.labels = "Hazard Rate",
@@ -347,7 +350,7 @@ stargazer(model4c, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4d: Sex + Region + Animal Attack + Sex*Animal Attack ----
 model4d <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
@@ -355,7 +358,7 @@ model4d <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
                     male * animal.attack.during.interval,
                   data = df)
 summary(model4d)
-stargazer(model4d, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model4d, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model4d.tex",
           dep.var.labels = "Hazard Rate",
@@ -365,7 +368,7 @@ stargazer(model4d, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4e: Sex + Region + Canoe Capsize + Sex*Canoe Capsize ----
 model4e <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
@@ -373,7 +376,7 @@ model4e <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
                     male * canoe.capsize.during.interval,
                   data = df)
 summary(model4e)
-stargazer(model4e, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model4e, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model4e.tex",
           dep.var.labels = "Hazard Rate",
@@ -383,14 +386,14 @@ stargazer(model4e, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4f: Sex + Region + Cut Self + Sex*Cut Self ----
 model4f <- coxreg(Surv(enter, exit, bite.during.interval) ~ male + region +
                     cut.self.during.interval + male * cut.self.during.interval,
                   data = df)
 summary(model4f)
-stargazer(model4f, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model4f, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model4f.tex",
           dep.var.labels = "Hazard Rate",
@@ -400,7 +403,7 @@ stargazer(model4f, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 
 
@@ -421,7 +424,7 @@ new_df <- df_long %>%
 model5a <- coxreg(Surv(enter, exit, event) ~ length.of.last.bite,
                   data = new_df)
 summary(model5a)
-stargazer(model5a, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model5a, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model5a.tex",
           dep.var.labels = "Hazard Rate",
@@ -429,13 +432,13 @@ stargazer(model5a, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "170"),
                            c("No. of Intervals", "250"),
                            c("Total No. of Risk Years", "6,393.67")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5b: Length of Prior Snake/Ray Bite + Sex ----
 model5b <- coxreg(Surv(enter, exit, event) ~ length.of.last.bite + male,
                   data = new_df)
 summary(model5b)
-stargazer(model5b, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model5b, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model5b.tex",
           dep.var.labels = "Hazard Rate",
@@ -443,13 +446,13 @@ stargazer(model5b, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "170"),
                            c("No. of Intervals", "250"),
                            c("Total No. of Risk Years", "6,393.67")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5c: Length of Prior Snake/Ray Bite + Sex + Region ----
 model5c <- coxreg(Surv(enter, exit, event) ~ length.of.last.bite + male +
                     region, data = new_df)
 summary(model5c)
-stargazer(model5c, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model5c, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model5c.tex",
           dep.var.labels = "Hazard Rate",
@@ -458,13 +461,13 @@ stargazer(model5c, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "170"),
                            c("No. of Intervals", "250"),
                            c("Total No. of Risk Years", "6,393.67")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5d: Length of Prior Snake/Ray Bite + Tree Fall ----
 model5d <- coxreg(Surv(enter, exit, event) ~ length.of.last.bite +
                     tree.fall.during.interval, data = new_df)
 summary(model5d)
-stargazer(model5d, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model5d, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model5d.tex",
           dep.var.labels = "Hazard Rate",
@@ -473,13 +476,13 @@ stargazer(model5d, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "170"),
                            c("No. of Intervals", "250"),
                            c("Total No. of Risk Years", "6,393.67")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5e: Length of Prior Snake/Ray Bite + Sickness ----
 model5e <- coxreg(Surv(enter, exit, event) ~ length.of.last.bite +
                     sickness.during.interval, data = new_df)
 summary(model5e)
-stargazer(model5e, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model5e, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model5e.tex",
           dep.var.labels = "Hazard Rate",
@@ -488,13 +491,13 @@ stargazer(model5e, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "170"),
                            c("No. of Intervals", "250"),
                            c("Total No. of Risk Years", "6,393.67")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5f: Length of Prior Snake/Ray Bite + Fight ----
 model5f <- coxreg(Surv(enter, exit, event) ~ length.of.last.bite +
                     fought.during.interval, data = new_df)
 summary(model5f)
-stargazer(model5f, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model5f, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model5f.tex",
           dep.var.labels = "Hazard Rate",
@@ -502,13 +505,13 @@ stargazer(model5f, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "170"),
                            c("No. of Intervals", "250"),
                            c("Total No. of Risk Years", "6,393.67")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5g: Length of Prior Snake/Ray Bite + Animal Attack ----
 model5g <- coxreg(Surv(enter, exit, event) ~ length.of.last.bite +
                     animal.attack.during.interval, data = new_df)
 summary(model5g)
-stargazer(model5g, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model5g, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model5g.tex",
           dep.var.labels = "Hazard Rate",
@@ -517,13 +520,13 @@ stargazer(model5g, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "170"),
                            c("No. of Intervals", "250"),
                            c("Total No. of Risk Years", "6,393.67")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5h: Length of Prior Snake/Ray Bite + Canoe Capsize ----
 model5h <- coxreg(Surv(enter, exit, event) ~ length.of.last.bite +
                     canoe.capsize.during.interval, data = new_df)
 summary(model5h)
-stargazer(model5h, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model5h, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model5h.tex",
           dep.var.labels = "Hazard Rate",
@@ -532,13 +535,13 @@ stargazer(model5h, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "170"),
                            c("No. of Intervals", "250"),
                            c("Total No. of Risk Years", "6,393.67")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5i: Length of Prior Snake/Ray Bite + Cut Self ----
 model5i <- coxreg(Surv(enter, exit, event) ~ length.of.last.bite +
                     cut.self.during.interval, data = new_df)
 summary(model5i)
-stargazer(model5i, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
+stargazer(model5i, type = "latex", report = "vcsp", single.row = T, title = "Snake/Ray Bite \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Snake Bite Tables/model5i.tex",
           dep.var.labels = "Hazard Rate",
@@ -547,7 +550,7 @@ stargazer(model5i, type = "latex", title = "Snake/Ray Bite \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "170"),
                            c("No. of Intervals", "250"),
                            c("Total No. of Risk Years", "6,393.67")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 
 

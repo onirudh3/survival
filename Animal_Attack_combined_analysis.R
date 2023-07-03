@@ -28,15 +28,18 @@ summary(model1)
 # Testing Proportional Hazards
 eha::logrank(Surv(enter, exit, Animal_Attack.during.interval), group = male, data = df)
 
+# Testing Proportional Hazards for region
+eha::logrank(Surv(enter, exit, Animal_Attack.during.interval), group = region, data = df)
+
 # Export results in table
-stargazer(model1, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model1, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model1.tex",
           dep.var.labels = "Hazard Rate", covariate.labels = "Male",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Model 2: Sex + Risk -----------------------------------------------------
 
@@ -44,7 +47,7 @@ stargazer(model1, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
 model2a <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male +
                     tree.fall.during.interval, data = df)
 summary(model2a)
-stargazer(model2a, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model2a, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model2a.tex",
           dep.var.labels = "Hazard Rate",
@@ -52,13 +55,13 @@ stargazer(model2a, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2b: Sex + Sickness ----
 model2b <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male +
                     sickness.during.interval, data = df)
 summary(model2b)
-stargazer(model2b, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model2b, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model2b.tex",
           dep.var.labels = "Hazard Rate",
@@ -66,13 +69,13 @@ stargazer(model2b, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2c: Sex + Fight ----
 model2c <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male +
                     fought.during.interval, data = df)
 summary(model2c)
-stargazer(model2c, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model2c, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model2c.tex",
           dep.var.labels = "Hazard Rate",
@@ -80,13 +83,13 @@ stargazer(model2c, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2d: Sex + Canoe Capsize ----
 model2d <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male +
                     canoe.capsize.during.interval, data = df)
 summary(model2d)
-stargazer(model2d, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model2d, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model2d.tex",
           dep.var.labels = "Hazard Rate",
@@ -94,13 +97,13 @@ stargazer(model2d, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2e: Sex + Cut Self ----
 model2e <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male +
                     cut.self.during.interval, data = df)
 summary(model2e)
-stargazer(model2e, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model2e, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model2e.tex",
           dep.var.labels = "Hazard Rate",
@@ -108,7 +111,7 @@ stargazer(model2e, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Model 3: Sex + Region + Risk --------------------------------------------
 
@@ -116,7 +119,7 @@ stargazer(model2e, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
 model3a <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male + region +
                     tree.fall.during.interval, data = df)
 summary(model3a)
-stargazer(model3a, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model3a, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model3a.tex",
           dep.var.labels = "Hazard Rate",
@@ -125,7 +128,7 @@ stargazer(model3a, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Animal Attack Combined Plots/model3a.pdf", height = 5, width = 5)
@@ -144,7 +147,7 @@ dev.off()
 model3b <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male + region +
                     sickness.during.interval, data = df)
 summary(model3b)
-stargazer(model3b, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model3b, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model3b.tex",
           dep.var.labels = "Hazard Rate",
@@ -153,7 +156,7 @@ stargazer(model3b, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Animal Attack Combined Plots/model3b.pdf", height = 5, width = 5)
@@ -173,7 +176,7 @@ model3c <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male + regi
                     fought.during.interval, data = df)
 summary(model3c)
 
-stargazer(model3c, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model3c, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model3c.tex",
           dep.var.labels = "Hazard Rate",
@@ -182,7 +185,7 @@ stargazer(model3c, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Animal Attack Combined Plots/model3c.pdf", height = 5, width = 5)
@@ -201,7 +204,7 @@ dev.off()
 model3d <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male + region +
                     canoe.capsize.during.interval, data = df)
 summary(model3d)
-stargazer(model3d, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model3d, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model3d.tex",
           dep.var.labels = "Hazard Rate",
@@ -210,7 +213,7 @@ stargazer(model3d, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Animal Attack Combined Plots/model3d.pdf", height = 5, width = 5)
@@ -229,7 +232,7 @@ dev.off()
 model3e <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male + region +
                     cut.self.during.interval, data = df)
 summary(model3e)
-stargazer(model3e, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model3e, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model3e.tex",
           dep.var.labels = "Hazard Rate",
@@ -237,7 +240,7 @@ stargazer(model3e, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Animal Attack Combined Plots/model3e.pdf", height = 5, width = 5)
@@ -259,7 +262,7 @@ model4a <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male + regi
                     tree.fall.during.interval +
                     male * tree.fall.during.interval, data = df)
 summary(model4a)
-stargazer(model4a, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model4a, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model4a.tex", dep.var.labels = "Hazard Rate",
           covariate.labels = c("Male", "Near San Borja", "Upriver", "Tree Fall",
@@ -267,14 +270,14 @@ stargazer(model4a, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4b: Sex + Region + Sickness + Sex*Sickness ----
 model4b <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male + region +
                     sickness.during.interval + male * sickness.during.interval,
                   data = df)
 summary(model4b)
-stargazer(model4b, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model4b, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model4b.tex",
           dep.var.labels = "Hazard Rate",
@@ -284,7 +287,7 @@ stargazer(model4b, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4c: Sex + Region + Fight + Sex*Fight ----
 model4c <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male + region +
@@ -292,7 +295,7 @@ model4c <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male + regi
                     male * fought.during.interval,
                   data = df)
 summary(model4c)
-stargazer(model4c, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model4c, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model4c.tex",
           dep.var.labels = "Hazard Rate",
@@ -302,7 +305,7 @@ stargazer(model4c, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4d: Sex + Region + Canoe Capsize + Sex*Canoe Capsize ----
 model4d <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male + region +
@@ -310,7 +313,7 @@ model4d <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male + regi
                     male * canoe.capsize.during.interval,
                   data = df)
 summary(model4d)
-stargazer(model4d, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model4d, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model4d.tex",
           dep.var.labels = "Hazard Rate",
@@ -320,14 +323,14 @@ stargazer(model4d, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4e: Sex + Region + Cut Self + Sex*Cut Self ----
 model4e <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male + region +
                     cut.self.during.interval + male * cut.self.during.interval,
                   data = df)
 summary(model4e)
-stargazer(model4e, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model4e, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model4e.tex",
           dep.var.labels = "Hazard Rate",
@@ -337,7 +340,7 @@ stargazer(model4e, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Model 5: Sex + Region + Length of Last Animal_Attack + Risk ------------------
 
@@ -356,7 +359,7 @@ plyr::count(new_df$pid)
 model5a <- coxreg(Surv(enter, exit, event) ~ length.of.last.Animal_Attack,
                   data = new_df)
 summary(model5a)
-stargazer(model5a, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model5a, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model5a.tex",
           dep.var.labels = "Hazard Rate",
@@ -364,13 +367,13 @@ stargazer(model5a, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "182"),
                            c("No. of Intervals", "280"),
                            c("No. of Risk Years", "6,753.24")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5b: Length of Prior Animal Attack (c) + Sex ----
 model5b <- coxreg(Surv(enter, exit, event) ~ length.of.last.Animal_Attack + male,
                   data = new_df)
 summary(model5b)
-stargazer(model5b, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model5b, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model5b.tex",
           dep.var.labels = "Hazard Rate",
@@ -378,13 +381,13 @@ stargazer(model5b, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "182"),
                            c("No. of Intervals", "280"),
                            c("No. of Risk Years", "6,753.24")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5c: Length of Prior Animal Attack (c) + Sex + Region ----
 model5c <- coxreg(Surv(enter, exit, event) ~ length.of.last.Animal_Attack + male +
                     region, data = new_df)
 summary(model5c)
-stargazer(model5c, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model5c, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model5c.tex",
           dep.var.labels = "Hazard Rate",
@@ -393,13 +396,13 @@ stargazer(model5c, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "182"),
                            c("No. of Intervals", "280"),
                            c("No. of Risk Years", "6,753.24")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5d: Length of Prior Animal Attack (c) + Fight ----
 model5d <- coxreg(Surv(enter, exit, event) ~ length.of.last.Animal_Attack +
                     fought.during.interval, data = new_df)
 summary(model5d)
-stargazer(model5d, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model5d, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model5d.tex",
           dep.var.labels = "Hazard Rate",
@@ -408,13 +411,13 @@ stargazer(model5d, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "182"),
                            c("No. of Intervals", "280"),
                            c("No. of Risk Years", "6,753.24")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5e: Length of Prior Animal Attack (c) + Sickness ----
 model5e <- coxreg(Surv(enter, exit, event) ~ length.of.last.Animal_Attack +
                     sickness.during.interval, data = new_df)
 summary(model5e)
-stargazer(model5e, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model5e, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model5e.tex",
           dep.var.labels = "Hazard Rate",
@@ -423,13 +426,13 @@ stargazer(model5e, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "182"),
                            c("No. of Intervals", "280"),
                            c("No. of Risk Years", "6,753.24")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5f: Length of Prior Animal Attack (c) + Tree Fall ----
 model5f <- coxreg(Surv(enter, exit, event) ~ length.of.last.Animal_Attack +
                     tree.fall.during.interval, data = new_df)
 summary(model5f)
-stargazer(model5f, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model5f, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model5f.tex",
           dep.var.labels = "Hazard Rate",
@@ -438,13 +441,13 @@ stargazer(model5f, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "182"),
                            c("No. of Intervals", "280"),
                            c("No. of Risk Years", "6,753.24")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5g: Length of Prior Animal Attack (c) + Canoe Capsize ----
 model5g <- coxreg(Surv(enter, exit, event) ~ length.of.last.Animal_Attack +
                     canoe.capsize.during.interval, data = new_df)
 summary(model5g)
-stargazer(model5g, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model5g, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model5g.tex",
           dep.var.labels = "Hazard Rate",
@@ -453,13 +456,13 @@ stargazer(model5g, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "182"),
                            c("No. of Intervals", "280"),
                            c("No. of Risk Years", "6,753.24")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5h: Length of Prior Animal Attack (c) + Cut Self ----
 model5h <- coxreg(Surv(enter, exit, event) ~ length.of.last.Animal_Attack +
                     cut.self.during.interval, data = new_df)
 summary(model5h)
-stargazer(model5h, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
+stargazer(model5h, type = "latex", report = "vcsp", single.row = T, title = "Animal Attack (c) \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Animal Attack Combined Tables/model5h.tex",
           dep.var.labels = "Hazard Rate",
@@ -468,7 +471,7 @@ stargazer(model5h, type = "latex", title = "Animal Attack (c) \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "182"),
                            c("No. of Intervals", "280"),
                            c("No. of Risk Years", "6,753.24")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 
 # Descriptive Plots -------------------------------------------------------

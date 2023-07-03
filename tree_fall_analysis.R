@@ -12,6 +12,7 @@ library(rms)
 library(Greg)
 library(survminer)
 library(moonBook)
+library(xfun)
 
 # Import data
 df <- read.csv("data_new_format.csv") # format with 13,451 intervals
@@ -22,29 +23,48 @@ df$region <- as.factor(df$region)
 df_long$region <- as.factor(df_long$region)
 
 # Model 1: Sex ------------------------------------------------------------
-model1 <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male, data = df)
+model1 <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male, data = df)
 summary(model1)
 
-# Testing Proportional Hazards
+# Testing Proportional Hazards for gender
 eha::logrank(Surv(enter, exit, tree.fall.during.interval), group = male, data = df)
 
+# Testing Proportional Hazards for region
+eha::logrank(Surv(enter, exit, tree.fall.during.interval), group = region, data = df)
+
 # Export results in table
-stargazer(model1, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model1, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model1.tex",
           dep.var.labels = "Hazard Rate", covariate.labels = "Male",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+
+model1
+stargazer(model1, type = "text")
+
+results <- data.frame("Coefficient" = summary(model1)$coefficients[,1],
+                      "Standard Error" = summary(model1)$coefficients[,3],
+                      "p-value" = summary(model1)$coefficients[,5])
+
+stargazer(results, title = "Tree Fall", summary = F, type = "latex", report = "vcsp", single.row = T,
+          covariate.labels = "Male",
+          add.lines = list(c("No. of Individuals", "388"),
+                           c("No. of Intervals", "13,451"),
+                           c("No. of Risk Years", "13,254.94")))
+
 
 # Model 2: Sex + Risk -----------------------------------------------------
 
 ## Model 2a: Sex + Fight  ----
-model2a <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male +
+model2a <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male +
                     tree.fall.during.interval, data = df)
 summary(model2a)
-stargazer(model2a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model2a, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model2a.tex",
           dep.var.labels = "Hazard Rate",
@@ -52,13 +72,14 @@ stargazer(model2a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2b: Sex + Sickness ----
-model2b <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male +
+model2b <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male +
                     sickness.during.interval, data = df)
 summary(model2b)
-stargazer(model2b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model2b, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model2b.tex",
           dep.var.labels = "Hazard Rate",
@@ -66,13 +87,14 @@ stargazer(model2b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2c: Sex + Snake/Ray Bite ----
-model2c <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male +
+model2c <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male +
                     bite.during.interval, data = df)
 summary(model2c)
-stargazer(model2c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model2c, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model2c.tex",
           dep.var.labels = "Hazard Rate",
@@ -80,13 +102,14 @@ stargazer(model2c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2d: Sex + Animal Attack ----
-model2d <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male +
+model2d <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male +
                     animal.attack.during.interval, data = df)
 summary(model2d)
-stargazer(model2d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model2d, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model2d.tex",
           dep.var.labels = "Hazard Rate",
@@ -94,13 +117,14 @@ stargazer(model2d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2e: Sex + Canoe Capsize ----
-model2e <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male +
+model2e <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male +
                     canoe.capsize.during.interval, data = df)
 summary(model2e)
-stargazer(model2e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model2e, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model2e.tex",
           dep.var.labels = "Hazard Rate",
@@ -108,13 +132,14 @@ stargazer(model2e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2f: Sex + Cut Self ----
-model2f <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male +
+model2f <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male +
                     cut.self.during.interval, data = df)
 summary(model2f)
-stargazer(model2f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model2f, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model2f.tex",
           dep.var.labels = "Hazard Rate",
@@ -122,13 +147,14 @@ stargazer(model2f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 2g: Sex + Animal Attack (c) ----
-model2g <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male +
+model2g <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male +
                     Animal_Attack.during.interval, data = df)
 summary(model2g)
-stargazer(model2g, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model2g, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model2g.tex",
           dep.var.labels = "Hazard Rate",
@@ -136,16 +162,17 @@ stargazer(model2g, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 
 # Model 3: Sex + Region + Risk --------------------------------------------
 
 ## Model 3a: Sex + Region + Fight ----
-model3a <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model3a <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     tree.fall.during.interval, data = df)
 summary(model3a)
-stargazer(model3a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model3a, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model3a.tex",
           dep.var.labels = "Hazard Rate",
@@ -154,7 +181,7 @@ stargazer(model3a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot Error in x[[i]][1, 1] : subscript out of bounds
 # pdf(file = "Tree Fall Plots/model3a.pdf", height = 5, width = 5)
@@ -170,10 +197,11 @@ stargazer(model3a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
 # dev.off()
 
 ## Model 3b: Sex + Region + Sickness ----
-model3b <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model3b <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     sickness.during.interval, data = df)
 summary(model3b)
-stargazer(model3b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model3b, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model3b.tex",
           dep.var.labels = "Hazard Rate",
@@ -182,7 +210,7 @@ stargazer(model3b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Tree Fall Plots/model3b.pdf", height = 5, width = 5)
@@ -198,10 +226,11 @@ legend("topleft", legend = c("Sickness Did Not Occur", "Sickness Occurred"),
 dev.off()
 
 ## Model 3c: Sex + Region + Snake/Ray Bite ----
-model3c <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model3c <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     bite.during.interval, data = df)
 summary(model3c)
-stargazer(model3c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model3c, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model3c.tex",
           dep.var.labels = "Hazard Rate",
@@ -209,7 +238,7 @@ stargazer(model3c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Tree Fall Plots/model3c.pdf", height = 5, width = 5)
@@ -225,11 +254,12 @@ legend("topleft", legend = c("Snake/Ray Bite Did Not Occur", "Snake/Ray Bite Occ
 dev.off()
 
 ## Model 3d: Sex + Region + Animal Attack ----
-model3d <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model3d <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     animal.attack.during.interval, data = df)
 summary(model3d)
 
-stargazer(model3d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model3d, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model3d.tex",
           dep.var.labels = "Hazard Rate",
@@ -238,7 +268,7 @@ stargazer(model3d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Tree Fall Plots/model3d.pdf", height = 5, width = 5)
@@ -254,10 +284,11 @@ legend("topleft", legend = c("Animal Attack Did Not Occur", "Animal Attack Occur
 dev.off()
 
 ## Model 3e: Sex + Region + Canoe Capsize ----
-model3e <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model3e <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     canoe.capsize.during.interval, data = df)
 summary(model3e)
-stargazer(model3e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model3e, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model3e.tex",
           dep.var.labels = "Hazard Rate",
@@ -266,7 +297,7 @@ stargazer(model3e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Tree Fall Plots/model3e.pdf", height = 5, width = 5)
@@ -282,10 +313,11 @@ legend("topleft", legend = c("Canoe Capsize Did Not Occur", "Canoe Capsize Occur
 dev.off()
 
 ## Model 3f: Sex + Region + Cut Self ----
-model3f <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model3f <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     cut.self.during.interval, data = df)
 summary(model3f)
-stargazer(model3f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model3f, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model3f.tex",
           dep.var.labels = "Hazard Rate",
@@ -293,7 +325,7 @@ stargazer(model3f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Tree Fall Plots/model3f.pdf", height = 5, width = 5)
@@ -309,11 +341,12 @@ legend("topleft", legend = c("Cut Self Did Not Occur", "Cut Self Occurred"),
 dev.off()
 
 ## Model 3g: Sex + Region + Animal Attack (c) ----
-model3g <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model3g <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     Animal_Attack.during.interval, data = df)
 summary(model3g)
 
-stargazer(model3g, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model3g, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model3g.tex",
           dep.var.labels = "Hazard Rate",
@@ -322,7 +355,7 @@ stargazer(model3g, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Plot
 pdf(file = "Tree Fall Plots/model3g.pdf", height = 5, width = 5)
@@ -340,11 +373,12 @@ dev.off()
 # Model 4: Sex + Region + Risk + Sex*Risk ---------------------------------
 
 ## Model 4a: Sex + Region + Fight + Sex*Fight ----
-model4a <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model4a <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     tree.fall.during.interval + male * tree.fall.during.interval,
                   data = df)
 summary(model4a)
-stargazer(model4a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model4a, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model4a.tex", dep.var.labels = "Hazard Rate",
           covariate.labels = c("Male", "Near San Borja", "Upriver", "Fight",
@@ -352,14 +386,15 @@ stargazer(model4a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4b: Sex + Region + Sickness + Sex*Sickness ----
-model4b <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model4b <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     sickness.during.interval + male * sickness.during.interval,
                   data = df)
 summary(model4b)
-stargazer(model4b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model4b, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model4b.tex",
           dep.var.labels = "Hazard Rate",
@@ -369,14 +404,15 @@ stargazer(model4b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4c: Sex + Region + Snake/Ray Bite + Sex*Snake/Ray Bite ----
-model4c <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model4c <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     bite.during.interval + male * bite.during.interval,
                   data = df)
 summary(model4c)
-stargazer(model4c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model4c, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model4c.tex",
           dep.var.labels = "Hazard Rate",
@@ -386,15 +422,16 @@ stargazer(model4c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4d: Sex + Region + Animal Attack + Sex*Animal Attack ----
-model4d <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model4d <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     animal.attack.during.interval +
                     male * animal.attack.during.interval,
                   data = df)
 summary(model4d)
-stargazer(model4d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model4d, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model4d.tex",
           dep.var.labels = "Hazard Rate",
@@ -404,15 +441,16 @@ stargazer(model4d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4e: Sex + Region + Canoe Capsize + Sex*Canoe Capsize ----
-model4e <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model4e <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     canoe.capsize.during.interval +
                     male * canoe.capsize.during.interval,
                   data = df)
 summary(model4e)
-stargazer(model4e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model4e, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model4e.tex",
           dep.var.labels = "Hazard Rate",
@@ -422,14 +460,15 @@ stargazer(model4e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4f: Sex + Region + Cut Self + Sex*Cut Self ----
-model4f <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model4f <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     cut.self.during.interval + male * cut.self.during.interval,
                   data = df)
 summary(model4f)
-stargazer(model4f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model4f, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model4f.tex",
           dep.var.labels = "Hazard Rate",
@@ -439,15 +478,16 @@ stargazer(model4f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 4g: Sex + Region + Animal Attack (c) + Sex*Animal Attack (c)----
-model4g <- coxreg(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
+model4g <- coxph(Surv(enter, exit, tree.fall.during.interval) ~ male + region +
                     Animal_Attack.during.interval +
                     male * Animal_Attack.during.interval,
                   data = df)
 summary(model4g)
-stargazer(model4g, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model4g, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model4g.tex",
           dep.var.labels = "Hazard Rate",
@@ -457,7 +497,7 @@ stargazer(model4g, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "388"),
                            c("No. of Intervals", "13,451"),
                            c("No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 
 # Model 5: Sex + Region + Length of Last Fight + Risk ------------------
@@ -474,10 +514,11 @@ sum(x$age)
 plyr::count(new_df$pid)
 
 ## Model 5a: Length of Last Tree Fall ----
-model5a <- coxreg(Surv(enter, exit, event) ~ length.of.last.tree.fall,
+model5a <- coxph(Surv(enter, exit, event) ~ length.of.last.tree.fall,
                   data = new_df)
 summary(model5a)
-stargazer(model5a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model5a, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model5a.tex",
           dep.var.labels = "Hazard Rate",
@@ -485,13 +526,14 @@ stargazer(model5a, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
                            c("No. of Risk Years", "5,176.69")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5b: Length of Prior Tree Fall + Sex ----
-model5b <- coxreg(Surv(enter, exit, event) ~ length.of.last.tree.fall + male,
+model5b <- coxph(Surv(enter, exit, event) ~ length.of.last.tree.fall + male,
                   data = new_df)
 summary(model5b)
-stargazer(model5b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model5b, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model5b.tex",
           dep.var.labels = "Hazard Rate",
@@ -499,13 +541,14 @@ stargazer(model5b, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
                            c("No. of Risk Years", "5,176.69")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5c: Length of Prior Tree Fall + Sex + Region ----
-model5c <- coxreg(Surv(enter, exit, event) ~ length.of.last.tree.fall + male +
+model5c <- coxph(Surv(enter, exit, event) ~ length.of.last.tree.fall + male +
                     region, data = new_df)
 summary(model5c)
-stargazer(model5c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model5c, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model5c.tex",
           dep.var.labels = "Hazard Rate",
@@ -514,13 +557,14 @@ stargazer(model5c, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
                            c("No. of Risk Years", "5,176.69")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5d: Length of Prior Tree Fall + Fight ----
-model5d <- coxreg(Surv(enter, exit, event) ~ length.of.last.tree.fall +
+model5d <- coxph(Surv(enter, exit, event) ~ length.of.last.tree.fall +
                     fought.during.interval, data = new_df)
 summary(model5d)
-stargazer(model5d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model5d, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model5d.tex",
           dep.var.labels = "Hazard Rate",
@@ -529,13 +573,14 @@ stargazer(model5d, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
                            c("No. of Risk Years", "5,176.69")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5e: Length of Prior Tree Fall + Sickness ----
-model5e <- coxreg(Surv(enter, exit, event) ~ length.of.last.tree.fall +
+model5e <- coxph(Surv(enter, exit, event) ~ length.of.last.tree.fall +
                     sickness.during.interval, data = new_df)
 summary(model5e)
-stargazer(model5e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model5e, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model5e.tex",
           dep.var.labels = "Hazard Rate",
@@ -544,13 +589,14 @@ stargazer(model5e, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
                            c("No. of Risk Years", "5,176.69")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5f: Length of Prior Tree Fall + Snake/Ray Bite ----
-model5f <- coxreg(Surv(enter, exit, event) ~ length.of.last.tree.fall +
+model5f <- coxph(Surv(enter, exit, event) ~ length.of.last.tree.fall +
                     bite.during.interval, data = new_df)
 summary(model5f)
-stargazer(model5f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model5f, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model5f.tex",
           dep.var.labels = "Hazard Rate",
@@ -558,13 +604,14 @@ stargazer(model5f, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
                            c("No. of Risk Years", "5,176.69")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5g: Length of Prior Tree Fall + Animal Attack ----
-model5g <- coxreg(Surv(enter, exit, event) ~ length.of.last.tree.fall +
+model5g <- coxph(Surv(enter, exit, event) ~ length.of.last.tree.fall +
                     animal.attack.during.interval, data = new_df)
 summary(model5g)
-stargazer(model5g, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model5g, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model5g.tex",
           dep.var.labels = "Hazard Rate",
@@ -573,13 +620,14 @@ stargazer(model5g, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
                            c("No. of Risk Years", "5,176.69")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5h: Length of Prior Tree Fall + Canoe Capsize ----
-model5h <- coxreg(Surv(enter, exit, event) ~ length.of.last.tree.fall +
+model5h <- coxph(Surv(enter, exit, event) ~ length.of.last.tree.fall +
                     canoe.capsize.during.interval, data = new_df)
 summary(model5h)
-stargazer(model5h, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model5h, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model5h.tex",
           dep.var.labels = "Hazard Rate",
@@ -588,13 +636,14 @@ stargazer(model5h, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
                            c("No. of Risk Years", "5,176.69")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5i: Length of Prior Tree Fall + Cut Self ----
-model5i <- coxreg(Surv(enter, exit, event) ~ length.of.last.tree.fall +
+model5i <- coxph(Surv(enter, exit, event) ~ length.of.last.tree.fall +
                     cut.self.during.interval, data = new_df)
 summary(model5i)
-stargazer(model5i, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model5i, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model5i.tex",
           dep.var.labels = "Hazard Rate",
@@ -603,13 +652,14 @@ stargazer(model5i, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
                            c("No. of Risk Years", "5,176.69")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 ## Model 5j: Length of Prior Tree Fall + Animal Attack ----
-model5j <- coxreg(Surv(enter, exit, event) ~ length.of.last.tree.fall +
+model5j <- coxph(Surv(enter, exit, event) ~ length.of.last.tree.fall +
                     Animal_Attack.during.interval, data = new_df)
 summary(model5j)
-stargazer(model5j, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
+stargazer(model5j, type = "latex", report = "vcsp", single.row = T,
+          title = "Tree Fall \\vspace{-1.4em}",
           notes = "Standard errors in parentheses",
           out = "Tree Fall Tables/model5j.tex",
           dep.var.labels = "Hazard Rate",
@@ -618,7 +668,7 @@ stargazer(model5j, type = "latex", title = "Tree Fall \\vspace{-1.4em}",
           add.lines = list(c("No. of Individuals", "160"),
                            c("No. of Intervals", "180"),
                            c("No. of Risk Years", "5,176.69")),
-          omit.stat = c("ll", "n"))
+          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
 # Descriptive Plots -------------------------------------------------------
 # Make age.cat as factor
@@ -1505,6 +1555,12 @@ autoplot(fit, censor.shape = '|', censor.colour = "lightgreen",
   labs(subtitle = "388 Individuals, 13,451 Intervals")
 dev.off()
 
+ggsurvplot(fit, font.title = c("30"), conf.int = TRUE, legend = "none",
+           surv.scale = "percent", title = "Tree Fall", axes.offset = F,
+           break.x.by = 5, subtitle = "388 Individuals, 13,451 Intervals",
+           censor.shape = "|", xlab = "Age in years", risk.table = T,
+           ylab = "Proportion of individuals not experienced risk")
+
 # By gender
 fit2 <- survfit(Surv(enter, exit, tree.fall.during.interval) ~ male, data = df)
 pdf(file = "Tree Fall Plots/survival_function_by_gender.pdf", height = 5)
@@ -1512,7 +1568,7 @@ ggsurvplot(fit2, font.title = c("30"), conf.int = TRUE, legend = "right",
            surv.scale = "percent", legend.labs = c("Female", "Male"),
            legend.title = "Sex", palette = c("orchid2", "dodgerblue2"),
            title = "Tree Fall", axes.offset = F, break.x.by = 5,
-           subtitle = "388 Individuals, 13,451 Intervals") +
+           subtitle = "388 Individuals, 13,451 Intervals", risk.table = T) +
   xlab("Age in years") +
   ylab("Proportion of individuals not experienced risk")# Cannot change legend size for some reason
 dev.off()
