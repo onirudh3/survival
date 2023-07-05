@@ -12,14 +12,20 @@ library(rms)
 library(Greg)
 library(survminer)
 library(moonBook)
+library(xfun)
+library(coxme)
+library(xtable)
 
 # Import data
 df <- read.csv("data_new_format.csv") # format with 13,451 intervals
 df_long <- read.csv("Animal_Attack_combined_final_table.csv") # longer interval format
+df_first <- read.csv("animal_attack_combined_time_to_first_risk_short_interval.csv") # time to first risk short interval format
 
 # Make region as factor
 df$region <- as.factor(df$region)
 df_long$region <- as.factor(df_long$region)
+df_first$region <- as.factor(df_first$region)
+
 
 # Model 1: Sex ------------------------------------------------------------
 model1 <- coxreg(Surv(enter, exit, Animal_Attack.during.interval) ~ male, data = df)
@@ -473,6 +479,73 @@ stargazer(model5h, type = "latex", report = "vcsp", single.row = T, title = "Ani
                            c("No. of Risk Years", "6,753.24")),
           omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
 
+
+# Model 6: Mixed effects --------------------------------------------------
+
+## Null Model
+model6 <- coxph(Surv(exit, Animal_Attack.during.interval) ~ 1, data = df_first)
+# summary(model6)
+
+## Model 6a: Null with random intercept for pid ----
+model6a <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid),
+                 data = df_first)
+# summary(model6a)
+
+## Model 6b: Null with random intercepts for pid and house.id ----
+model6b <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
+                   (1 | house.id), data = df_first)
+# summary(model6b)
+
+## Model 6c: Null with random intercepts for pid, house.id and region ----
+model6c <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
+                   (1 | house.id) + (1 | region), data = df_first)
+# summary(model6c)
+
+## Model 6d: Null with region FE and pid, house.id RE ----
+model6d <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
+                   (1 | house.id) + region, data = df_first)
+# summary(model6d)
+# Note that Animal Attack Combined (c) does not violate proportional hazards for region, test is
+# significant
+
+## Model 6e: Nested RE ----
+model6e <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) + (1 | region/house.id),
+                 data = df_first)
+# summary(model6e)
+
+## Comparing model fit ----
+aov_test <- anova(model6, model6a, model6b, model6c, model6d, model6e)
+aov_test
+
+aic_test <- AIC(model6, model6a, model6b, model6c, model6d, model6e)
+aic_test
+
+## Tabulating ----
+df_coxme <- cbind(aov_test, aic_test)
+df_coxme <- subset(df_coxme, select = -c(Df))
+df_coxme <- data.frame(t(df_coxme))
+colnames(df_coxme) <- c("1", "2", "3", "4", "5", "6")
+
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$pos[[6]] <- 5
+addtorow$pos[[7]] <- 5
+addtorow$command <- c('\\hline',
+                      '\\hline',
+                      'PID RE & No & Yes & Yes & Yes & Yes & Yes \\\\\n',
+                      'House ID RE & No & No & Yes & Yes & Yes & Nested \\\\\n',
+                      'Region RE & No & No & No & Yes & No & Yes \\\\\n',
+                      'Region FE & No & No & No & No & Yes & No \\\\\n',
+                      '\\hline')
+print(xtable(df_coxme, caption = "Animal Attack (c) Mixed Effects Specifications"), add.to.row = addtorow,
+      caption.placement = "top", file = "Animal Attack Combined Tables/model6.tex")
+rm(aic_test, aov_test)
+# rm(addtorow)
 
 # Descriptive Plots -------------------------------------------------------
 # Make age.cat as factor
