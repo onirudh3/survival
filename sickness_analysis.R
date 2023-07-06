@@ -1576,11 +1576,17 @@ autoplot(fit, censor.shape = '|', censor.colour = "darkgoldenrod3",
   labs(subtitle = "388 Individuals, 13,451 Intervals")
 dev.off()
 
-ggsurvplot(fit, font.title = c("30"), conf.int = TRUE, legend = "none",
-           surv.scale = "percent", title = "Sickness", axes.offset = T,
-           break.x.by = 5, subtitle = "388 Individuals, 13,451 Intervals",
-           censor.shape = "|", xlab = "Age in years", risk.table = T,
-           ylab = "Proportion of individuals not experienced risk")
+
+# Survival risk table
+fit <- survfit(Surv(enter, exit, sickness.during.interval) ~ 1, df_first)
+gg <- ggsurvtable(fit, break.time.by = 10, data = df_first)
+gg <- data.frame(gg[["risk.table"]][["data"]])
+gg <- gg[c("time", "n.risk", "cum.n.event")]
+gg <- gg %>% rename("Age (Years)" = "time",
+                    "No. at Risk" = "n.risk",
+                    "Cumulative No. of Events" = "cum.n.event")
+stargazer(gg, summary = F, out = "Sickness Tables/risk_table.tex",
+          title = "Sickness Risk Table \\vspace{-1.4em}", rownames = F)
 
 # By gender
 fit2 <- survfit(Surv(enter, exit, sickness.during.interval) ~ male, data = df)

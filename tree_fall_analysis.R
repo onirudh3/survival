@@ -1633,16 +1633,20 @@ autoplot(fit, censor.shape = '|', censor.colour = "lightgreen",
   labs(subtitle = "388 Individuals, 13,451 Intervals")
 dev.off()
 
-# dfg <- data.frame(fit$n.censor, fit$time)
-#
-# ggsurvplot(fit, font.title = c("30"), conf.int = TRUE, legend = "none",
-#            surv.scale = "percent", title = "Tree Fall", axes.offset = F,
-#            break.x.by = 5, subtitle = "388 Individuals, 13,451 Intervals",
-#            censor.shape = "|", xlab = "Age in years", risk.table = T,
-#            ylab = "Proportion of individuals not experienced risk")
-#
-# dfx <- read.csv("tree_fall_cleaned.csv")
-# dfx <- subset(dfx, !is.na(tf.age1))
+
+# Survival risk table
+df_event <- subset(df_first, tree.fall.during.interval == 1) # Tree fall occurred 183 times
+plyr::count(df_event$pid) # 163 out of 388 ever faced tree fall
+
+fit <- survfit(Surv(enter, exit, tree.fall.during.interval) ~ 1, df_first)
+gg <- ggsurvtable(fit, break.time.by = 10, data = df_first)
+gg <- data.frame(gg[["risk.table"]][["data"]])
+gg <- gg[c("time", "n.risk", "cum.n.event")]
+gg <- gg %>% rename("Age (Years)" = "time",
+                    "No. at Risk" = "n.risk",
+                    "Cumulative No. of Events" = "cum.n.event")
+stargazer(gg, summary = F, out = "Tree Fall Tables/risk_table.tex",
+          title = "Tree Fall Risk Table \\vspace{-1.4em}", rownames = F)
 
 # By gender
 fit2 <- survfit(Surv(enter, exit, tree.fall.during.interval) ~ male, data = df)

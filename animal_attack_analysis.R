@@ -1399,6 +1399,17 @@ autoplot(fit, censor.shape = '|', censor.colour = "pink",
   labs(subtitle = "388 Individuals, 13,451 Intervals")
 dev.off()
 
+# Survival risk table
+fit <- survfit(Surv(enter, exit, animal.attack.during.interval) ~ 1, df_first)
+gg <- ggsurvtable(fit, break.time.by = 10, data = df_first)
+gg <- data.frame(gg[["risk.table"]][["data"]])
+gg <- gg[c("time", "n.risk", "cum.n.event")]
+gg <- gg %>% rename("Age (Years)" = "time",
+                    "No. at Risk" = "n.risk",
+                    "Cumulative No. of Events" = "cum.n.event")
+stargazer(gg, summary = F, out = "Animal Attack Tables/risk_table.tex",
+          title = "Animal Attack Risk Table \\vspace{-1.4em}", rownames = F)
+
 # By gender
 fit2 <- survfit(Surv(enter, exit, animal.attack.during.interval) ~ male, data = df)
 pdf(file = "Animal Attack Plots/survival_function_by_gender.pdf", height = 5)
