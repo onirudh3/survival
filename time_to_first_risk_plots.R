@@ -96,6 +96,11 @@ dev.off()
 
 
 ### Short Interval ----
+# Make age.cat as factor
+df_short$age.cat <- factor(df_short$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
 
 # Line plot
 pdf(file = "Tree Fall Plots/descriptive_plot6.pdf", height = 5, width = 7)
@@ -446,6 +451,11 @@ dev.off()
 
 
 ### Short Interval ----
+# Make age.cat as factor
+df_short$age.cat <- factor(df_short$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                                        "20-25", "25-30", "30-35", "35-40",
+                                                        "40-45", "45-50", "50-55", "55-60",
+                                                        "60+"))
 
 # Line plot
 pdf(file = "Snake Bite Plots/descriptive_plot6.pdf", height = 5, width = 7)
@@ -781,6 +791,11 @@ dev.off()
 
 
 ### Short Interval ----
+# Make age.cat as factor
+df_short$age.cat <- factor(df_short$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                                        "20-25", "25-30", "30-35", "35-40",
+                                                        "40-45", "45-50", "50-55", "55-60",
+                                                        "60+"))
 
 # Line plot
 pdf(file = "Fight Plots/descriptive_plot6.pdf", height = 5, width = 7)
@@ -1118,6 +1133,11 @@ dev.off()
 
 
 ### Short Interval ----
+# Make age.cat as factor
+df_short$age.cat <- factor(df_short$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                                        "20-25", "25-30", "30-35", "35-40",
+                                                        "40-45", "45-50", "50-55", "55-60",
+                                                        "60+"))
 
 # Line plot
 pdf(file = "Sickness Plots/descriptive_plot6.pdf", height = 5, width = 7)
@@ -1455,6 +1475,11 @@ dev.off()
 
 
 ### Short Interval ----
+# Make age.cat as factor
+df_short$age.cat <- factor(df_short$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                                        "20-25", "25-30", "30-35", "35-40",
+                                                        "40-45", "45-50", "50-55", "55-60",
+                                                        "60+"))
 
 # Line plot
 pdf(file = "Animal Attack Plots/descriptive_plot6.pdf", height = 5, width = 7)
@@ -1789,6 +1814,11 @@ dev.off()
 
 
 ### Short Interval ----
+# Make age.cat as factor
+df_short$age.cat <- factor(df_short$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                                        "20-25", "25-30", "30-35", "35-40",
+                                                        "40-45", "45-50", "50-55", "55-60",
+                                                        "60+"))
 
 # Line plot
 pdf(file = "Canoe Capsize Plots/descriptive_plot6.pdf", height = 5, width = 7)
@@ -2124,6 +2154,11 @@ dev.off()
 
 
 ### Short Interval ----
+# Make age.cat as factor
+df_short$age.cat <- factor(df_short$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                                        "20-25", "25-30", "30-35", "35-40",
+                                                        "40-45", "45-50", "50-55", "55-60",
+                                                        "60+"))
 
 # Line plot
 pdf(file = "Cut Self Plots/descriptive_plot6.pdf", height = 5, width = 7)
@@ -2460,6 +2495,11 @@ dev.off()
 
 
 ### Short Interval ----
+# Make age.cat as factor
+df_short$age.cat <- factor(df_short$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                                        "20-25", "25-30", "30-35", "35-40",
+                                                        "40-45", "45-50", "50-55", "55-60",
+                                                        "60+"))
 
 # Line plot
 pdf(file = "Animal Attack Combined Plots/descriptive_plot6.pdf", height = 5, width = 7)

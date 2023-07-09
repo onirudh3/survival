@@ -1062,6 +1062,17 @@ df_first <- read.csv("sickness_time_to_first_risk_short_interval.csv") # time to
 model6 <- coxph(Surv(exit, sickness.during.interval) ~ 1, data = df_first)
 # summary(model6)
 
+# Proportional hazards test
+c <- eha::logrank(Surv(exit, sickness.during.interval), male, df_first)
+c <- data.frame("Chisq" = c$test.statistic, "df" = c$df, "p" = c$p.value)
+stargazer(c, summary = F, title = "Sickness Log-rank Test Results for Sex", rownames = F,
+          out = "Sickness Tables/logranktest3.tex")
+
+d <- eha::logrank(Surv(exit, sickness.during.interval), region, df_first)
+d <- data.frame("Chisq" = d$test.statistic, "df" = d$df, "p" = d$p.value)
+stargazer(d, summary = F, title = "Sickness Log-rank Test Results for Region", rownames = F,
+          out = "Sickness Tables/logranktest4.tex")
+
 ## Model 6a: Null with random intercept for pid ----
 model6a <- coxme(Surv(exit, sickness.during.interval) ~ 1 + (1 | pid),
                  data = df_first)
@@ -1120,7 +1131,273 @@ x <- xtable(df_coxme, caption = "Sickness Mixed Effects Specifications")
 align(x) <- "lcccccc"
 print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model6.tex")
 
+## Model 6f: Tree Fall ----
+model6f <- coxme(Surv(exit, sickness.during.interval) ~ strata(male) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + tree.fall.during.interval, df_first)
+extract_coxme_table <- function (mod){
+  beta <- mod$coefficients
+  exp_beta <- exp(beta)
+  nvar <- length(beta)
+  nfrail <- nrow(mod$var) - nvar
+  se <- sqrt(diag(mod$var)[nfrail + 1:nvar])
+  p<- signif(1 - pchisq((beta/se)^2, 1), 2)
+  table = data.frame(cbind(beta, exp_beta, se, p))
+  return(table)
+}
+results <- extract_coxme_table(model6f)
+b <- data.frame(confint(model6f))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Tree Fall")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model6f.tex")
 
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/schoenfeld_res1.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model6f))
+dev.off()
+
+
+## Model 6g: Snake/Ray Bite ----
+model6g <- coxme(Surv(exit, sickness.during.interval) ~ strata(male) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + bite.during.interval, df_first)
+results <- extract_coxme_table(model6g)
+b <- data.frame(confint(model6g))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Snake/Ray Bite")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model6g.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/schoenfeld_res2.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model6g))
+dev.off()
+
+
+## Model 6h: Fight ----
+model6h <- coxme(Surv(exit, sickness.during.interval) ~ strata(male) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + fought.during.interval, df_first)
+results <- extract_coxme_table(model6h)
+b <- data.frame(confint(model6h))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Fight")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model6h.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/schoenfeld_res3.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model6h))
+dev.off()
+
+
+## Model 6i: Canoe Capsize ----
+model6i <- coxme(Surv(exit, sickness.during.interval) ~ strata(male) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + canoe.capsize.during.interval, df_first)
+results <- extract_coxme_table(model6i)
+b <- data.frame(confint(model6i))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Canoe Capsize")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model6i.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/schoenfeld_res4.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model6i))
+dev.off()
+
+
+## Model 6j: Animal Attack ----
+model6j <- coxme(Surv(exit, sickness.during.interval) ~ strata(male) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + animal.attack.during.interval, df_first)
+results <- extract_coxme_table(model6j)
+b <- data.frame(confint(model6j))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Animal Attack")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model6j.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/schoenfeld_res5.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model6j))
+dev.off()
+
+
+## Model 6k: Animal Attack (c) ----
+model6k <- coxme(Surv(exit, sickness.during.interval) ~ strata(male) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + Animal_Attack.during.interval, df_first)
+results <- extract_coxme_table(model6k)
+b <- data.frame(confint(model6k))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Animal Attack (c)")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model6k.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/schoenfeld_res6.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model6k))
+dev.off()
+
+
+## Model 6l: Cut Self ----
+model6l <- coxme(Surv(exit, sickness.during.interval) ~ strata(male) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + cut.self.during.interval, df_first)
+results <- extract_coxme_table(model6l)
+b <- data.frame(confint(model6l))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Cut Self")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model6l.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/schoenfeld_res7.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model6l))
+dev.off()
 
 # Descriptive Plots -------------------------------------------------------
 # Make age.cat as factor

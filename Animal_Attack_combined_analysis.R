@@ -802,70 +802,275 @@ align(x) <- "lccc"
 print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/model5h.tex")
 
 
-# # Model 6: Mixed effects --------------------------------------------------
-# df_first <- read.csv("animal_attack_combined_time_to_first_risk_short_interval.csv") # time to first risk short interval format
-#
-# ## Null Model
-# model6 <- coxph(Surv(exit, Animal_Attack.during.interval) ~ 1, data = df_first)
-# # summary(model6)
-#
-# ## Model 6a: Null with random intercept for pid ----
-# model6a <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid),
-#                  data = df_first)
-# # summary(model6a)
-#
-# ## Model 6b: Null with random intercepts for pid and house.id ----
-# model6b <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
-#                    (1 | house.id), data = df_first)
-# # summary(model6b)
-#
-# ## Model 6c: Null with random intercepts for pid, house.id and region ----
-# model6c <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
-#                    (1 | house.id) + (1 | region), data = df_first)
-# # summary(model6c)
-#
-# ## Model 6d: Null with region FE and pid, house.id RE ----
-# model6d <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
-#                    (1 | house.id) + region, data = df_first)
-# # summary(model6d)
-#
-# ## Model 6e: Nested RE ----
-# model6e <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) + (1 | region/house.id),
-#                  data = df_first)
-# # summary(model6e)
-#
-# ## Comparing model fit ----
-# aov_test <- anova(model6, model6a, model6b, model6c, model6d, model6e)
-# aov_test
-#
-# aic_test <- AIC(model6, model6a, model6b, model6c, model6d, model6e)
-# aic_test
-#
-# ## Tabulating ----
-# df_coxme <- cbind(aov_test, aic_test)
-# df_coxme <- subset(df_coxme, select = -c(Df))
-# df_coxme <- data.frame(t(df_coxme))
-# colnames(df_coxme) <- c("1", "2", "3", "4", "5", "6")
-#
-# addtorow <- list()
-# addtorow$pos <- list()
-# addtorow$pos[[1]] <- -1
-# addtorow$pos[[2]] <- 5
-# addtorow$pos[[3]] <- 5
-# addtorow$pos[[4]] <- 5
-# addtorow$pos[[5]] <- 5
-# addtorow$pos[[6]] <- 5
-# addtorow$pos[[7]] <- 5
-# addtorow$command <- c('\\hline',
-#                       '\\hline',
-#                       'PID RE & No & Yes & Yes & Yes & Yes & Yes \\\\\n',
-#                       'House ID RE & No & No & Yes & Yes & Yes & Nested \\\\\n',
-#                       'Region RE & No & No & No & Yes & No & Yes \\\\\n',
-#                       'Region FE & No & No & No & No & Yes & No \\\\\n',
-#                       '\\hline')
-# x <- xtable(df_coxme, caption = "Animal Attack (c) Mixed Effects Specifications")
-# align(x) <- "lcccccc"
-# print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/model6.tex")
+# Model 6: Mixed effects --------------------------------------------------
+df_first <- read.csv("animal_attack_combined_time_to_first_risk_short_interval.csv") # time to first risk short interval format
+
+## Null Model
+model6 <- coxph(Surv(exit, Animal_Attack.during.interval) ~ 1, data = df_first)
+# summary(model6)
+
+# Proportional hazards test
+c <- eha::logrank(Surv(exit, Animal_Attack.during.interval), male, df_first)
+c <- data.frame("Chisq" = c$test.statistic, "df" = c$df, "p" = c$p.value)
+stargazer(c, summary = F, title = "Animal Attack (c) Log-rank Test Results for Sex", rownames = F,
+          out = "Animal Attack Combined Tables/logranktest3.tex")
+
+d <- eha::logrank(Surv(exit, Animal_Attack.during.interval), region, df_first)
+d <- data.frame("Chisq" = d$test.statistic, "df" = d$df, "p" = d$p.value)
+stargazer(d, summary = F, title = "Animal Attack (c) Log-rank Test Results for Region", rownames = F,
+          out = "Animal Attack Combined Tables/logranktest4.tex")
+
+## Model 6a: Null with random intercept for pid ----
+model6a <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid),
+                 data = df_first)
+# summary(model6a)
+
+## Model 6b: Null with random intercepts for pid and house.id ----
+model6b <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
+                   (1 | house.id), data = df_first)
+# summary(model6b)
+
+## Model 6c: Null with random intercepts for pid, house.id and region ----
+model6c <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
+                   (1 | house.id) + (1 | region), data = df_first)
+# summary(model6c)
+
+## Model 6d: Null with region FE and pid, house.id RE ----
+model6d <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
+                   (1 | house.id) + region, data = df_first)
+# summary(model6d)
+
+## Model 6e: Nested RE ----
+model6e <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) + (1 | region/house.id),
+                 data = df_first)
+# summary(model6e)
+
+## Comparing model fit ----
+aov_test <- anova(model6, model6a, model6b, model6c, model6d, model6e)
+aov_test
+
+aic_test <- AIC(model6, model6a, model6b, model6c, model6d, model6e)
+aic_test
+
+## Tabulating ----
+df_coxme <- cbind(aov_test, aic_test)
+df_coxme <- subset(df_coxme, select = -c(Df))
+df_coxme <- data.frame(t(df_coxme))
+colnames(df_coxme) <- c("1", "2", "3", "4", "5", "6")
+
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$pos[[6]] <- 5
+addtorow$pos[[7]] <- 5
+addtorow$command <- c('\\hline',
+                      '\\hline',
+                      'PID RE & No & Yes & Yes & Yes & Yes & Yes \\\\\n',
+                      'House ID RE & No & No & Yes & Yes & Yes & Nested \\\\\n',
+                      'Region RE & No & No & No & Yes & No & Yes \\\\\n',
+                      'Region FE & No & No & No & No & Yes & No \\\\\n',
+                      '\\hline')
+x <- xtable(df_coxme, caption = "Animal Attack (c) Mixed Effects Specifications")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/model6.tex")
+
+## Model 6f: Tree Fall ----
+model6f <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + tree.fall.during.interval, df_first)
+extract_coxme_table <- function (mod){
+  beta <- mod$coefficients
+  exp_beta <- exp(beta)
+  nvar <- length(beta)
+  nfrail <- nrow(mod$var) - nvar
+  se <- sqrt(diag(mod$var)[nfrail + 1:nvar])
+  p<- signif(1 - pchisq((beta/se)^2, 1), 2)
+  table = data.frame(cbind(beta, exp_beta, se, p))
+  return(table)
+}
+results <- extract_coxme_table(model6f)
+b <- data.frame(confint(model6f))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Tree Fall")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Animal Attack (c) \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/model6f.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/schoenfeld_res1.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model6f))
+dev.off()
+
+
+## Model 6g: Sickness ----
+model6g <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + sickness.during.interval, df_first)
+results <- extract_coxme_table(model6g)
+b <- data.frame(confint(model6g))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Sickness")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Animal Attack (c) \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/model6g.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/schoenfeld_res2.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model6g))
+dev.off()
+
+
+## Model 6h: Fight ----
+model6h <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + fought.during.interval, df_first)
+results <- extract_coxme_table(model6h)
+b <- data.frame(confint(model6h))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Fight")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Animal Attack (c) \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/model6h.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/schoenfeld_res3.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model6h))
+dev.off()
+
+
+## Model 6i: Canoe Capsize ----
+model6i <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + canoe.capsize.during.interval, df_first)
+results <- extract_coxme_table(model6i)
+b <- data.frame(confint(model6i))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Canoe Capsize")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Animal Attack (c) \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/model6i.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/schoenfeld_res4.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model6i))
+dev.off()
+
+
+## Model 6j: Cut Self ----
+model6j <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + cut.self.during.interval, df_first)
+results <- extract_coxme_table(model6j)
+b <- data.frame(confint(model6j))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Cut Self")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Animal Attack (c) \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/model6j.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/schoenfeld_res5.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model6j))
+dev.off()
 
 # Descriptive Plots -------------------------------------------------------
 # Make age.cat as factor
