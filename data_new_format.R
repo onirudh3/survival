@@ -244,19 +244,25 @@ df <- df[c("pid", "age", "male", "region", "enter", "exit", "event",
 
 # Categorizing the age in the interval for an individual
 df <- df %>%
-  mutate(age.cat = case_when(exit >= 0 & exit < 5 ~ "0-5",
-                             exit >= 5 & exit < 10 ~ "5-10",
-                             exit >= 10 & exit < 15 ~ "10-15",
-                             exit >= 15 & exit < 20 ~ "15-20",
-                             exit >= 20 & exit < 25 ~ "20-25",
-                             exit >= 25 & exit < 30 ~ "25-30",
-                             exit >= 30 & exit < 35 ~ "30-35",
-                             exit >= 35 & exit < 40 ~ "35-40",
-                             exit >= 40 & exit < 45 ~ "40-45",
-                             exit >= 45 & exit < 50 ~ "45-50",
-                             exit >= 50 & exit < 55 ~ "50-55",
-                             exit >= 55 & exit < 60 ~ "55-60",
-                             exit >= 60 ~ "60+"))
+  mutate(age.cat = case_when(exit > 0 & exit <= 5 ~ "0-5",
+                             exit > 5 & exit <= 10 ~ "5-10",
+                             exit > 10 & exit <= 15 ~ "10-15",
+                             exit > 15 & exit <= 20 ~ "15-20",
+                             exit > 20 & exit <= 25 ~ "20-25",
+                             exit > 25 & exit <= 30 ~ "25-30",
+                             exit > 30 & exit <= 35 ~ "30-35",
+                             exit > 35 & exit <= 40 ~ "35-40",
+                             exit > 40 & exit <= 45 ~ "40-45",
+                             exit > 45 & exit <= 50 ~ "45-50",
+                             exit > 50 & exit <= 55 ~ "50-55",
+                             exit > 55 & exit <= 60 ~ "55-60",
+                             exit > 60 ~ "60+"))
+
+# Make age.cat as factor
+df$age.cat <- factor(df$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
 
 # Rename event column to tree.fall.during.interval
 df <- df %>% dplyr::rename("tree.fall.during.interval" = "event")
@@ -488,7 +494,7 @@ rm(animal_attack_df3, dc1, ds1, dx, dy, fought_df3, h_id, raw_data, sick_df3,
 
 raw <- read.csv("raw_data_no_duplicates.csv")
 
-raw <- select(raw, c(7, 16:35))
+raw <- dplyr::select(raw, c(7, 16:35))
 raw <- subset(raw, select = -c(snake.or.ray.bite.age, snake.or.ray.bite.age1))
 dx <- left_join(df, raw)
 
@@ -819,7 +825,7 @@ df <- subset(df, select = -c(index, cum))
 ## Animal Attack ----
 raw <- read.csv("raw_data_no_duplicates.csv")
 
-raw <- select(raw, c(7, 39:50))
+raw <- dplyr::select(raw, c(7, 39:50))
 raw <- subset(raw, select = -c(animal.attack.age))
 dx <- left_join(df, raw)
 
@@ -895,7 +901,7 @@ df <- subset(df, select = -c(index))
 ## Sickness ----
 raw <- read.csv("raw_data_no_duplicates.csv")
 
-raw <- select(raw, c(7, sickness.what:sickness.cause2))
+raw <- dplyr::select(raw, c(7, sickness.what:sickness.cause2))
 
 # Arrange the instances in ascending order
 raw <- transform(raw,
@@ -1221,7 +1227,7 @@ df <- subset(df, select = -c(index, cum))
 ## Fight ----
 raw <- read.csv("raw_data_no_duplicates.csv")
 
-raw <- select(raw, c(7, Fought.whom:Fought.either.drunk2))
+raw <- dplyr::select(raw, c(7, Fought.whom:Fought.either.drunk2))
 raw <- subset(raw, select = -c(fought.age, fought.age1, fought.age2))
 dx <- left_join(df, raw)
 
@@ -1580,7 +1586,7 @@ df <- subset(df, select = -c(index, cum))
 
 ## Tree Fall ----
 raw <- read.csv("raw_data_no_duplicates.csv")
-raw <- select(raw, c(7, TIPO1:other.serious.accident.age5))
+raw <- dplyr::select(raw, c(7, TIPO1:other.serious.accident.age5))
 ### Arrange the instances in ascending order, implementing bubble sort algorithm ----
 # Very tedious but could not find a better way
 
@@ -2734,7 +2740,7 @@ df <- relocate(df, c(tree_fall_where_hurt_1:tree_fall_still_bothers_2), .after =
 df <- subset(df, select = -c(index, cum))
 ## Canoe Capsize ----
 raw <- read.csv("raw_data_no_duplicates.csv")
-raw <- select(raw, c(7, TIPO1:other.serious.accident.age5))
+raw <- dplyr::select(raw, c(7, TIPO1:other.serious.accident.age5))
 
 ## Arrange the instances in ascending order, implementing bubble sort algorithm ----
 # Very tedious but could not find a better way
@@ -3866,7 +3872,7 @@ df <- subset(df, select = -c(index))
 
 ## Cut Self ----
 raw <- read.csv("raw_data_no_duplicates.csv")
-raw <- select(raw, c(7, TIPO1:other.serious.accident.age5))
+raw <- dplyr::select(raw, c(7, TIPO1:other.serious.accident.age5))
 
 ## Arrange the instances in ascending order, implementing bubble sort algorithm ----
 # Very tedious but could not find a better way
@@ -5688,13 +5694,6 @@ df$still_bothers_Animal_Attacked_3 <- df$still_bothers_snake_ray_3
 # Export as csv -----------------------------------------------------------
 
 write.csv(df, "data_new_format.csv", row.names = F)
-
-
-
-
-
-
-
 
 
 

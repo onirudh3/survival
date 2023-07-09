@@ -2121,6 +2121,22 @@ df <- left_join(df, dx)
 df <- relocate(df, c(cut_self_where_hurt_1:cut_self_still_bothers_3), .after = time.since.last.cut.self)
 df <- subset(df, select = -c(index, cum))
 
+# Categorizing the age in the interval for an individual
+df <- df %>%
+  mutate(age.cat = case_when(exit > 0 & exit <= 5 ~ "0-5",
+                             exit > 5 & exit <= 10 ~ "5-10",
+                             exit > 10 & exit <= 15 ~ "10-15",
+                             exit > 15 & exit <= 20 ~ "15-20",
+                             exit > 20 & exit <= 25 ~ "20-25",
+                             exit > 25 & exit <= 30 ~ "25-30",
+                             exit > 30 & exit <= 35 ~ "30-35",
+                             exit > 35 & exit <= 40 ~ "35-40",
+                             exit > 40 & exit <= 45 ~ "40-45",
+                             exit > 45 & exit <= 50 ~ "45-50",
+                             exit > 50 & exit <= 55 ~ "50-55",
+                             exit > 55 & exit <= 60 ~ "55-60",
+                             exit > 60 ~ "60+"))
+
 # Export final table to csv -----------------------------------------------
 
 write.csv(df, "cut_self_final_table.csv", row.names = F)

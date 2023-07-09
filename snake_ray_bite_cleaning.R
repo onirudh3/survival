@@ -308,7 +308,7 @@ rm(df3, df6, dx, dy, h_id)
 
 raw <- read.csv("raw_data_no_duplicates.csv")
 
-raw <- select(raw, c(7, 16:35))
+raw <- dplyr::select(raw, c(7, 16:35))
 raw <- subset(raw, select = -c(snake.or.ray.bite.age, snake.or.ray.bite.age1))
 dx <- left_join(df, raw)
 dx <- subset(dx, select = -c(house.id, age, male, region, length.of.last.bite:cut.self.co_occurrence.interval))
@@ -633,6 +633,22 @@ dx <- subset(dx, select = -c(still.bothers.bite, still.bothers.bite1, still.both
 df <- left_join(df, dx)
 df <- relocate(df, c(what_bit_you_snake_ray_1:still_bothers_snake_ray_3), .after = time.since.last.bite)
 df <- subset(df, select = -c(index, cum))
+
+# Categorizing the age in the interval for an individual
+df <- df %>%
+  mutate(age.cat = case_when(exit > 0 & exit <= 5 ~ "0-5",
+                             exit > 5 & exit <= 10 ~ "5-10",
+                             exit > 10 & exit <= 15 ~ "10-15",
+                             exit > 15 & exit <= 20 ~ "15-20",
+                             exit > 20 & exit <= 25 ~ "20-25",
+                             exit > 25 & exit <= 30 ~ "25-30",
+                             exit > 30 & exit <= 35 ~ "30-35",
+                             exit > 35 & exit <= 40 ~ "35-40",
+                             exit > 40 & exit <= 45 ~ "40-45",
+                             exit > 45 & exit <= 50 ~ "45-50",
+                             exit > 50 & exit <= 55 ~ "50-55",
+                             exit > 55 & exit <= 60 ~ "55-60",
+                             exit > 60 ~ "60+"))
 
 # Export final table to csv -----------------------------------------------
 

@@ -13,7 +13,7 @@ library(survminer)
 library(moonBook)
 
 # Import data
-df <- read.csv("data_new_format.csv") # format with 13,541 intervals
+df <- read.csv("data_new_format.csv") # format with 13,451 intervals
 
 # Make region as factor
 df$region <- as.factor(df$region)
@@ -123,7 +123,7 @@ ggplot(df2, aes(x = age.cat, y = prop, group = event, col = event)) +
   xlab("Age of Occurrence") +
   ylab("Percentage of Intervals") +
   labs(color = "Type") +
-  labs(subtitle = "388 Individuals, 13,541 Intervals")
+  labs(subtitle = "388 Individuals, 13,451 Intervals")
 
 # Percentage of intervals by gender ---------------------------------------
 ## Males ----
@@ -326,7 +326,7 @@ ggplot(df2_ratio, aes(x = age.cat, y = prop_m_by_f, group = event, col = event))
   xlab("Age of Occurrence") +
   ylab("Ratio of Percentage (Male/Female)") +
   labs(color = "Type") +
-  labs(subtitle = "388 Individuals, 13,541 Intervals") +
+  labs(subtitle = "388 Individuals, 13,451 Intervals") +
   scale_y_continuous(breaks = seq(0, 10, 1))
 
 
@@ -418,7 +418,7 @@ ggplot(df2, aes(x = age.cat, y = prop, group = risk.type, col = risk.type)) +
   xlab("Age of Occurrence") +
   ylab("Percentage of Individuals") +
   labs(color = "Type") +
-  labs(subtitle = "388 Individuals, 13,541 Intervals")
+  labs(subtitle = "388 Individuals, 13,451 Intervals")
 
 rm(df2)
 
@@ -558,7 +558,7 @@ ggplot(df3, aes(x = age.cat, y = prop_ratio_m_by_f, group = risk.type,
   theme(plot.title = element_text(size = 40)) +
   xlab("Age in Years") +
   ylab("Ratio of Percentage of Risk Occurrence (Male/Female)") +
-  labs(subtitle = "388 Individuals, 13,541 Intervals") +
+  labs(subtitle = "388 Individuals, 13,451 Intervals") +
   labs(color = "Type") +
   scale_y_continuous(breaks = seq(0, 10, 1))
 
@@ -566,7 +566,7 @@ rm(df_female, df_female2, df_male, df_male2, df2, df3)
 
 
 
-
+# Remove all objects and reload the data at this point!
 
 
 # With Snake/Ray Bite and Animal Attack combined, as Animal Attack (c) ----
@@ -644,7 +644,7 @@ ggplot(df2, aes(x = age.cat, y = prop, group = event, col = event)) +
   xlab("Age of Occurrence") +
   ylab("Percentage of Intervals") +
   labs(color = "Type") +
-  labs(subtitle = "388 Individuals, 13,541 Intervals")
+  labs(subtitle = "388 Individuals, 13,451 Intervals")
 
 
 
@@ -714,7 +714,9 @@ df2_m <- df2_m[c("age.cat", "event", "prop")]
 df2_m$event <- factor(df2_m$event, levels = c("Cut Self", "Sickness", "Tree Fall", "Fight",
                                               "Canoe Capsize", "Animal Attack (c)"))
 
-df2_m <- complete(df2_m, age.cat, event)
+df2_m <- df2_m |>
+  ungroup() |>
+  complete(age.cat, event)
 
 # Plot
 ggplot(df2_m, aes(x = age.cat, y = prop, group = event, col = event)) +
@@ -795,7 +797,9 @@ df2_f <- df2_f[c("age.cat", "event", "prop")]
 df2_f$event <- factor(df2_f$event, levels = c("Cut Self", "Sickness", "Tree Fall", "Fight",
                                               "Canoe Capsize", "Animal Attack (c)"))
 
-df2_f <- complete(df2_f, age.cat, event)
+df2_f <- df2_f |>
+  ungroup() |>
+  complete(age.cat, event)
 
 
 # Plot
@@ -833,7 +837,7 @@ ggplot(df2_ratio, aes(x = age.cat, y = prop_m_by_f, group = event, col = event))
   xlab("Age of Occurrence") +
   ylab("Ratio of Percentage (Male/Female)") +
   labs(color = "Type") +
-  labs(subtitle = "388 Individuals, 13,541 Intervals") +
+  labs(subtitle = "388 Individuals, 13,451 Intervals") +
   scale_y_continuous(breaks = seq(0, 10, 1))
 
 
@@ -915,7 +919,7 @@ ggplot(df2, aes(x = age.cat, y = prop, group = risk.type, col = risk.type)) +
   xlab("Age of Occurrence") +
   ylab("Percentage of Individuals") +
   labs(color = "Type") +
-  labs(subtitle = "388 Individuals, 13,541 Intervals")
+  labs(subtitle = "388 Individuals, 13,451 Intervals")
 
 rm(df2)
 
@@ -1045,7 +1049,7 @@ ggplot(df3, aes(x = age.cat, y = prop_ratio_m_by_f, group = risk.type,
   theme(plot.title = element_text(size = 40)) +
   xlab("Age in Years") +
   ylab("Ratio of Percentage of Risk Occurrence (Male/Female)") +
-  labs(subtitle = "388 Individuals, 13,541 Intervals") +
+  labs(subtitle = "388 Individuals, 13,451 Intervals") +
   labs(color = "Type") +
   scale_y_continuous(breaks = seq(0, 10, 1))
 

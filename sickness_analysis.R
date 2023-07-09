@@ -18,7 +18,7 @@ library(xtable)
 # Import data, format with 13,451 intervals
 df <- read.csv("data_new_format.csv")
 df_long <- read.csv("sickness_final_table.csv")
-df_first <- read.csv("sickness_time_to_first_risk_short_interval.csv") # time to first risk short interval format
+df_first <- read.csv("sickness_time_to_first_risk_long_interval.csv") # time to first risk long interval format
 
 
 # Make region as factor
@@ -27,7 +27,7 @@ df_long$region <- as.factor(df_long$region)
 df_first$region <- as.factor(df_first$region)
 
 # Model 1: Sex ------------------------------------------------------------
-model1 <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male, data = df)
+model1 <- coxph(Surv(enter, exit, sickness.during.interval) ~ male, data = df)
 summary(model1)
 
 # Testing Proportional Hazards
@@ -38,133 +38,254 @@ eha::logrank(Surv(enter, exit, sickness.during.interval), group = male,
 eha::logrank(Surv(enter, exit, sickness.during.interval), group = region, data = df)
 
 # Export results in table
-stargazer(model1, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model1.tex",
-          dep.var.labels = "Hazard Rate", covariate.labels = "Male",
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model1)$coefficients[,1],
+                      "SE" = summary(model1)$coefficients[,3],
+                      "p" = summary(model1)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "t.results.")
+results$Male <- as.numeric(results$Male)
+results$Male <- round(results$Male, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 4
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model1.tex")
 
 # Model 2: Sex + Risk -----------------------------------------------------
 
 ## Model 2a: Sex + Tree Fall ----
-model2a <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male +
+model2a <- coxph(Surv(enter, exit, sickness.during.interval) ~ male +
                     tree.fall.during.interval,
                   data = df)
-summary(model2a)
-stargazer(model2a, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model2a.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Tree Fall"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model2a)$coefficients[,1],
+                      "SE" = summary(model2a)$coefficients[,3],
+                      "p" = summary(model2a)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male")
+results <- results %>% rename("Tree Fall" = "tree.fall.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model2a.tex")
 
 ## Model 2b: Sex + Snake/Ray Bite ----
-model2b <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male +
+model2b <- coxph(Surv(enter, exit, sickness.during.interval) ~ male +
                     bite.during.interval, data = df)
-summary(model2b)
-stargazer(model2b, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model2b.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Snake/Ray Bite"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model2b)$coefficients[,1],
+                      "SE" = summary(model2b)$coefficients[,3],
+                      "p" = summary(model2b)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male")
+results <- results %>% rename("Snake/Ray Bite" = "bite.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model2b.tex")
 
 ## Model 2c: Sex + Fight ----
-model2c <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male +
+model2c <- coxph(Surv(enter, exit, sickness.during.interval) ~ male +
                     fought.during.interval, data = df)
-summary(model2c)
-stargazer(model2c, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model2c.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Fight"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model2c)$coefficients[,1],
+                      "SE" = summary(model2c)$coefficients[,3],
+                      "p" = summary(model2c)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male")
+results <- results %>% rename("Fight" = "fought.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model2c.tex")
 
 ## Model 2d: Sex + Animal Attack ----
-model2d <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male +
+model2d <- coxph(Surv(enter, exit, sickness.during.interval) ~ male +
                     animal.attack.during.interval, data = df)
-summary(model2d)
-stargazer(model2d, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model2d.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Animal Attack"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model2d)$coefficients[,1],
+                      "SE" = summary(model2d)$coefficients[,3],
+                      "p" = summary(model2d)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male")
+results <- results %>% rename("Animal Attack" = "animal.attack.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model2d.tex")
 
 ## Model 2e: Sex + Canoe Capsize ----
-model2e <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male +
+model2e <- coxph(Surv(enter, exit, sickness.during.interval) ~ male +
                     canoe.capsize.during.interval, data = df)
-summary(model2e)
-stargazer(model2e, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model2e.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Canoe Capsize"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model2e)$coefficients[,1],
+                      "SE" = summary(model2e)$coefficients[,3],
+                      "p" = summary(model2e)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male")
+results <- results %>% rename("Canoe Capsize" = "canoe.capsize.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model2e.tex")
 
 ## Model 2f: Sex + Cut Self ----
-model2f <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male +
+model2f <- coxph(Surv(enter, exit, sickness.during.interval) ~ male +
                     cut.self.during.interval, data = df)
-summary(model2f)
-stargazer(model2f, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model2f.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Cut Self"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model2f)$coefficients[,1],
+                      "SE" = summary(model2f)$coefficients[,3],
+                      "p" = summary(model2f)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male")
+results <- results %>% rename("Cut Self" = "cut.self.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model2f.tex")
 
-## Model 2g: Sex + Cut Self ----
-model2g <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male +
+## Model 2g: Sex + Animal Attack (c) ----
+model2g <- coxph(Surv(enter, exit, sickness.during.interval) ~ male +
                     Animal_Attack.during.interval, data = df)
-summary(model2g)
-stargazer(model2g, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model2g.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Animal Attack (c)"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model2g)$coefficients[,1],
+                      "SE" = summary(model2g)$coefficients[,3],
+                      "p" = summary(model2g)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male")
+results <- results %>% rename("Animal Attack (c)" = "Animal_Attack.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model2g.tex")
 
 
 # Model 3: Sex + Region + Risk --------------------------------------------
 
 ## Model 3a: Sex + Region + Tree Fall ----
-model3a <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model3a <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     tree.fall.during.interval, data = df)
-summary(model3a)
-stargazer(model3a, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model3a.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver",
-                               "Tree Fall"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model3a)$coefficients[,1],
+                      "SE" = summary(model3a)$coefficients[,3],
+                      "p" = summary(model3a)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Tree Fall" = "tree.fall.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 4
+addtorow$pos[[3]] <- 7
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model3a.tex")
 
 # Plot
 pdf(file = "Sickness Plots/model3a.pdf", height = 5, width = 5)
@@ -180,19 +301,33 @@ legend("topleft", legend = c("Tree Fall Did Not Occur", "Tree Fall Occured"),
 dev.off()
 
 ## Model 3b: Sex + Region + Snake/Ray Bite ----
-model3b <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model3b <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     bite.during.interval, data = df)
-summary(model3b)
-stargazer(model3b, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model3b.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver",
-                               "Snake/Ray Bite"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model3b)$coefficients[,1],
+                      "SE" = summary(model3b)$coefficients[,3],
+                      "p" = summary(model3b)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Snake/Ray Bite" = "bite.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 4
+addtorow$pos[[3]] <- 7
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model3b.tex")
 
 # Plot
 pdf(file = "Sickness Plots/model3b.pdf", height = 5, width = 5)
@@ -208,18 +343,33 @@ legend("topleft", legend = c("Snake/Ray Bite Did Not Occur", "Snake/Ray Bite Occ
 dev.off()
 
 ## Model 3c: Sex + Region + Fight ----
-model3c <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model3c <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     fought.during.interval, data = df)
-summary(model3c)
-stargazer(model3c, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model3c.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver", "Fight"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model3c)$coefficients[,1],
+                      "SE" = summary(model3c)$coefficients[,3],
+                      "p" = summary(model3c)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Fight" = "fought.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 4
+addtorow$pos[[3]] <- 7
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model3c.tex")
 
 # Plot
 pdf(file = "Sickness Plots/model3c.pdf", height = 5, width = 5)
@@ -235,19 +385,33 @@ legend("topleft", legend = c("Fight Did Not Occur", "Fight Occured"),
 dev.off()
 
 ## Model 3d: Sex + Region + Animal Attack ----
-model3d <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model3d <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     animal.attack.during.interval, data = df)
-summary(model3d)
-stargazer(model3d, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model3d.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver",
-                               "Animal Attack"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model3d)$coefficients[,1],
+                      "SE" = summary(model3d)$coefficients[,3],
+                      "p" = summary(model3d)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Animal Attack" = "animal.attack.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 4
+addtorow$pos[[3]] <- 7
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model3d.tex")
 
 # Plot
 pdf(file = "Sickness Plots/model3d.pdf", height = 5, width = 5)
@@ -263,19 +427,33 @@ legend("topleft", legend = c("Animal Attack Did Not Occur", "Animal Attack Occur
 dev.off()
 
 ## Model 3e: Sex + Region + Canoe Capsize ----
-model3e <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model3e <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     canoe.capsize.during.interval, data = df)
-summary(model3e)
-stargazer(model3e, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model3e.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver",
-                               "Canoe Capsize"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model3e)$coefficients[,1],
+                      "SE" = summary(model3e)$coefficients[,3],
+                      "p" = summary(model3e)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Canoe Capsize" = "canoe.capsize.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 4
+addtorow$pos[[3]] <- 7
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model3e.tex")
 
 # Plot
 pdf(file = "Sickness Plots/model3e.pdf", height = 5, width = 5)
@@ -291,18 +469,33 @@ legend("topleft", legend = c("Canoe Capsize Did Not Occur", "Canoe Capsize Occur
 dev.off()
 
 ## Model 3f: Sex + Region + Cut Self ----
-model3f <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model3f <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     cut.self.during.interval, data = df)
-summary(model3f)
-stargazer(model3f, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model3f.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver", "Cut Self"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model3f)$coefficients[,1],
+                      "SE" = summary(model3f)$coefficients[,3],
+                      "p" = summary(model3f)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Cut Self" = "cut.self.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 4
+addtorow$pos[[3]] <- 7
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model3f.tex")
 
 # Plot
 pdf(file = "Sickness Plots/model3f.pdf", height = 5, width = 5)
@@ -318,18 +511,33 @@ legend("topleft", legend = c("Cut Self Did Not Occur", "Cut Self Occured"),
 dev.off()
 
 ## Model 3g: Sex + Region + Animal Attack (c) ----
-model3g <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model3g <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     Animal_Attack.during.interval, data = df)
-summary(model3g)
-stargazer(model3g, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model3g.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver", "Animal Attack (c)"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model3g)$coefficients[,1],
+                      "SE" = summary(model3g)$coefficients[,3],
+                      "p" = summary(model3g)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Animal Attack (c)" = "Animal_Attack.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 4
+addtorow$pos[[3]] <- 7
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model3g.tex")
 
 # Plot
 pdf(file = "Sickness Plots/model3g.pdf", height = 5, width = 5)
@@ -347,123 +555,223 @@ dev.off()
 # Model 4: Sex + Region + Risk + Sex*Risk ---------------------------------
 
 ## Model 4a: Sex + Region + Tree Fall + Sex*Tree Fall ----
-model4a <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model4a <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     tree.fall.during.interval +
                     male * tree.fall.during.interval, data = df)
-summary(model4a)
-stargazer(model4a, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model4a.tex", dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver", "Tree Fall",
-                               "Male \\texttimes\\ Tree Fall"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model4a)$coefficients[,1],
+                      "SE" = summary(model4a)$coefficients[,3],
+                      "p" = summary(model4a)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Tree Fall" = "tree.fall.during.interval",
+                              "Male x Tree Fall" = "male.tree.fall.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 8
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model4a.tex")
 
 ## Model 4b: Sex + Region + Snake/Ray Bite + Sex*Snake/Ray Bite ----
-model4b <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model4b <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     bite.during.interval + male * bite.during.interval,
                   data = df)
-summary(model4b)
-stargazer(model4b, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model4b.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver",
-                               "Snake/Ray Bite",
-                               "Male \\texttimes\\ Snake/Ray Bite"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model4b)$coefficients[,1],
+                      "SE" = summary(model4b)$coefficients[,3],
+                      "p" = summary(model4b)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Snake/Ray Bite" = "bite.during.interval",
+                              "Male x Snake/Ray Bite" = "male.bite.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 8
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model4b.tex")
 
 ## Model 4c: Sex + Region + Fight + Sex*Fight ----
-model4c <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model4c <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     fought.during.interval + male * fought.during.interval,
                   data = df)
-summary(model4c)
-stargazer(model4c, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model4c.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver",
-                               "Fight",
-                               "Male \\texttimes\\ Fight"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model4c)$coefficients[,1],
+                      "SE" = summary(model4c)$coefficients[,3],
+                      "p" = summary(model4c)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Fight" = "fought.during.interval",
+                              "Male x Fight" = "male.fought.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 8
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model4c.tex")
 
 ## Model 4d: Sex + Region + Animal Attack + Sex*Animal Attack ----
-model4d <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model4d <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     animal.attack.during.interval +
                     male * animal.attack.during.interval,
                   data = df)
-summary(model4d)
-stargazer(model4d, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model4d.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver",
-                               "Animal Attack",
-                               "Male \\texttimes\\ Animal Attack"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model4d)$coefficients[,1],
+                      "SE" = summary(model4d)$coefficients[,3],
+                      "p" = summary(model4d)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Animal Attack" = "animal.attack.during.interval",
+                              "Male x Animal Attack" = "male.animal.attack.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 8
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model4d.tex")
 
 ## Model 4e: Sex + Region + Canoe Capsize + Sex*Canoe Capsize ----
-model4e <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model4e <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     canoe.capsize.during.interval +
                     male * canoe.capsize.during.interval,
                   data = df)
-summary(model4e)
-stargazer(model4e, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model4e.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver",
-                               "Canoe Capsize",
-                               "Male \\texttimes\\ Canoe Capsize"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model4e)$coefficients[,1],
+                      "SE" = summary(model4e)$coefficients[,3],
+                      "p" = summary(model4e)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Canoe Capsize" = "canoe.capsize.during.interval",
+                              "Male x Canoe Capsize" = "male.canoe.capsize.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 8
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model4e.tex")
 
 ## Model 4f: Sex + Region + Cut Self + Sex*Cut Self ----
-model4f <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model4f <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     cut.self.during.interval + male * cut.self.during.interval,
                   data = df)
-summary(model4f)
-stargazer(model4f, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model4f.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver",
-                               "Cut Self",
-                               "Male \\texttimes\\ Cut Self"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model4f)$coefficients[,1],
+                      "SE" = summary(model4f)$coefficients[,3],
+                      "p" = summary(model4f)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Cut Self" = "cut.self.during.interval",
+                              "Male x Cut Self" = "male.cut.self.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 8
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model4f.tex")
 
 ## Model 4g: Sex + Region + Animal Attack (c) + Sex*Animal Attack (c) ----
-model4g <- coxreg(Surv(enter, exit, sickness.during.interval) ~ male + region +
+model4g <- coxph(Surv(enter, exit, sickness.during.interval) ~ male + region +
                     Animal_Attack.during.interval + male * Animal_Attack.during.interval,
                   data = df)
-summary(model4g)
-stargazer(model4g, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model4g.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Male", "Near San Borja", "Upriver",
-                               "Animal Attack (c)",
-                               "Male \\texttimes\\ Animal Attack (c)"),
-          add.lines = list(c("No. of Individuals", "388"),
-                           c("No. of Intervals", "13,451"),
-                           c("Total No. of Risk Years", "13,254.94")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model4g)$coefficients[,1],
+                      "SE" = summary(model4g)$coefficients[,3],
+                      "p" = summary(model4g)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver",
+                              "Animal Attack (c)" = "Animal_Attack.during.interval",
+                              "Male x Animal Attack (c)" = "male.Animal_Attack.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 8
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model4g.tex")
 
 # Model 5: Sex + Region + Length of Last Sickness + Risk ------------------
 
@@ -476,154 +784,279 @@ new_df <- df_long %>%
 # sum(x$age)
 
 ## Model 5a: Length of Last Sickness ----
-model5a <- coxreg(Surv(enter, exit, event) ~ length.of.last.sickness,
+model5a <- coxph(Surv(enter, exit, event) ~ length.of.last.sickness,
                   data = new_df)
-summary(model5a)
-stargazer(model5a, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model5a.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Length of Prior Sickness Interval"),
-          add.lines = list(c("No. of Individuals", "325"),
-                           c("No. of Intervals", "475"),
-                           c("Total No. of Risk Years", "11,197.42")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model5a)$coefficients[,1],
+                      "SE" = summary(model5a)$coefficients[,3],
+                      "p" = summary(model5a)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Length of Prior Sickness Interval" = "t.results.")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 4
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model5a.tex")
 
 ## Model 5b: Length of Prior Sickness + Sex ----
-model5b <- coxreg(Surv(enter, exit, event) ~ length.of.last.sickness + male,
+model5b <- coxph(Surv(enter, exit, event) ~ length.of.last.sickness + male,
                   data = new_df)
-summary(model5b)
-stargazer(model5b, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model5b.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Length of Prior Sickness Interval", "Male"),
-          add.lines = list(c("No. of Individuals", "325"),
-                           c("No. of Intervals", "475"),
-                           c("Total No. of Risk Years", "11,197.42")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model5b)$coefficients[,1],
+                      "SE" = summary(model5b)$coefficients[,3],
+                      "p" = summary(model5b)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Length of Prior Sickness Interval" = "length.of.last.sickness")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model5b.tex")
 
 ## Model 5c: Length of Prior Sickness + Sex + Region ----
-model5c <- coxreg(Surv(enter, exit, event) ~ length.of.last.sickness + male +
+model5c <- coxph(Surv(enter, exit, event) ~ length.of.last.sickness + male +
                     region, data = new_df)
-summary(model5c)
-stargazer(model5c, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model5c.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Length of Prior Sickness Interval", "Male",
-                               "Near San Borja", "Upriver"),
-          add.lines = list(c("No. of Individuals", "325"),
-                           c("No. of Intervals", "475"),
-                           c("Total No. of Risk Years", "11,197.42")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model5c)$coefficients[,1],
+                      "SE" = summary(model5c)$coefficients[,3],
+                      "p" = summary(model5c)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Male" = "male",
+                              "Length of Prior Sickness Interval" = "length.of.last.sickness",
+                              "Near San Borja" = "regionNear.San.Borja",
+                              "Upriver" = "regionUpriver")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 4
+addtorow$pos[[3]] <- 7
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model5c.tex")
 
 ## Model 5d: Length of Prior Sickness + Tree Fall ----
-model5d <- coxreg(Surv(enter, exit, event) ~ length.of.last.sickness +
+model5d <- coxph(Surv(enter, exit, event) ~ length.of.last.sickness +
                     tree.fall.during.interval, data = new_df)
-summary(model5d)
-stargazer(model5d, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model5d.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Length of Prior Sickness Interval",
-                               "Tree Fall"),
-          add.lines = list(c("No. of Individuals", "325"),
-                           c("No. of Intervals", "475"),
-                           c("Total No. of Risk Years", "11,197.42")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model5d)$coefficients[,1],
+                      "SE" = summary(model5d)$coefficients[,3],
+                      "p" = summary(model5d)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Length of Prior Sickness Interval" = "length.of.last.sickness",
+                              "Tree Fall" = "tree.fall.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model5d.tex")
 
 ## Model 5e: Length of Prior Sickness + Snake/Ray Bite ----
-model5e <- coxreg(Surv(enter, exit, event) ~ length.of.last.sickness +
+model5e <- coxph(Surv(enter, exit, event) ~ length.of.last.sickness +
                     bite.during.interval, data = new_df)
-summary(model5e)
-stargazer(model5e, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model5e.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Length of Prior Sickness Interval",
-                               "Snake/Ray Bite"),
-          add.lines = list(c("No. of Individuals", "325"),
-                           c("No. of Intervals", "475"),
-                           c("Total No. of Risk Years", "11,197.42")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model5e)$coefficients[,1],
+                      "SE" = summary(model5e)$coefficients[,3],
+                      "p" = summary(model5e)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Length of Prior Sickness Interval" = "length.of.last.sickness",
+                              "Snake/Ray Bite" = "bite.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model5e.tex")
 
 ## Model 5f: Length of Prior Sickness + Fight ----
-model5f <- coxreg(Surv(enter, exit, event) ~ length.of.last.sickness +
+model5f <- coxph(Surv(enter, exit, event) ~ length.of.last.sickness +
                     fought.during.interval, data = new_df)
-summary(model5f)
-stargazer(model5f, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model5f.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Length of Prior Sickness Interval", "Fight"),
-          add.lines = list(c("No. of Individuals", "325"),
-                           c("No. of Intervals", "475"),
-                           c("Total No. of Risk Years", "11,197.42")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model5f)$coefficients[,1],
+                      "SE" = summary(model5f)$coefficients[,3],
+                      "p" = summary(model5f)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Length of Prior Sickness Interval" = "length.of.last.sickness",
+                              "Fight" = "fought.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model5f.tex")
 
 ## Model 5g: Length of Prior Sickness + Animal Attack ----
-model5g <- coxreg(Surv(enter, exit, event) ~ length.of.last.sickness +
+model5g <- coxph(Surv(enter, exit, event) ~ length.of.last.sickness +
                     animal.attack.during.interval, data = new_df)
-summary(model5g)
-stargazer(model5g, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model5g.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Length of Prior Sickness Interval",
-                               "Animal Attack"),
-          add.lines = list(c("No. of Individuals", "325"),
-                           c("No. of Intervals", "475"),
-                           c("Total No. of Risk Years", "11,197.42")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model5g)$coefficients[,1],
+                      "SE" = summary(model5g)$coefficients[,3],
+                      "p" = summary(model5g)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Length of Prior Sickness Interval" = "length.of.last.sickness",
+                              "Animal Attack" = "animal.attack.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model5g.tex")
 
 ## Model 5h: Length of Prior Sickness + Canoe Capsize ----
-model5h <- coxreg(Surv(enter, exit, event) ~ length.of.last.sickness +
+model5h <- coxph(Surv(enter, exit, event) ~ length.of.last.sickness +
                     canoe.capsize.during.interval, data = new_df)
-summary(model5h)
-stargazer(model5h, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model5h.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Length of Prior Sickness Interval",
-                               "Canoe Capsize"),
-          add.lines = list(c("No. of Individuals", "325"),
-                           c("No. of Intervals", "475"),
-                           c("Total No. of Risk Years", "11,197.42")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model5h)$coefficients[,1],
+                      "SE" = summary(model5h)$coefficients[,3],
+                      "p" = summary(model5h)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Length of Prior Sickness Interval" = "length.of.last.sickness",
+                              "Canoe Capsize" = "canoe.capsize.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model5h.tex")
 
 ## Model 5i: Length of Prior Sickness + Cut Self ----
-model5i <- coxreg(Surv(enter, exit, event) ~ length.of.last.sickness +
+model5i <- coxph(Surv(enter, exit, event) ~ length.of.last.sickness +
                     cut.self.during.interval, data = new_df)
-summary(model5i)
-stargazer(model5i, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model5i.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Length of Prior Sickness Interval",
-                               "Cut Self"),
-          add.lines = list(c("No. of Individuals", "325"),
-                           c("No. of Intervals", "475"),
-                           c("Total No. of Risk Years", "11,197.42")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model5i)$coefficients[,1],
+                      "SE" = summary(model5i)$coefficients[,3],
+                      "p" = summary(model5i)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Length of Prior Sickness Interval" = "length.of.last.sickness",
+                              "Cut Self" = "cut.self.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model5i.tex")
 
 ## Model 5j: Length of Prior Sickness + Animal Attack (c) ----
-model5j <- coxreg(Surv(enter, exit, event) ~ length.of.last.sickness +
+model5j <- coxph(Surv(enter, exit, event) ~ length.of.last.sickness +
                     Animal_Attack.during.interval, data = new_df)
-summary(model5j)
-stargazer(model5j, type = "latex", report = "vcsp", single.row = T, title = "Sickness \\vspace{-1.4em}",
-          notes = "Standard errors in parentheses",
-          out = "Sickness Tables/model5j.tex",
-          dep.var.labels = "Hazard Rate",
-          covariate.labels = c("Length of Prior Sickness Interval",
-                               "Animal Attack (c)"),
-          add.lines = list(c("No. of Individuals", "325"),
-                           c("No. of Intervals", "475"),
-                           c("Total No. of Risk Years", "11,197.42")),
-          omit.stat = c("ll", "n", "rsq", "max.rsq", "wald", "lr", "logrank"))
+results <- data.frame("Coefficient" = summary(model5j)$coefficients[,1],
+                      "SE" = summary(model5j)$coefficients[,3],
+                      "p" = summary(model5j)$coefficients[,5])
+results <- data.frame(t(results))
+results <- results %>% rename("Length of Prior Sickness Interval" = "length.of.last.sickness",
+                              "Animal Attack (c)" = "Animal_Attack.during.interval")
+results <- round(results, 3)
+results <- results %>%
+  mutate("No. of Individuals" = c("", "388", ""),
+         "No. of Intervals" = c("", "13,451", ""),
+         "No. of Risk Years" = c("", "13,254.94", ""))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model5j.tex")
 
 
 # Model 6: Mixed effects --------------------------------------------------
+df_first <- read.csv("sickness_time_to_first_risk_short_interval.csv") # time to first risk short interval format
 
 ## Null Model
 model6 <- coxph(Surv(exit, sickness.during.interval) ~ 1, data = df_first)
@@ -648,8 +1081,6 @@ model6c <- coxme(Surv(exit, sickness.during.interval) ~ 1 + (1 | pid) +
 model6d <- coxme(Surv(exit, sickness.during.interval) ~ 1 + (1 | pid) +
                    (1 | house.id) + region, data = df_first)
 # summary(model6d)
-# Note that sickness violates proportional hazards for region, test is
-# not significant
 
 ## Model 6e: Nested RE ----
 model6e <- coxme(Surv(exit, sickness.during.interval) ~ 1 + (1 | pid) + (1 | region/house.id),
@@ -685,10 +1116,9 @@ addtorow$command <- c('\\hline',
                       'Region RE & No & No & No & Yes & No & Yes \\\\\n',
                       'Region FE & No & No & No & No & Yes & No \\\\\n',
                       '\\hline')
-print(xtable(df_coxme, caption = "Sickness Mixed Effects Specifications"), add.to.row = addtorow,
-      caption.placement = "top", file = "Sickness Tables/model6.tex")
-rm(aic_test, aov_test)
-# rm(addtorow)
+x <- xtable(df_coxme, caption = "Sickness Mixed Effects Specifications")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model6.tex")
 
 
 
@@ -1578,15 +2008,18 @@ dev.off()
 
 
 # Survival risk table
-fit <- survfit(Surv(enter, exit, sickness.during.interval) ~ 1, df_first)
+fit <- survfit(Surv(enter, exit, event) ~ 1, df_first)
 gg <- ggsurvtable(fit, break.time.by = 10, data = df_first)
 gg <- data.frame(gg[["risk.table"]][["data"]])
-gg <- gg[c("time", "n.risk", "cum.n.event")]
+gg <- gg[c("time", "n.risk", "cum.n.event", "pct.risk")]
+gg$pct.risk <- gg$pct.risk / 100
 gg <- gg %>% rename("Age (Years)" = "time",
                     "No. at Risk" = "n.risk",
-                    "Cumulative No. of Events" = "cum.n.event")
+                    "No. of Events" = "cum.n.event",
+                    "Proportion at Risk" = "pct.risk")
 stargazer(gg, summary = F, out = "Sickness Tables/risk_table.tex",
-          title = "Sickness Risk Table \\vspace{-1.4em}", rownames = F)
+          title = "Sickness Risk Table \\vspace{-1.4em}", rownames = F,
+          digits = 2)
 
 # By gender
 fit2 <- survfit(Surv(enter, exit, sickness.during.interval) ~ male, data = df)

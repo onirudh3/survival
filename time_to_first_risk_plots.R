@@ -10,8 +10,160 @@ library(ggfortify)
 # Tree Fall ---------------------------------------------------------------
 
 df <- read.csv("tree_fall_time_to_first_risk_long_interval.csv")
+df_short <- read.csv("tree_fall_time_to_first_risk_short_interval.csv")
+
+df$male <- ifelse(df$male == 1, "Male", "Female")
+df_short$male <- ifelse(df_short$male == 1, "Male", "Female")
 
 df$male <- as.factor(df$male)
+df_short$male <- as.factor(df_short$male)
+
+## Descriptive Plots ----
+
+### Long Interval ----
+# Make age.cat as factor
+df$age.cat <- factor(df$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+# Line plot
+pdf(file = "Tree Fall Plots/descriptive_plot4.pdf", height = 5, width = 7)
+df %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "green3",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Tree Fall") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+
+# By gender
+df_male <- subset(df, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Tree Fall Plots/descriptive_plot5.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Tree Fall") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
+
+
+### Short Interval ----
+
+# Line plot
+pdf(file = "Tree Fall Plots/descriptive_plot6.pdf", height = 5, width = 7)
+df_short %>%
+  count(age.cat, tree.fall.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(tree.fall.during.interval == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "green3",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Tree Fall") +
+  labs(subtitle = "388 Individuals, 10,738 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+# By gender
+df_male <- subset(df_short, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, tree.fall.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(tree.fall.during.interval == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df_short, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, tree.fall.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(tree.fall.during.interval == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Tree Fall Plots/descriptive_plot7.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Tree Fall") +
+  labs(subtitle = "388 Individuals, 10,738 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
+
+
 
 ## Survival Curves ----
 # null model
@@ -132,12 +284,12 @@ ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = m
 dev.off()
 
 # Ratio of male hazard over female hazard
-fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 1))
+fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 df_surv$Sex <- "Male"
 
-fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 0))
+fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Female"))
 df_surv2 <- data.frame(time = fit2$time, hazard = fit2$hazard,
                        lower.ci = fit2$lower.ci, upper.ci = fit2$upper.ci)
 df_surv2$Sex <- "Female"
@@ -208,8 +360,158 @@ dev.off()
 # Snake/Ray Bite ----------------------------------------------------------
 
 df <- read.csv("snake_ray_bite_time_to_first_risk_long_interval.csv")
+df_short <- read.csv("snake_ray_bite_time_to_first_risk_short_interval.csv")
+
+df$male <- ifelse(df$male == 1, "Male", "Female")
+df_short$male <- ifelse(df_short$male == 1, "Male", "Female")
 
 df$male <- as.factor(df$male)
+df_short$male <- as.factor(df_short$male)
+
+## Descriptive Plots ----
+
+### Long Interval ----
+# Make age.cat as factor
+df$age.cat <- factor(df$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+# Line plot
+pdf(file = "Snake Bite Plots/descriptive_plot4.pdf", height = 5, width = 7)
+df %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "lightseagreen",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Snake/Ray Bite") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+
+# By gender
+df_male <- subset(df, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Snake Bite Plots/descriptive_plot5.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Snake/Ray Bite") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
+
+
+### Short Interval ----
+
+# Line plot
+pdf(file = "Snake Bite Plots/descriptive_plot6.pdf", height = 5, width = 7)
+df_short %>%
+  count(age.cat, bite.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(bite.during.interval == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "lightseagreen",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Snake/Ray Bite") +
+  labs(subtitle = "388 Individuals, 10,681 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+# By gender
+df_male <- subset(df_short, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, bite.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(bite.during.interval == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df_short, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, bite.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(bite.during.interval == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Snake Bite Plots/descriptive_plot7.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Snake/Ray Bite") +
+  labs(subtitle = "388 Individuals, 10,681 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
 
 ## Survival Curves ----
 # null model
@@ -318,12 +620,12 @@ ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = m
 dev.off()
 
 # Ratio of male hazard over female hazard
-fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 1))
+fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 df_surv$Sex <- "Male"
 
-fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 0))
+fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Female"))
 df_surv2 <- data.frame(time = fit2$time, hazard = fit2$hazard,
                        lower.ci = fit2$lower.ci, upper.ci = fit2$upper.ci)
 df_surv2$Sex <- "Female"
@@ -393,8 +695,158 @@ dev.off()
 # Fight -------------------------------------------------------------------
 
 df <- read.csv("fought_time_to_first_risk_long_interval.csv")
+df_short <- read.csv("fought_time_to_first_risk_short_interval.csv")
+
+df$male <- ifelse(df$male == 1, "Male", "Female")
+df_short$male <- ifelse(df_short$male == 1, "Male", "Female")
 
 df$male <- as.factor(df$male)
+df_short$male <- as.factor(df_short$male)
+
+## Descriptive Plots ----
+
+### Long Interval ----
+# Make age.cat as factor
+df$age.cat <- factor(df$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+# Line plot
+pdf(file = "Fight Plots/descriptive_plot4.pdf", height = 5, width = 7)
+df %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "turquoise2",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Fight") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+
+# By gender
+df_male <- subset(df, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Fight Plots/descriptive_plot5.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Fight") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
+
+
+### Short Interval ----
+
+# Line plot
+pdf(file = "Fight Plots/descriptive_plot6.pdf", height = 5, width = 7)
+df_short %>%
+  count(age.cat, fought.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(fought.during.interval == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "turquoise2",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Fight") +
+  labs(subtitle = "388 Individuals, 12,117 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+# By gender
+df_male <- subset(df_short, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, fought.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(fought.during.interval == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df_short, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, fought.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(fought.during.interval == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Fight Plots/descriptive_plot7.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Fight") +
+  labs(subtitle = "388 Individuals, 12,117 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
 
 ## Survival Curves (Kaplan-Meier estimator) ----
 # null model
@@ -503,12 +955,12 @@ ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = m
 dev.off()
 
 # Ratio of male hazard over female hazard
-fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 1))
+fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 df_surv$Sex <- "Male"
 
-fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 0))
+fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Female"))
 df_surv2 <- data.frame(time = fit2$time, hazard = fit2$hazard,
                        lower.ci = fit2$lower.ci, upper.ci = fit2$upper.ci)
 df_surv2$Sex <- "Female"
@@ -580,8 +1032,158 @@ dev.off()
 # Sickness -------------------------------------------------------------------
 
 df <- read.csv("sickness_time_to_first_risk_long_interval.csv")
+df_short <- read.csv("sickness_time_to_first_risk_short_interval.csv")
+
+df$male <- ifelse(df$male == 1, "Male", "Female")
+df_short$male <- ifelse(df_short$male == 1, "Male", "Female")
 
 df$male <- as.factor(df$male)
+df_short$male <- as.factor(df_short$male)
+
+## Descriptive Plots ----
+
+### Long Interval ----
+# Make age.cat as factor
+df$age.cat <- factor(df$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+# Line plot
+pdf(file = "Sickness Plots/descriptive_plot4.pdf", height = 5, width = 7)
+df %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "goldenrod2",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Sickness") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+
+# By gender
+df_male <- subset(df, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Sickness Plots/descriptive_plot5.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Sickness") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
+
+
+### Short Interval ----
+
+# Line plot
+pdf(file = "Sickness Plots/descriptive_plot6.pdf", height = 5, width = 7)
+df_short %>%
+  count(age.cat, sickness.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(sickness.during.interval == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "goldenrod2",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Sickness") +
+  labs(subtitle = "388 Individuals, 8,430 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+# By gender
+df_male <- subset(df_short, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, sickness.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(sickness.during.interval == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df_short, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, sickness.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(sickness.during.interval == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Sickness Plots/descriptive_plot7.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Sickness") +
+  labs(subtitle = "388 Individuals, 8,430 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
 
 ## Survival Curves (Kaplan-Meier estimator) ----
 # null model
@@ -693,12 +1295,12 @@ ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = m
 dev.off()
 
 # Ratio of male hazard over female hazard
-fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 1))
+fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 df_surv$Sex <- "Male"
 
-fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 0))
+fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Female"))
 df_surv2 <- data.frame(time = fit2$time, hazard = fit2$hazard,
                        lower.ci = fit2$lower.ci, upper.ci = fit2$upper.ci)
 df_surv2$Sex <- "Female"
@@ -767,8 +1369,158 @@ dev.off()
 # Animal Attack -----------------------------------------------------------
 
 df <- read.csv("animal_attack_time_to_first_risk_long_interval.csv")
+df_short <- read.csv("animal_attack_time_to_first_risk_short_interval.csv")
+
+df$male <- ifelse(df$male == 1, "Male", "Female")
+df_short$male <- ifelse(df_short$male == 1, "Male", "Female")
 
 df$male <- as.factor(df$male)
+df_short$male <- as.factor(df_short$male)
+
+## Descriptive Plots ----
+
+### Long Interval ----
+# Make age.cat as factor
+df$age.cat <- factor(df$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+# Line plot
+pdf(file = "Animal Attack Plots/descriptive_plot4.pdf", height = 5, width = 7)
+df %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "pink4",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Animal Attack") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+
+# By gender
+df_male <- subset(df, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Animal Attack Plots/descriptive_plot5.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Animal Attack") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
+
+
+### Short Interval ----
+
+# Line plot
+pdf(file = "Animal Attack Plots/descriptive_plot6.pdf", height = 5, width = 7)
+df_short %>%
+  count(age.cat, animal.attack.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(animal.attack.during.interval == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "pink4",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Animal Attack") +
+  labs(subtitle = "388 Individuals, 13,104 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+# By gender
+df_male <- subset(df_short, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, animal.attack.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(animal.attack.during.interval == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df_short, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, animal.attack.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(animal.attack.during.interval == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Animal Attack Plots/descriptive_plot7.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Animal Attack") +
+  labs(subtitle = "388 Individuals, 13,104 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
 
 ## Survival Curves (Kaplan-Meier estimator) ----
 # null model
@@ -880,11 +1632,11 @@ ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = m
 dev.off()
 
 # Ratio of male hazard over female hazard
-fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 1))
+fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 df_surv$Sex <- "Male"
-fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 0))
+fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Female"))
 df_surv2 <- data.frame(time = fit2$time, hazard = fit2$hazard,
                        lower.ci = fit2$lower.ci, upper.ci = fit2$upper.ci)
 df_surv2$Sex <- "Female"
@@ -951,8 +1703,158 @@ dev.off()
 # Canoe Capsize -----------------------------------------------------------
 
 df <- read.csv("canoe_capsize_time_to_first_risk_long_interval.csv")
+df_short <- read.csv("canoe_capsize_time_to_first_risk_short_interval.csv")
+
+df$male <- ifelse(df$male == 1, "Male", "Female")
+df_short$male <- ifelse(df_short$male == 1, "Male", "Female")
 
 df$male <- as.factor(df$male)
+df_short$male <- as.factor(df_short$male)
+
+## Descriptive Plots ----
+
+### Long Interval ----
+# Make age.cat as factor
+df$age.cat <- factor(df$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+# Line plot
+pdf(file = "Canoe Capsize Plots/descriptive_plot4.pdf", height = 5, width = 7)
+df %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "purple",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Canoe Capsize") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+
+# By gender
+df_male <- subset(df, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Canoe Capsize Plots/descriptive_plot5.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Canoe Capsize") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
+
+
+### Short Interval ----
+
+# Line plot
+pdf(file = "Canoe Capsize Plots/descriptive_plot6.pdf", height = 5, width = 7)
+df_short %>%
+  count(age.cat, canoe.capsize.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(canoe.capsize.during.interval == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "purple",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Canoe Capsize") +
+  labs(subtitle = "388 Individuals, 11,822 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+# By gender
+df_male <- subset(df_short, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, canoe.capsize.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(canoe.capsize.during.interval == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df_short, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, canoe.capsize.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(canoe.capsize.during.interval == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Canoe Capsize Plots/descriptive_plot7.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Canoe Capsize") +
+  labs(subtitle = "388 Individuals, 11,822 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
 
 ## Survival Curves (Kaplan-Meier estimator) ----
 # null model
@@ -1064,11 +1966,11 @@ ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = m
 dev.off()
 
 # Ratio of male hazard over female hazard
-fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 1))
+fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 df_surv$Sex <- "Male"
-fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 0))
+fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Female"))
 df_surv2 <- data.frame(time = fit2$time, hazard = fit2$hazard,
                        lower.ci = fit2$lower.ci, upper.ci = fit2$upper.ci)
 df_surv2$Sex <- "Female"
@@ -1136,8 +2038,158 @@ dev.off()
 # Cut Self ----------------------------------------------------------------
 
 df <- read.csv("cut_self_time_to_first_risk_long_interval.csv")
+df_short <- read.csv("cut_self_time_to_first_risk_short_interval.csv")
+
+df$male <- ifelse(df$male == 1, "Male", "Female")
+df_short$male <- ifelse(df_short$male == 1, "Male", "Female")
 
 df$male <- as.factor(df$male)
+df_short$male <- as.factor(df_short$male)
+
+## Descriptive Plots ----
+
+### Long Interval ----
+# Make age.cat as factor
+df$age.cat <- factor(df$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+# Line plot
+pdf(file = "Cut Self Plots/descriptive_plot4.pdf", height = 5, width = 7)
+df %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "orange",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Cut Self") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+
+# By gender
+df_male <- subset(df, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Cut Self Plots/descriptive_plot5.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Cut Self") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
+
+
+### Short Interval ----
+
+# Line plot
+pdf(file = "Cut Self Plots/descriptive_plot6.pdf", height = 5, width = 7)
+df_short %>%
+  count(age.cat, cut.self.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(cut.self.during.interval == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "orange",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Cut Self") +
+  labs(subtitle = "388 Individuals, 9,275 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+# By gender
+df_male <- subset(df_short, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, cut.self.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(cut.self.during.interval == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df_short, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, cut.self.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(cut.self.during.interval == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Cut Self Plots/descriptive_plot7.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Cut Self") +
+  labs(subtitle = "388 Individuals, 9,275 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
 
 ## Survival Curves (Kaplan-Meier estimator) ----
 # null model
@@ -1249,11 +2301,11 @@ ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = m
 dev.off()
 
 # Ratio of male hazard over female hazard
-fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 1))
+fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 df_surv$Sex <- "Male"
-fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 0))
+fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Female"))
 df_surv2 <- data.frame(time = fit2$time, hazard = fit2$hazard,
                        lower.ci = fit2$lower.ci, upper.ci = fit2$upper.ci)
 df_surv2$Sex <- "Female"
@@ -1322,8 +2374,158 @@ dev.off()
 # Animal Attack (c) -------------------------------------------------------
 
 df <- read.csv("Animal_Attack_combined_time_to_first_risk_long_interval.csv")
+df_short <- read.csv("Animal_Attack_combined_time_to_first_risk_short_interval.csv")
+
+df$male <- ifelse(df$male == 1, "Male", "Female")
+df_short$male <- ifelse(df_short$male == 1, "Male", "Female")
 
 df$male <- as.factor(df$male)
+df_short$male <- as.factor(df_short$male)
+
+## Descriptive Plots ----
+
+### Long Interval ----
+# Make age.cat as factor
+df$age.cat <- factor(df$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+# Line plot
+pdf(file = "Animal Attack Combined Plots/descriptive_plot4.pdf", height = 5, width = 7)
+df %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "orange",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Animal Attack (c)") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+
+# By gender
+df_male <- subset(df, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, event) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(event == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Animal Attack Combined Plots/descriptive_plot5.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Animal Attack (c)") +
+  labs(subtitle = "388 Individuals, 388 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
+
+
+### Short Interval ----
+
+# Line plot
+pdf(file = "Animal Attack Combined Plots/descriptive_plot6.pdf", height = 5, width = 7)
+df_short %>%
+  count(age.cat, Animal_Attack.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(Animal_Attack.during.interval == 1) %>%
+  ggplot() +
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "orange",
+            linewidth = 2) +
+  geom_text(aes(x = age.cat, y = prop,
+                label = scales::percent(prop)), size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 12) +
+  ggtitle("Animal Attack (c)") +
+  labs(subtitle = "388 Individuals, 10,478 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals")
+dev.off()
+
+# By gender
+df_male <- subset(df_short, male == "Male")
+df_male_plot <- df_male %>%
+  count(age.cat, Animal_Attack.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(Animal_Attack.during.interval == 1)
+df_male_plot$male <- "Male"
+df_male_plot <- df_male_plot[c("age.cat", "male", "prop")]
+
+df_female <- subset(df_short, male == "Female")
+df_female_plot <- df_female %>%
+  count(age.cat, Animal_Attack.during.interval) %>%
+  mutate(prop = prop.table(n)) %>%
+  filter(Animal_Attack.during.interval == 1)
+df_female_plot$male <- "Female"
+df_female_plot <- df_female_plot[c("age.cat", "male", "prop")]
+
+df_gender_plot <- rbind(df_male_plot, df_female_plot)
+
+df_gender_plot$prop <- round(df_gender_plot$prop, digits = 4)
+
+df_gender_plot$age.cat <- factor(df_gender_plot$age.cat,
+                                 levels = c("0-5", "5-10", "10-15", "15-20",
+                                            "20-25", "25-30", "30-35", "35-40",
+                                            "40-45", "45-50", "50-55", "55-60",
+                                            "60+"))
+
+df_gender_plot <- complete(df_gender_plot, age.cat, male)
+
+
+pdf(file = "Animal Attack Combined Plots/descriptive_plot7.pdf", height = 5, width = 7.5)
+ggplot(df_gender_plot, aes(x = age.cat, y = prop, group = male, color = male)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1.5) +
+  geom_text(aes(label = scales::percent(prop)), color = "black", size = 3.2) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 13) +
+  ggtitle("Animal Attack (c)") +
+  labs(subtitle = "388 Individuals, 10,478 Intervals") +
+  theme(plot.title = element_text(size = 30)) +
+  xlab("Age of Occurrence") +
+  ylab("Percentage of Intervals") +
+  labs(color = "") +
+  theme(legend.title = element_blank(), legend.position = c(0.7, 0.5))
+dev.off()
 
 ## Survival Curves (Kaplan-Meier estimator) ----
 # null model
@@ -1435,11 +2637,11 @@ ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = m
 dev.off()
 
 # Ratio of male hazard over female hazard
-fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 1))
+fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 df_surv$Sex <- "Male"
-fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == 0))
+fit2 <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Female"))
 df_surv2 <- data.frame(time = fit2$time, hazard = fit2$hazard,
                        lower.ci = fit2$lower.ci, upper.ci = fit2$upper.ci)
 df_surv2$Sex <- "Female"

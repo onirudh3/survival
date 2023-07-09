@@ -300,7 +300,7 @@ rm(df3, df6, dx, dy, h_id)
 
 raw <- read.csv("raw_data_no_duplicates.csv")
 
-raw <- select(raw, c(7, 39:50))
+raw <- dplyr::select(raw, c(7, 39:50))
 raw <- subset(raw, select = -c(animal.attack.age))
 dx <- left_join(df, raw)
 
@@ -366,6 +366,22 @@ dx <- subset(dx, select = -c(still.bothers.attack, still.bothers.attack1))
 df <- left_join(df, dx)
 df <- relocate(df, c(what_attacked_you:still_bothers_attack), .after = time.since.last.animal.attack)
 df <- subset(df, select = -c(index))
+
+# Categorizing the age in the interval for an individual
+df <- df %>%
+  mutate(age.cat = case_when(exit > 0 & exit <= 5 ~ "0-5",
+                             exit > 5 & exit <= 10 ~ "5-10",
+                             exit > 10 & exit <= 15 ~ "10-15",
+                             exit > 15 & exit <= 20 ~ "15-20",
+                             exit > 20 & exit <= 25 ~ "20-25",
+                             exit > 25 & exit <= 30 ~ "25-30",
+                             exit > 30 & exit <= 35 ~ "30-35",
+                             exit > 35 & exit <= 40 ~ "35-40",
+                             exit > 40 & exit <= 45 ~ "40-45",
+                             exit > 45 & exit <= 50 ~ "45-50",
+                             exit > 50 & exit <= 55 ~ "50-55",
+                             exit > 55 & exit <= 60 ~ "55-60",
+                             exit > 60 ~ "60+"))
 
 # Export final table to csv -----------------------------------------------
 write.csv(df, "animal_attack_final_table.csv", row.names = F)
