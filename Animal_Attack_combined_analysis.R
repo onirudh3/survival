@@ -881,6 +881,8 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack
 ## Model 6f: Tree Fall ----
 model6f <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + (1 | pid) +
                    (1 | house.id) + (1 | region) + tree.fall.during.interval, df_first)
+saveRDS(model6f, file = "Animal Attack Combined Tables/coxme_tree_fall.RDS")
+
 extract_coxme_table <- function (mod){
   beta <- mod$coefficients
   exp_beta <- exp(beta)
@@ -928,6 +930,8 @@ dev.off()
 ## Model 6g: Sickness ----
 model6g <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + (1 | pid) +
                    (1 | house.id) + (1 | region) + sickness.during.interval, df_first)
+saveRDS(model6g, file = "Animal Attack Combined Tables/coxme_sickness.RDS")
+
 results <- extract_coxme_table(model6g)
 b <- data.frame(confint(model6g))
 results <- cbind(results, b)
@@ -965,6 +969,8 @@ dev.off()
 ## Model 6h: Fight ----
 model6h <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + (1 | pid) +
                    (1 | house.id) + (1 | region) + fought.during.interval, df_first)
+saveRDS(model6h, file = "Animal Attack Combined Tables/coxme_fight.RDS")
+
 results <- extract_coxme_table(model6h)
 b <- data.frame(confint(model6h))
 results <- cbind(results, b)
@@ -1002,6 +1008,8 @@ dev.off()
 ## Model 6i: Canoe Capsize ----
 model6i <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + (1 | pid) +
                    (1 | house.id) + (1 | region) + canoe.capsize.during.interval, df_first)
+saveRDS(model6i, file = "Animal Attack Combined Tables/coxme_canoe_capsize.RDS")
+
 results <- extract_coxme_table(model6i)
 b <- data.frame(confint(model6i))
 results <- cbind(results, b)
@@ -1039,6 +1047,8 @@ dev.off()
 ## Model 6j: Cut Self ----
 model6j <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + (1 | pid) +
                    (1 | house.id) + (1 | region) + cut.self.during.interval, df_first)
+saveRDS(model6j, file = "Animal Attack Combined Tables/coxme_cut_self.RDS")
+
 results <- extract_coxme_table(model6j)
 b <- data.frame(confint(model6j))
 results <- cbind(results, b)
@@ -1070,6 +1080,50 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack
 # Plot Schoenfeld residuals
 pdf(file = "Animal Attack Combined Plots/schoenfeld_res5.pdf", height = 5, width = 7)
 ggcoxzph(cox.zph(model6j))
+dev.off()
+
+# Building mixed effects hazard plot for all risks ------------------------
+
+df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/coxme_tree_fall.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/coxme_tree_fall.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/coxme_sickness.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/coxme_sickness.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/coxme_fight.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/coxme_fight.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/coxme_cut_self.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/coxme_cut_self.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/coxme_canoe_capsize.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/coxme_canoe_capsize.RDS")))))
+
+df_hazard_plot <- round(df_hazard_plot, 3)
+df_hazard_plot$X2.5.. <- exp(df_hazard_plot$X2.5..)
+df_hazard_plot$X97.5.. <- exp(df_hazard_plot$X97.5..)
+df_hazard_plot <- rownames_to_column(df_hazard_plot, "covariate")
+
+ph_df <- bind_rows(data.frame(cox.zph(readRDS("Animal Attack Combined Tables/coxme_tree_fall.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Animal Attack Combined Tables/coxme_sickness.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Animal Attack Combined Tables/coxme_fight.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Animal Attack Combined Tables/coxme_cut_self.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Animal Attack Combined Tables/coxme_canoe_capsize.RDS"))$table))
+ph_df <- ph_df %>% filter(!duplicated(ph_df))
+ph_df <- rownames_to_column(ph_df, "covariate")
+
+df_hazard_plot <- left_join(df_hazard_plot, ph_df, by = "covariate")
+df_hazard_plot <- df_hazard_plot %>%
+  mutate(p.y = case_when(p.y <= 0.05 ~ "Violates PH", T ~ "Does Not Violate PH"),
+         covariate = case_when(covariate == "tree.fall.during.interval" ~ "Tree Fall",
+                               covariate == "fought.during.interval" ~ "Fight",
+                               covariate == "sickness.during.interval" ~ "Sickness",
+                               covariate == "cut.self.during.interval" ~ "Cut Self",
+                               covariate == "canoe.capsize.during.interval" ~ "Canoe Capsize",))
+
+pdf(file = "Animal Attack Combined Plots/coxme_plot.pdf", height = 6.5, width = 6)
+df_hazard_plot %>%
+  ggplot() +
+  geom_bar(aes(x = reorder(covariate, -exp_beta), y = exp_beta, fill = p.y), stat = "identity") +
+  geom_point(aes(x = covariate, y = exp_beta)) +
+  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..)) +
+  labs(x = "", y = "Hazard", fill = "", subtitle = "All Animal Attacks; Cox Model with RE for PID, House ID, and Region") +
+  scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
+  theme_classic(base_size = 12) +
+  guides(x =  guide_axis(angle = 90)) +
+  ggtitle("Animal Attack") +
+  theme(plot.title = element_text(size = 30))
 dev.off()
 
 # Descriptive Plots -------------------------------------------------------
