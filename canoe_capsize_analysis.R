@@ -2315,7 +2315,7 @@ gg <- gg %>% rename("Age (Years)" = "time",
                     "No. of Events" = "cum.n.event",
                     "Proportion at Risk" = "pct.risk")
 stargazer(gg, summary = F, out = "Canoe Capsize Tables/risk_table.tex",
-          title = "Canoe Capsize Risk Table \\vspace{-1.4em}", rownames = F,
+          title = "Canoe Capsize \\vspace{-1.4em}", rownames = F,
           digits = 2)
 
 # By gender
@@ -2349,6 +2349,23 @@ ggplot(df_surv, aes(x = time, y = hazard)) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) +
   labs(subtitle = "388 Individuals, 13,451 Intervals")
 dev.off()
+
+# Hazard table
+fit <- bshazard(Surv(enter, exit, event) ~ 1, data = df_first)
+df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
+                      lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
+df_surv <- round(df_surv, 3) # here we understand hazards begin from age 3 onward
+df_surv$time <- plyr::round_any(df_surv$time, 10, f = floor)
+df_surv <- subset(df_surv, subset = time %in% c(10, 20, 30, 40, 50, 60, 70))
+df_surv <- distinct(df_surv, time, .keep_all = T)
+df_surv <- df_surv %>% add_row(time = 0, hazard = NA, lower.ci = NA, upper.ci = NA, .before = 1)
+df_surv <- df_surv %>% rename("Age (Years)" = "time",
+                              "Hazard" = "hazard",
+                              "Lower CI" = "lower.ci",
+                              "Upper CI" = "upper.ci")
+stargazer(df_surv, summary = F, out = "Canoe Capsize Tables/hazard_table.tex",
+          title = "Canoe Capsize \\vspace{-1.4em}", rownames = F,
+          notes = "\\tiny Note: Canoe Capsize hazard begins from the age interval 2-3 onward.")
 
 ### muhaz ----
 pdf(file = "Canoe Capsize Plots/hazard_function2.pdf", height = 5)
