@@ -1456,22 +1456,26 @@ df_hazard_plot <- df_hazard_plot %>%
                                covariate == "sickness.during.interval" ~ "Sickness",
                                covariate == "Animal_Attack.during.interval" ~ "Animal Attack",
                                covariate == "cut.self.during.interval" ~ "Cut Self",
-                               covariate == "canoe.capsize.during.interval" ~ "Canoe Capsize",))
+                               covariate == "canoe.capsize.during.interval" ~ "Canoe Capsize"))
+
+df_hazard_plot$p.y <- as.factor(df_hazard_plot$p.y)
 
 pdf(file = "Tree Fall Plots/coxme_plot.pdf", height = 6.5, width = 6)
-df_hazard_plot %>%
+p <- df_hazard_plot %>%
   ggplot() +
   geom_bar(aes(x = reorder(covariate, -exp_beta), y = exp_beta, fill = p.y), stat = "identity") +
-  geom_point(aes(x = covariate, y = exp_beta)) +
-  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..)) +
-  labs(x = "", y = "Hazard", fill = "", subtitle = "Cox Model with RE for PID, House ID, and Region") +
+  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, size = 0.4) +
+  labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID, House ID, and Region") +
+  geom_segment(aes(x = 0, y = 1, xend = 5.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
   scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
-  theme_classic(base_size = 12) +
+  theme_classic(base_size = 16) +
   guides(x =  guide_axis(angle = 90)) +
-  ggtitle("Tree Fall") +
-  theme(plot.title = element_text(size = 30))
+  ggtitle("Outcome Variable: Tree Fall") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5)) +
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 10.5))
+p
 dev.off()
-
+saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Tree Fall Plots/coxme_plot.RDS")
 
 
 

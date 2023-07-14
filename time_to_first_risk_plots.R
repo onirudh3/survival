@@ -175,17 +175,19 @@ dev.off()
 m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Tree Fall Plots/survival_function_time_to_first_risk.pdf", height = 5)
-autoplot(m1, censor.shape = '|', censor.colour = "green3",
-         surv.colour = "green3") +
+p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Tree Fall") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   xlab("Age [years]") +
   ylab("Proportion not having experienced tree fall") +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Tree Fall Plots/survival_function_time_to_first_risk.RDS")
 # For Anirudh to do, change axis labels and scale; y-axis from 0-100, labeled
 # 'Proportion not having experienced tree fall'; x-axis labeled 'Age [years]';
 # add horizontal line at 50%; delete 'strata' from legend
@@ -195,17 +197,19 @@ dev.off()
 m1a <- survfit(Surv(exit, event) ~ male, data = df, conf.type = "log-log")
 summary(m1a)
 pdf(file = "Tree Fall Plots/survival_function_time_to_first_risk_by_gender.pdf", height = 5)
-autoplot(m1a) +
+p <- autoplot(m1a) +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   labs(color = "", x = "Age [years]", y = "Proportion not having experienced tree fall") +
   scale_color_hue(labels = c("Female", "Male")) +
   ggtitle("Tree Fall") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Tree Fall Plots/survival_function_time_to_first_risk_by_gender.RDS")
 #For Anirudh to do, change axis labels and scale; y-axis from 0-100, labeled
 # 'Proportion not having experienced tree fall'; x-axis labeled 'Age [years]';
 # add horizontal line at 50%; delete 'strata' from legend
@@ -255,18 +259,20 @@ fit <- bshazard(Surv(enter, exit, event) ~ 1, data = df)
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 pdf(file = "Tree Fall Plots/hazard_function_time_to_first_risk.pdf", height = 5)
-ggplot(df_surv, aes(x = time, y = hazard)) +
-  geom_line(color = "green4") +
+p <- ggplot(df_surv, aes(x = time, y = hazard)) +
+  geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "lightgreen") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
   ggtitle("Tree Fall") +
-  theme(plot.title = element_text(size = 30)) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.15))
+p
 dev.off()
+saveRDS(p, file = "Tree Fall Plots/hazard_function_time_to_first_risk.RDS")
 
 # Plot hazard by gender
 as.data.frame.bshazard <- function(x, ...) {
@@ -276,17 +282,19 @@ hazards <- group_by(df, male) %>%
   do(as.data.frame(bshazard(Surv(enter, exit, event) ~ 1, data = ., verbose = FALSE))) %>%
   ungroup()
 pdf(file = "Tree Fall Plots/hazard_function_time_to_first_risk_by_gender.pdf", height = 5)
-ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
+p <- ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci, fill = male), alpha = 0.3) +
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Tree Fall") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_color_hue(labels = c("Female", "Male")) +
   guides(fill = F) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.28))
+p
 dev.off()
+saveRDS(p, file = "Tree Fall Plots/hazard_function_time_to_first_risk_by_gender.RDS")
 
 # Ratio of male hazard over female hazard
 fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
@@ -528,33 +536,38 @@ dev.off()
 m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Snake Bite Plots/survival_function_time_to_first_risk.pdf", height = 5)
-autoplot(m1, censor.shape = '|', censor.colour = "lightseagreen",
-         surv.colour = "lightseagreen") +
+p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Snake/Ray Bite") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   xlab("Age [years]") +
   ylab("Proportion not having experienced snake/ray bite") +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Snake Bite Plots/survival_function_time_to_first_risk.RDS")
 
 # Male covariate
 m1a <- survfit(Surv(exit, event) ~ male, data = df, conf.type = "log-log")
 summary(m1a)
 pdf(file = "Snake Bite Plots/survival_function_time_to_first_risk_by_gender.pdf", height = 5)
-autoplot(m1a) +
+p <- autoplot(m1a) +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   labs(color = "", x = "Age [years]", y = "Proportion not having experienced snake/ray bite") +
   scale_color_hue(labels = c("Female", "Male")) +
   ggtitle("Snake/Ray Bite") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Snake Bite Plots/survival_function_time_to_first_risk_by_gender.RDS")
+
 
 # Region covariate
 m1b <- survfit(Surv(exit, event) ~ region, data = df, conf.type = "log-log")
@@ -596,18 +609,20 @@ fit <- bshazard(Surv(enter, exit, event) ~ 1, data = df)
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 pdf(file = "Snake Bite Plots/hazard_function_time_to_first_risk.pdf", height = 5)
-ggplot(df_surv, aes(x = time, y = hazard)) +
-  geom_line(color = "lightseagreen") +
+p <- ggplot(df_surv, aes(x = time, y = hazard)) +
+  geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "lightseagreen") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
   ggtitle("Snake/Ray Bite") +
-  theme(plot.title = element_text(size = 30)) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.15))
+p
 dev.off()
+saveRDS(p, file = "Snake Bite Plots/hazard_function_time_to_first_risk.RDS")
 
 # Plot hazard by gender
 as.data.frame.bshazard <- function(x, ...) {
@@ -617,17 +632,19 @@ hazards <- group_by(df, male) %>%
   do(as.data.frame(bshazard(Surv(enter, exit, event) ~ 1, data = ., verbose = FALSE))) %>%
   ungroup()
 pdf(file = "Snake Bite Plots/hazard_function_time_to_first_risk_by_gender.pdf", height = 5)
-ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
+p <- ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci, fill = male), alpha = 0.3) +
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Snake/Ray Bite") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_color_hue(labels = c("Female", "Male")) +
   guides(fill = F) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.28))
+p
 dev.off()
+saveRDS(p, file = "Snake Bite Plots/hazard_function_time_to_first_risk_by_gender.RDS")
 
 # Ratio of male hazard over female hazard
 fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
@@ -868,33 +885,39 @@ dev.off()
 m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Fight Plots/survival_function_time_to_first_risk.pdf", height = 5)
-autoplot(m1, censor.shape = '|', censor.colour = "turquoise2",
-         surv.colour = "turquoise2") +
+p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Fight") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   xlab("Age [years]") +
   ylab("Proportion not having experienced fight") +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Fight Plots/survival_function_time_to_first_risk.RDS")
+
 
 # Male covariate
 m1a <- survfit(Surv(exit, event) ~ male, data = df, conf.type = "log-log")
 summary(m1a)
 pdf(file = "Fight Plots/survival_function_time_to_first_risk_by_gender.pdf", height = 5)
-autoplot(m1a) +
+p <- autoplot(m1a) +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   labs(color = "", x = "Age [years]", y = "Proportion not having experienced fight") +
   scale_color_hue(labels = c("Female", "Male")) +
   ggtitle("Fight") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Fight Plots/survival_function_time_to_first_risk_by_gender.RDS")
+
 
 # Region covariate
 m1b <- survfit(Surv(exit, event) ~ region, data = df, conf.type = "log-log")
@@ -936,18 +959,20 @@ fit <- bshazard(Surv(enter, exit, event) ~ 1, data = df)
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 pdf(file = "Fight Plots/hazard_function_time_to_first_risk.pdf", height = 5)
-ggplot(df_surv, aes(x = time, y = hazard)) +
-  geom_line(color = "turquoise2") +
+p <- ggplot(df_surv, aes(x = time, y = hazard)) +
+  geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "turquoise2") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
   ggtitle("Fight") +
-  theme(plot.title = element_text(size = 30)) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.15))
+p
 dev.off()
+saveRDS(p, file = "Fight Plots/hazard_function_time_to_first_risk.RDS")
 
 # Plot hazard by gender
 as.data.frame.bshazard <- function(x, ...) {
@@ -957,17 +982,19 @@ hazards <- group_by(df, male) %>%
   do(as.data.frame(bshazard(Surv(enter, exit, event) ~ 1, data = ., verbose = FALSE))) %>%
   ungroup()
 pdf(file = "Fight Plots/hazard_function_time_to_first_risk_by_gender.pdf", height = 5)
-ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
+p <- ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci, fill = male), alpha = 0.3) +
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Fight") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_color_hue(labels = c("Female", "Male")) +
   guides(fill = F) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.28))
+p
 dev.off()
+saveRDS(p, file = "Fight Plots/hazard_function_time_to_first_risk_by_gender.RDS")
 
 # Ratio of male hazard over female hazard
 fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
@@ -1210,34 +1237,38 @@ dev.off()
 m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Sickness Plots/survival_function_time_to_first_risk.pdf", height = 5)
-autoplot(m1, censor.shape = '|', censor.colour = "goldenrod2",
-         surv.colour = "goldenrod2") +
+p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Sickness") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   xlab("Age [years]") +
   ylab("Proportion not having experienced sickness") +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Sickness Plots/survival_function_time_to_first_risk.RDS")
 
 
 # Male covariate
 m1a <- survfit(Surv(exit, event) ~ male, data = df, conf.type = "log-log")
 summary(m1a)
 pdf(file = "Sickness Plots/survival_function_time_to_first_risk_by_gender.pdf", height = 5)
-autoplot(m1a) +
+p <- autoplot(m1a) +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   labs(color = "", x = "Age [years]", y = "Proportion not having experienced sickness") +
   scale_color_hue(labels = c("Female", "Male")) +
   ggtitle("Sickness") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Sickness Plots/survival_function_time_to_first_risk_by_gender.RDS")
 
 
 # Region covariate
@@ -1281,18 +1312,20 @@ fit <- bshazard(Surv(enter, exit, event) ~ 1, data = df)
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 pdf(file = "Sickness Plots/hazard_function_time_to_first_risk.pdf", height = 5)
-ggplot(df_surv, aes(x = time, y = hazard)) +
-  geom_line(color = "goldenrod2") +
+p <- ggplot(df_surv, aes(x = time, y = hazard)) +
+  geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "goldenrod2") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
   ggtitle("Sickness") +
-  theme(plot.title = element_text(size = 30)) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.15))
+p
 dev.off()
+saveRDS(p, file = "Sickness Plots/hazard_function_time_to_first_risk.RDS")
 
 # Plot hazard by gender
 as.data.frame.bshazard <- function(x, ...) {
@@ -1302,17 +1335,19 @@ hazards <- group_by(df, male) %>%
   do(as.data.frame(bshazard(Surv(enter, exit, event) ~ 1, data = ., verbose = FALSE))) %>%
   ungroup()
 pdf(file = "Sickness Plots/hazard_function_time_to_first_risk_by_gender.pdf", height = 5)
-ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
+p <- ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci, fill = male), alpha = 0.3) +
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Sickness") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_color_hue(labels = c("Female", "Male")) +
   guides(fill = F) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.28))
+p
 dev.off()
+saveRDS(p, file = "Sickness Plots/hazard_function_time_to_first_risk_by_gender.RDS")
 
 # Ratio of male hazard over female hazard
 fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
@@ -1552,34 +1587,38 @@ dev.off()
 m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Animal Attack Plots/survival_function_time_to_first_risk.pdf", height = 5)
-autoplot(m1, censor.shape = '|', censor.colour = "pink4",
-         surv.colour = "pink4") +
+p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Animal Attack") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   xlab("Age [years]") +
   ylab("Proportion not having experienced animal attack") +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Animal Attack Plots/survival_function_time_to_first_risk.RDS")
 
 
 # Male covariate
 m1a <- survfit(Surv(exit, event) ~ male, data = df, conf.type = "log-log")
 summary(m1a)
 pdf(file = "Animal Attack Plots/survival_function_time_to_first_risk_by_gender.pdf", height = 5)
-autoplot(m1a) +
+p <- autoplot(m1a) +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   labs(color = "", x = "Age [years]", y = "Proportion not having experienced animal attack") +
   scale_color_hue(labels = c("Female", "Male")) +
   ggtitle("Animal Attack") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Animal Attack Plots/survival_function_time_to_first_risk_by_gender.RDS")
 
 
 # Region covariate
@@ -1623,18 +1662,20 @@ fit <- bshazard(Surv(enter, exit, event) ~ 1, data = df)
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 pdf(file = "Animal Attack Plots/hazard_function_time_to_first_risk.pdf", height = 5)
-ggplot(df_surv, aes(x = time, y = hazard)) +
-  geom_line(color = "pink4") +
+p <- ggplot(df_surv, aes(x = time, y = hazard)) +
+  geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "pink4") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
   ggtitle("Animal Attack") +
-  theme(plot.title = element_text(size = 30)) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.15))
+p
 dev.off()
+saveRDS(p, file = "Animal Attack Plots/hazard_function_time_to_first_risk.RDS")
 
 # Plot hazard by gender
 as.data.frame.bshazard <- function(x, ...) {
@@ -1644,17 +1685,19 @@ hazards <- group_by(df, male) %>%
   do(as.data.frame(bshazard(Surv(enter, exit, event) ~ 1, data = ., verbose = FALSE))) %>%
   ungroup()
 pdf(file = "Animal Attack Plots/hazard_function_time_to_first_risk_by_gender.pdf", height = 5)
-ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
+p <- ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci, fill = male), alpha = 0.3) +
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Animal Attack") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_color_hue(labels = c("Female", "Male")) +
   guides(fill = F) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.28))
+p
 dev.off()
+saveRDS(p, file = "Animal Attack Plots/hazard_function_time_to_first_risk_by_gender.RDS")
 
 # Ratio of male hazard over female hazard
 fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
@@ -1891,34 +1934,38 @@ dev.off()
 m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Canoe Capsize Plots/survival_function_time_to_first_risk.pdf", height = 5)
-autoplot(m1, censor.shape = '|', censor.colour = "purple",
-         surv.colour = "purple") +
+p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Canoe Capsize") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   xlab("Age [years]") +
   ylab("Proportion not having experienced canoe capsize") +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Canoe Capsize Plots/survival_function_time_to_first_risk.RDS")
 
 
 # Male covariate
 m1a <- survfit(Surv(exit, event) ~ male, data = df, conf.type = "log-log")
 summary(m1a)
 pdf(file = "Canoe Capsize Plots/survival_function_time_to_first_risk_by_gender.pdf", height = 5)
-autoplot(m1a) +
+p <- autoplot(m1a) +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   labs(color = "", x = "Age [years]", y = "Proportion not having experienced canoe capsize") +
   scale_color_hue(labels = c("Female", "Male")) +
   ggtitle("Canoe Capsize") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Canoe Capsize Plots/survival_function_time_to_first_risk_by_gender.RDS")
 
 
 # Region covariate
@@ -1962,18 +2009,20 @@ fit <- bshazard(Surv(enter, exit, event) ~ 1, data = df)
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 pdf(file = "Canoe Capsize Plots/hazard_function_time_to_first_risk.pdf", height = 5)
-ggplot(df_surv, aes(x = time, y = hazard)) +
-  geom_line(color = "purple") +
+p <- ggplot(df_surv, aes(x = time, y = hazard)) +
+  geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "purple") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
   ggtitle("Canoe Capsize") +
-  theme(plot.title = element_text(size = 30)) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.15))
+p
 dev.off()
+saveRDS(p, file = "Canoe Capsize Plots/hazard_function_time_to_first_risk.RDS")
 
 # Plot hazard by gender
 as.data.frame.bshazard <- function(x, ...) {
@@ -1983,17 +2032,19 @@ hazards <- group_by(df, male) %>%
   do(as.data.frame(bshazard(Surv(enter, exit, event) ~ 1, data = ., verbose = FALSE))) %>%
   ungroup()
 pdf(file = "Canoe Capsize Plots/hazard_function_time_to_first_risk_by_gender.pdf", height = 5)
-ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
+p <- ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci, fill = male), alpha = 0.3) +
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Canoe Capsize") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_color_hue(labels = c("Female", "Male")) +
   guides(fill = F) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.28))
+p
 dev.off()
+saveRDS(p, file = "Canoe Capsize Plots/hazard_function_time_to_first_risk_by_gender.RDS")
 
 # Ratio of male hazard over female hazard
 fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
@@ -2231,34 +2282,38 @@ dev.off()
 m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Cut Self Plots/survival_function_time_to_first_risk.pdf", height = 5)
-autoplot(m1, censor.shape = '|', censor.colour = "orange",
-         surv.colour = "orange") +
+p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Cut Self") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   xlab("Age [years]") +
   ylab("Proportion not having experienced cut self") +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Cut Self Plots/survival_function_time_to_first_risk.RDS")
 
 
 # Male covariate
 m1a <- survfit(Surv(exit, event) ~ male, data = df, conf.type = "log-log")
 summary(m1a)
 pdf(file = "Cut Self Plots/survival_function_time_to_first_risk_by_gender.pdf", height = 5)
-autoplot(m1a) +
+p <- autoplot(m1a) +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   labs(color = "", x = "Age [years]", y = "Proportion not having experienced cut self") +
   scale_color_hue(labels = c("Female", "Male")) +
   ggtitle("Cut Self") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Cut Self Plots/survival_function_time_to_first_risk_by_gender.RDS")
 
 
 # Region covariate
@@ -2302,18 +2357,20 @@ fit <- bshazard(Surv(enter, exit, event) ~ 1, data = df)
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 pdf(file = "Cut Self Plots/hazard_function_time_to_first_risk.pdf", height = 5)
-ggplot(df_surv, aes(x = time, y = hazard)) +
-  geom_line(color = "orange") +
+p <- ggplot(df_surv, aes(x = time, y = hazard)) +
+  geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "orange") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
   ggtitle("Cut Self") +
-  theme(plot.title = element_text(size = 30)) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.15))
+p
 dev.off()
+saveRDS(p, file = "Cut Self Plots/hazard_function_time_to_first_risk.RDS")
 
 # Plot hazard by gender
 as.data.frame.bshazard <- function(x, ...) {
@@ -2323,17 +2380,19 @@ hazards <- group_by(df, male) %>%
   do(as.data.frame(bshazard(Surv(enter, exit, event) ~ 1, data = ., verbose = FALSE))) %>%
   ungroup()
 pdf(file = "Cut Self Plots/hazard_function_time_to_first_risk_by_gender.pdf", height = 5)
-ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
+p <- ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci, fill = male), alpha = 0.3) +
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Cut Self") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_color_hue(labels = c("Female", "Male")) +
   guides(fill = F) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.28))
+p
 dev.off()
+saveRDS(p, file = "Cut Self Plots/hazard_function_time_to_first_risk_by_gender.RDS")
 
 # Ratio of male hazard over female hazard
 fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
@@ -2572,34 +2631,41 @@ dev.off()
 m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Animal Attack Combined Plots/survival_function_time_to_first_risk.pdf", height = 5)
-autoplot(m1, censor.shape = '|', censor.colour = "lightcoral",
-         surv.colour = "lightcoral") +
+p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
-  ggtitle("Animal Attack (c)") +
-  theme(plot.title = element_text(size = 30)) +
+  ggtitle("Animal Attack") +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   xlab("Age [years]") +
   ylab("Proportion not having experienced animal attack (c)") +
+  # labs(subtitle = "(All Animal Attacks)") +
+  # theme(plot.subtitle = element_text(hjust = 0.5, size = 5)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Animal Attack Combined Plots/survival_function_time_to_first_risk.RDS")
 
 
 # Male covariate
 m1a <- survfit(Surv(exit, event) ~ male, data = df, conf.type = "log-log")
 summary(m1a)
 pdf(file = "Animal Attack Combined Plots/survival_function_time_to_first_risk_by_gender.pdf", height = 5)
-autoplot(m1a) +
+p <- autoplot(m1a) +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   labs(color = "", x = "Age [years]", y = "Proportion not having experienced animal attack (c)") +
   scale_color_hue(labels = c("Female", "Male")) +
   ggtitle("Animal Attack (c)") +
-  theme(plot.title = element_text(size = 30)) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+p
 dev.off()
+saveRDS(p, file = "Animal Attack Combined Plots/survival_function_time_to_first_risk_by_gender.RDS")
+
 
 
 # Region covariate
@@ -2643,18 +2709,21 @@ fit <- bshazard(Surv(enter, exit, event) ~ 1, data = df)
 df_surv <- data.frame(time = fit$time, hazard = fit$hazard,
                       lower.ci = fit$lower.ci, upper.ci = fit$upper.ci)
 pdf(file = "Animal Attack Combined Plots/hazard_function_time_to_first_risk.pdf", height = 5)
-ggplot(df_surv, aes(x = time, y = hazard)) +
-  geom_line(color = "lightcoral") +
+p <- ggplot(df_surv, aes(x = time, y = hazard)) +
+  geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "lightcoral") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
-  ggtitle("Animal Attack (c)") +
-  theme(plot.title = element_text(size = 30)) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  ggtitle("Animal Attack") +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.15))
+p
 dev.off()
+saveRDS(p, file = "Animal Attack Combined Plots/hazard_function_time_to_first_risk.RDS")
+
 
 # Plot hazard by gender
 as.data.frame.bshazard <- function(x, ...) {
@@ -2664,17 +2733,20 @@ hazards <- group_by(df, male) %>%
   do(as.data.frame(bshazard(Surv(enter, exit, event) ~ 1, data = ., verbose = FALSE))) %>%
   ungroup()
 pdf(file = "Animal Attack Combined Plots/hazard_function_time_to_first_risk_by_gender.pdf", height = 5)
-ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
+p <- ggplot(hazards, aes(x = time, y = hazard, group = male)) + geom_line(aes(col = male)) +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci, fill = male), alpha = 0.3) +
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
-  ggtitle("Animal Attack (c)") +
-  theme(plot.title = element_text(size = 30)) +
+  ggtitle("Animal Attack") +
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_color_hue(labels = c("Female", "Male")) +
   guides(fill = F) +
-  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
+  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, 0.28))
+p
 dev.off()
+saveRDS(p, file = "Animal Attack Combined Plots/hazard_function_time_to_first_risk_by_gender.RDS")
+
 
 # Ratio of male hazard over female hazard
 fit <- bshazard(Surv(enter, exit, event) ~ 1, data = subset(df, male == "Male"))
@@ -2737,11 +2809,94 @@ ggplot(hazards, aes(x = time, y = hazard, group = interaction(male, region))) +
   # geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci, fill = interaction(male, region)), alpha = 0.3) +
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
-  ggtitle("Animal Attack (c)") +
+  ggtitle("Animal Attack") +
   guides(fill = F) +
   scale_color_hue(labels = c("Female, Forest", "Male, Forest", "Female, Near San Borja",
                              "Male, Near San Borja", "Female, Upriver", "Male, Upriver")) +
   theme(plot.title = element_text(size = 30)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+dev.off()
+
+
+# Panel plot for survival curves ------------------------------------------
+
+figure <- ggarrange(readRDS("Sickness Plots/survival_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
+          readRDS("Cut Self Plots/survival_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
+          readRDS("Animal Attack Combined Plots/survival_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
+          readRDS("Tree Fall Plots/survival_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
+          readRDS("Fight Plots/survival_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
+          readRDS("Canoe Capsize Plots/survival_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"))
+
+pdf(file = "Panel Plots/survival.pdf", height = 9, width = 15)
+annotate_figure(figure, left = textGrob("Percentage Not Experienced Risk", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
+                bottom = grid::textGrob("Age (Years)", gp = gpar(cex = 1.3)))
+dev.off()
+
+
+
+# Panel plot for survival curves by gender --------------------------------
+
+figure <- ggarrange(readRDS("Sickness Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Cut Self Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Animal Attack Combined Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Tree Fall Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Fight Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Canoe Capsize Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+                    common.legend = T, legend = "bottom")
+
+pdf(file = "Panel Plots/survival_by_gender.pdf", height = 9, width = 15)
+annotate_figure(figure, left = textGrob("Percentage Not Experienced Risk", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
+                bottom = grid::textGrob("Age (Years)", gp = gpar(cex = 1.3)))
+dev.off()
+
+
+
+# Panel plot for hazard curves --------------------------------------------
+
+figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Cut Self Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Animal Attack Combined Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Tree Fall Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Fight Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"))
+
+pdf(file = "Panel Plots/hazard.pdf", height = 9, width = 15)
+annotate_figure(figure, left = textGrob("Hazard", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
+                bottom = grid::textGrob("Age (Years)", gp = gpar(cex = 1.3)))
+dev.off()
+
+# Panel plot for hazard curves by gender ----------------------------------
+
+figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Cut Self Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Animal Attack Combined Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Tree Fall Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Fight Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+                    common.legend = T, legend = "bottom")
+
+pdf(file = "Panel Plots/hazard_by_gender.pdf", height = 9, width = 15)
+annotate_figure(figure, left = textGrob("Hazard", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
+                bottom = grid::textGrob("Age (Years)", gp = gpar(cex = 1.3)))
+dev.off()
+
+
+# Panel plot for cox mixed effects models ---------------------------------
+ph_legend <- as_ggplot(get_legend(readRDS("Animal Attack Combined Plots/coxme_plot.RDS") +
+                                    guides(fill = guide_legend(nrow = 1))))
+
+figure <- ggarrange(readRDS("Sickness Plots/coxme_plot.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Cut Self Plots/coxme_plot.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Animal Attack Combined Plots/coxme_plot.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Tree Fall Plots/coxme_plot.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Fight Plots/coxme_plot.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Canoe Capsize Plots/coxme_plot.RDS") + rremove("ylab") + rremove("xlab"),
+                    "",
+                    ph_legend,
+                    legend = "none",
+                    heights = c(1, 1, 0.2, 1, 1, 0.2, 1, 1))
+pdf(file = "Panel Plots/coxme.pdf", height = 15, width = 15)
+annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp = gpar(cex = 1.7)),
+                bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
 dev.off()
