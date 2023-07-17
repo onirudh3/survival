@@ -5,7 +5,8 @@ library(tidyverse)
 library(survival)
 library(bshazard)
 library(ggfortify)
-
+library(ggpubr)
+library(grid)
 
 # Tree Fall ---------------------------------------------------------------
 
@@ -2657,7 +2658,7 @@ p <- autoplot(m1a) +
   theme_classic(base_size = 14) +
   labs(color = "", x = "Age [years]", y = "Proportion not having experienced animal attack (c)") +
   scale_color_hue(labels = c("Female", "Male")) +
-  ggtitle("Animal Attack (c)") +
+  ggtitle("Animal Attack") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA)) +
@@ -2894,8 +2895,9 @@ figure <- ggarrange(readRDS("Sickness Plots/coxme_plot.RDS") + rremove("ylab") +
                     readRDS("Canoe Capsize Plots/coxme_plot.RDS") + rremove("ylab") + rremove("xlab"),
                     "",
                     ph_legend,
+                    "",
                     legend = "none",
-                    heights = c(1, 1, 0.2, 1, 1, 0.2, 1, 1))
+                    heights = c(1, 1, 0.2))
 pdf(file = "Panel Plots/coxme.pdf", height = 15, width = 15)
 annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp = gpar(cex = 1.7)),
                 bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))

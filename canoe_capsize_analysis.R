@@ -1444,7 +1444,7 @@ df_hazard_plot <- df_hazard_plot %>%
                                covariate == "fought.during.interval" ~ "Fight",
                                covariate == "sickness.during.interval" ~ "Sickness",
                                covariate == "Animal_Attack.during.interval" ~ "Animal Attack",
-                               covariate == "cut.self.during.interval" ~ "CUt Self"))
+                               covariate == "cut.self.during.interval" ~ "Cut Self"))
 
 pdf(file = "Canoe Capsize Plots/coxme_plot.pdf", height = 6.5, width = 6)
 p <- df_hazard_plot %>%
