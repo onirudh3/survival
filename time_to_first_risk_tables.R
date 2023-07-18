@@ -3,6 +3,10 @@
 
 library(tidyverse)
 
+# Read raw data for adding calendar year ----
+raw_df <- subset(read.csv("raw_data_no_duplicates.csv"), select = c(pid, YearBorn))
+
+
 
 # Time to first risk ------------------------------------------------------
 
@@ -23,6 +27,12 @@ dg <- df_short %>%
   mutate(y = cumall(lag(!tree.fall.during.interval))) %>%
   filter(is.na(y)) %>%
   dplyr::select(-y)
+
+dg <- left_join(dg, raw_df)
+dg <- dg %>%
+  group_by(pid) %>%
+  mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
+dg <- subset(dg, select = -c(YearBorn))
 
 write.csv(dg, "tree_fall_time_to_first_risk_short_interval.csv", row.names = F)
 
@@ -45,6 +55,12 @@ dg <- df_short %>%
   filter(is.na(y)) %>%
   dplyr::select(-y)
 
+dg <- left_join(dg, raw_df)
+dg <- dg %>%
+  group_by(pid) %>%
+  mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
+dg <- subset(dg, select = -c(YearBorn))
+
 write.csv(dg, "snake_ray_bite_time_to_first_risk_short_interval.csv", row.names = F)
 
 
@@ -64,6 +80,12 @@ dg <- df_short %>%
   mutate(y = cumall(lag(!sickness.during.interval))) %>%
   filter(is.na(y)) %>%
   dplyr::select(-y)
+
+dg <- left_join(dg, raw_df)
+dg <- dg %>%
+  group_by(pid) %>%
+  mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
+dg <- subset(dg, select = -c(YearBorn))
 
 write.csv(dg, "sickness_time_to_first_risk_short_interval.csv", row.names = F)
 
@@ -85,6 +107,12 @@ dg <- df_short %>%
   filter(is.na(y)) %>%
   dplyr::select(-y)
 
+dg <- left_join(dg, raw_df)
+dg <- dg %>%
+  group_by(pid) %>%
+  mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
+dg <- subset(dg, select = -c(YearBorn))
+
 write.csv(dg, "fought_time_to_first_risk_short_interval.csv", row.names = F)
 
 
@@ -104,6 +132,12 @@ dg <- df_short %>%
   mutate(y = cumall(lag(!animal.attack.during.interval))) %>%
   filter(is.na(y)) %>%
   dplyr::select(-y)
+
+dg <- left_join(dg, raw_df)
+dg <- dg %>%
+  group_by(pid) %>%
+  mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
+dg <- subset(dg, select = -c(YearBorn))
 
 write.csv(dg, "animal_attack_time_to_first_risk_short_interval.csv", row.names = F)
 
@@ -125,6 +159,12 @@ dg <- df_short %>%
   filter(is.na(y)) %>%
   dplyr::select(-y)
 
+dg <- left_join(dg, raw_df)
+dg <- dg %>%
+  group_by(pid) %>%
+  mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
+dg <- subset(dg, select = -c(YearBorn))
+
 write.csv(dg, "canoe_capsize_time_to_first_risk_short_interval.csv", row.names = F)
 
 
@@ -144,6 +184,12 @@ dg <- df_short %>%
   mutate(y = cumall(lag(!cut.self.during.interval))) %>%
   filter(is.na(y)) %>%
   dplyr::select(-y)
+
+dg <- left_join(dg, raw_df)
+dg <- dg %>%
+  group_by(pid) %>%
+  mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
+dg <- subset(dg, select = -c(YearBorn))
 
 write.csv(dg, "cut_self_time_to_first_risk_short_interval.csv", row.names = F)
 
@@ -165,7 +211,11 @@ dg <- df_short %>%
   filter(is.na(y)) %>%
   dplyr::select(-y)
 
+dg <- left_join(dg, raw_df)
+dg <- dg %>%
+  group_by(pid) %>%
+  mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
+dg <- subset(dg, select = -c(YearBorn))
+
 write.csv(dg, "Animal_Attack_combined_time_to_first_risk_short_interval.csv", row.names = F)
-
-
 

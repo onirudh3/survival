@@ -1465,6 +1465,258 @@ p
 dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Fight Plots/coxme_plot.RDS")
 
+
+# Model 7: coxme and calendar year ----------------------------------------
+
+## Model 7a: Tree Fall ----
+model7a <- coxme(Surv(exit, fought.during.interval) ~ strata(male) + strata(year) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + tree.fall.during.interval, df_first)
+saveRDS(model7a, file = "Fight Tables/coxme_tree_fall1.RDS")
+# a <- readRDS("stuff1.RDS")
+# object.size(model7a)
+
+results <- extract_coxme_table(model7a)
+b <- data.frame(confint(model7a))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Tree Fall")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Fight \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Fight Tables/model7a.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Fight Plots/schoenfeld_res1_.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model7a))
+dev.off()
+
+
+## Model 7b: Sickness ----
+model7b <- coxme(Surv(exit, fought.during.interval) ~ strata(male) + strata(year) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + sickness.during.interval, df_first)
+saveRDS(model7b, file = "Fight Tables/coxme_sickness1.RDS")
+
+results <- extract_coxme_table(model7b)
+b <- data.frame(confint(model7b))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Sickness")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Fight \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Fight Tables/model7b.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Fight Plots/schoenfeld_res2_.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model7b))
+dev.off()
+
+
+
+## Model 7c: Canoe Capsize ----
+model7c <- coxme(Surv(exit, fought.during.interval) ~ strata(male) + strata(year) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + canoe.capsize.during.interval, df_first)
+saveRDS(model7c, file = "Fight Tables/coxme_canoe_capsize1.RDS")
+
+results <- extract_coxme_table(model7c)
+b <- data.frame(confint(model7c))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Canoe Capsize")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Fight \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Fight Tables/model7c.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Fight Plots/schoenfeld_res3_.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model7c))
+dev.off()
+
+
+## Model 7d: Animal Attack (c) ----
+model7d <- coxme(Surv(exit, fought.during.interval) ~ strata(male) + strata(year) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + Animal_Attack.during.interval, df_first)
+saveRDS(model7d, file = "Fight Tables/coxme_animal_attack_combined1.RDS")
+
+results <- extract_coxme_table(model7d)
+b <- data.frame(confint(model7d))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Animal Attack (c)")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Fight \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Fight Tables/model7d.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Fight Plots/schoenfeld_res4_.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model7d))
+dev.off()
+
+
+## Model 7e: Cut Self ----
+model7e <- coxme(Surv(exit, fought.during.interval) ~ strata(male) + strata(year) + (1 | pid) +
+                   (1 | house.id) + (1 | region) + cut.self.during.interval, df_first)
+saveRDS(model7e, file = "Fight Tables/coxme_cut_self1.RDS")
+
+results <- extract_coxme_table(model7e)
+b <- data.frame(confint(model7e))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Cut Self")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Fight \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Fight Tables/model7e.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Fight Plots/schoenfeld_res5_.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model7e))
+dev.off()
+
+
+
+# Building mixed effects hazard plot for all risks ------------------------
+
+df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Fight Tables/coxme_tree_fall1.RDS")), data.frame(confint(readRDS("Fight Tables/coxme_tree_fall1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Fight Tables/coxme_sickness1.RDS")), data.frame(confint(readRDS("Fight Tables/coxme_sickness1.RDS")))),
+                            # cbind(extract_coxme_table(readRDS("Fight Tables/coxme_animal_attack1.RDS")), data.frame(confint(readRDS("Fight Tables/coxme_animal_attack1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Fight Tables/coxme_animal_attack_combined1.RDS")), data.frame(confint(readRDS("Fight Tables/coxme_animal_attack_combined1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Fight Tables/coxme_cut_self1.RDS")), data.frame(confint(readRDS("Fight Tables/coxme_cut_self1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Fight Tables/coxme_canoe_capsize1.RDS")), data.frame(confint(readRDS("Fight Tables/coxme_canoe_capsize1.RDS")))))
+
+df_hazard_plot <- round(df_hazard_plot, 3)
+df_hazard_plot$X2.5.. <- exp(df_hazard_plot$X2.5..)
+df_hazard_plot$X97.5.. <- exp(df_hazard_plot$X97.5..)
+df_hazard_plot <- rownames_to_column(df_hazard_plot, "covariate")
+# rownames(df_hazard_plot) <- c("Tree Fall", "Sickness", "Animal Attack", "Cut Self", "Canoe Capsize")
+
+ph_df <- bind_rows(data.frame(cox.zph(readRDS("Fight Tables/coxme_tree_fall1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Fight Tables/coxme_sickness1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Fight Tables/coxme_animal_attack_combined1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Fight Tables/coxme_cut_self1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Fight Tables/coxme_canoe_capsize1.RDS"))$table))
+ph_df <- ph_df %>% filter(!duplicated(ph_df))
+ph_df <- rownames_to_column(ph_df, "covariate")
+
+df_hazard_plot <- left_join(df_hazard_plot, ph_df, by = "covariate")
+df_hazard_plot <- df_hazard_plot %>%
+  mutate(p.y = case_when(p.y <= 0.05 ~ "Violates PH", T ~ "Does Not Violate PH"),
+         covariate = case_when(covariate == "tree.fall.during.interval" ~ "Tree Fall",
+                               covariate == "sickness.during.interval" ~ "Sickness",
+                               covariate == "Animal_Attack.during.interval" ~ "Animal Attack",
+                               covariate == "cut.self.during.interval" ~ "Cut Self",
+                               covariate == "canoe.capsize.during.interval" ~ "Canoe Capsize",))
+
+pdf(file = "Fight Plots/coxme_plot_.pdf", height = 6.5, width = 6)
+p <- df_hazard_plot %>%
+  ggplot() +
+  geom_bar(aes(x = reorder(covariate, -exp_beta), y = exp_beta, fill = p.y), stat = "identity") +
+  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, size = 0.4) +
+  labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID, House ID, and Region") +
+  geom_segment(aes(x = 0, y = 1, xend = 5.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
+  theme_classic(base_size = 16) +
+  guides(x =  guide_axis(angle = 90)) +
+  ggtitle("Outcome Variable: Fight") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5)) +
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 13))
+p
+dev.off()
+saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Fight Plots/coxme_plot_.RDS")
+
+
 # Descriptive Plots -------------------------------------------------------
 # Make age.cat as factor
 df$age.cat <- factor(df$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",

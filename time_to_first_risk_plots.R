@@ -1,12 +1,14 @@
 
 # Libraries ---------------------------------------------------------------
 
-library(tidyverse)
+library(ggplot2)
 library(survival)
 library(bshazard)
 library(ggfortify)
 library(ggpubr)
 library(grid)
+library(scales)
+library(cowplot)
 
 # Tree Fall ---------------------------------------------------------------
 
@@ -2883,7 +2885,7 @@ annotate_figure(figure, left = textGrob("Hazard", rot = 90, vjust = 1, gp = gpar
 dev.off()
 
 
-# Panel plot for cox mixed effects models ---------------------------------
+# Panel plot for cox mixed effects models A -------------------------------
 ph_legend <- as_ggplot(get_legend(readRDS("Animal Attack Combined Plots/coxme_plot.RDS") +
                                     guides(fill = guide_legend(nrow = 1))))
 
@@ -2899,6 +2901,26 @@ figure <- ggarrange(readRDS("Sickness Plots/coxme_plot.RDS") + rremove("ylab") +
                     legend = "none",
                     heights = c(1, 1, 0.2))
 pdf(file = "Panel Plots/coxme.pdf", height = 15, width = 15)
+annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp = gpar(cex = 1.7)),
+                bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
+dev.off()
+
+# Panel plot for cox mixed effects models B -------------------------------
+ph_legend <- as_ggplot(get_legend(readRDS("Animal Attack Combined Plots/coxme_plot_.RDS") +
+                                    guides(fill = guide_legend(nrow = 1))))
+
+figure <- ggarrange(readRDS("Sickness Plots/coxme_plot_.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Cut Self Plots/coxme_plot_.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Animal Attack Combined Plots/coxme_plot_.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Tree Fall Plots/coxme_plot_.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Fight Plots/coxme_plot_.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Canoe Capsize Plots/coxme_plot_.RDS") + rremove("ylab") + rremove("xlab"),
+                    "",
+                    ph_legend,
+                    "",
+                    legend = "none",
+                    heights = c(1, 1, 0.2))
+pdf(file = "Panel Plots/coxme_.pdf", height = 15, width = 15)
 annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp = gpar(cex = 1.7)),
                 bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
 dev.off()
