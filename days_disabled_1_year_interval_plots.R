@@ -305,13 +305,18 @@ df6 <- df6 %>%
 df6$risk <- "Fight"
 
 
-
-# Days disabled stacked plot ----------------------------------------------
+# Combining dfs -----------------------------------------------------------
 
 df <- bind_rows(df1, df2, df3, df4, df5, df6)
 
 df$risk <- factor(df$risk, levels = c("Sickness", "Cut Self", "Animal Attack",
                                       "Tree Fall", "Fight", "Canoe Capsize"))
+
+rm(df1, df2, df3, df4, df5, df6)
+
+df <- df %>%
+  group_by(exit, risk) %>%
+  summarise(across(days_disabled_risk:n, sum))
 
 df$exit <- factor(df$exit, levels = c("1", "2", "3", "4", "5", "6", "7", "8",
                                       "9", "10", "11", "12", "13", "14", "15",
@@ -320,6 +325,8 @@ df$exit <- factor(df$exit, levels = c("1", "2", "3", "4", "5", "6", "7", "8",
                                       "30", "31", "32", "33", "34", "35", "36",
                                       "37", "38", "39", "40-45", "45-50", "50-55",
                                       "55-60", "60+"))
+
+# 1. Stacked plot one year intervals --------------------------------------
 
 df %>%
   ggplot(aes(x = exit, y = days_disabled_risk, group = risk, fill = risk)) +
@@ -337,7 +344,7 @@ df %>%
         legend.position = c(0.75, 0.7))
 
 
-# Days disabled stacked proportion plot -----------------------------------
+# 2. Stacked proportion plot one year intervals ---------------------------
 df$n <- df$n * 365 # this is the denominator
 
 df %>%
