@@ -7,7 +7,7 @@ library(tidyverse)
 
 df1 <- read.csv("tree_fall_time_to_first_risk_short_interval.csv")
 
-df1 <- subset(df1, male == 1)
+df1 <- subset(df1, male == 0)
 
 df1$exit <- ceiling(df1$exit)
 
@@ -60,7 +60,7 @@ df1$risk <- "Tree Fall"
 
 df2 <- read.csv("sickness_time_to_first_risk_short_interval.csv")
 
-df2 <- subset(df2, male == 1)
+df2 <- subset(df2, male == 0)
 
 df2$exit <- ceiling(df2$exit)
 
@@ -117,7 +117,7 @@ df2$risk <- "Sickness"
 
 df3 <- read.csv("Animal_Attack_time_to_first_risk_short_interval.csv")
 
-df3 <- subset(df3, male == 1)
+df3 <- subset(df3, male == 0)
 
 df3$exit <- ceiling(df3$exit)
 
@@ -175,7 +175,7 @@ df3$risk <- "Animal Attack"
 
 df4 <- read.csv("cut_self_time_to_first_risk_short_interval.csv")
 
-df4 <- subset(df4, male == 1)
+df4 <- subset(df4, male == 0)
 
 df4$exit <- ceiling(df4$exit)
 
@@ -232,7 +232,7 @@ df4$risk <- "Cut Self"
 
 df5 <- read.csv("canoe_capsize_time_to_first_risk_short_interval.csv")
 
-df5 <- subset(df5, male == 1)
+df5 <- subset(df5, male == 0)
 
 df5$exit <- ceiling(df5$exit)
 
@@ -282,7 +282,7 @@ df5$risk <- "Canoe Capsize"
 
 df6 <- read.csv("fought_time_to_first_risk_short_interval.csv")
 
-df6 <- subset(df6, male == 1)
+df6 <- subset(df6, male == 0)
 
 df6$exit <- ceiling(df6$exit)
 
@@ -362,7 +362,7 @@ df$n_prop <- df$n * 365 * df$group_count
 df %>%
   ggplot(aes(x = exit.char, y = days_disabled_risk, group = risk, fill = risk)) +
   geom_area(position = 'stack', alpha = 0.8) +
-  colorspace::scale_fill_discrete_sequential(palette = "Reds", rev = F) +
+  colorspace::scale_fill_discrete_sequential(palette = "YlGnBu", rev = F) +
   theme_classic(base_size = 18) +
   scale_x_discrete(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
@@ -370,7 +370,7 @@ df %>%
   xlab("Age of Occurrence") +
   guides(x =  guide_axis(angle = 45)) +
   ylab("Days Disabled/Injured") +
-  ggtitle("All Risks (Male)") +
+  ggtitle("All Risks (Female)") +
   theme(plot.title = element_text(size = 50, hjust = 0.5),
         legend.position = c(0.75, 0.8))
 
@@ -380,7 +380,7 @@ df %>%
 df %>%
   ggplot(aes(x = exit.char, y = days_disabled_risk / n_prop, group = risk, fill = risk)) +
   geom_area(position = 'stack', alpha = 0.8) +
-  colorspace::scale_fill_discrete_sequential(palette = "Reds", rev = F) +
+  colorspace::scale_fill_discrete_sequential(palette = "YlGnBu", rev = F) +
   theme_classic(base_size = 18) +
   scale_x_discrete(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
@@ -388,6 +388,6 @@ df %>%
   xlab("Age of Occurrence") +
   guides(x =  guide_axis(angle = 45)) +
   ylab("Proportion of Days Disabled/Injured") +
-  ggtitle("All Risks (Male)") +
+  ggtitle("All Risks (Female)") +
   theme(plot.title = element_text(size = 50, hjust = 0.5),
         legend.position = c(0.75, 0.7))
