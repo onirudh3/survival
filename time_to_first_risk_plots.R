@@ -2880,10 +2880,11 @@ figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk_b
                     common.legend = T, legend = "bottom")
 
 pdf(file = "Panel Plots/hazard_by_gender.pdf", height = 9, width = 15)
-annotate_figure(figure, left = textGrob("Hazard", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
+p <- annotate_figure(figure, left = textGrob("Hazard", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
                 bottom = grid::textGrob("Age (Years)", gp = gpar(cex = 1.3)))
+p
 dev.off()
-
+saveRDS(p, file = "Panel Plots/hazard_by_gender.RDS")
 
 # Panel plot for cox mixed effects models A -------------------------------
 ph_legend <- as_ggplot(get_legend(readRDS("Animal Attack Combined Plots/coxme_plot.RDS") +

@@ -51,7 +51,7 @@ df1 <- df1 %>%
   group_by(exit.char) %>%
   summarise(group_count = n(),
             days_disabled_risk = sum(days_disabled_risk),
-            n = sum(n))
+            n = mean(n))
 
 df1$risk <- "Tree Fall"
 
@@ -108,7 +108,7 @@ df2 <- df2 %>%
   group_by(exit.char) %>%
   summarise(group_count = n(),
             days_disabled_risk = sum(days_disabled_risk),
-            n = sum(n))
+            n = mean(n))
 
 df2$risk <- "Sickness"
 
@@ -165,7 +165,7 @@ df3 <- df3 %>%
   group_by(exit.char) %>%
   summarise(group_count = n(),
             days_disabled_risk = sum(days_disabled_risk),
-            n = sum(n))
+            n = mean(n))
 
 df3$risk <- "Animal Attack"
 
@@ -223,7 +223,7 @@ df4 <- df4 %>%
   group_by(exit.char) %>%
   summarise(group_count = n(),
             days_disabled_risk = sum(days_disabled_risk),
-            n = sum(n))
+            n = mean(n))
 
 df4$risk <- "Cut Self"
 
@@ -273,7 +273,7 @@ df5 <- df5 %>%
   group_by(exit.char) %>%
   summarise(group_count = n(),
             days_disabled_risk = sum(days_disabled_risk),
-            n = sum(n))
+            n = mean(n))
 
 df5$risk <- "Canoe Capsize"
 
@@ -330,7 +330,7 @@ df6 <- df6 %>%
   group_by(exit.char) %>%
   summarise(group_count = n(),
             days_disabled_risk = sum(days_disabled_risk),
-            n = sum(n))
+            n = mean(n))
 
 df6$risk <- "Fight"
 
