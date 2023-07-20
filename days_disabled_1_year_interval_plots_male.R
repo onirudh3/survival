@@ -7,6 +7,8 @@ library(tidyverse)
 
 df1 <- read.csv("tree_fall_time_to_first_risk_short_interval.csv")
 
+df1 <- subset(df1, male == 1)
+
 df1$exit <- ceiling(df1$exit)
 
 # df1 <- df1 %>%
@@ -38,15 +40,7 @@ df1 <- df1 %>%
 df1$exit.char <- as.character(df1$exit)
 
 df1 <- df1 %>%
-  mutate(exit.char = case_when(exit > 0 & exit <= 5 ~ "0-5",
-                               exit > 5 & exit <= 10 ~ "5-10",
-                               exit > 10 & exit <= 15 ~ "10-15",
-                               exit > 15 & exit <= 20 ~ "15-20",
-                               exit > 20 & exit <= 25 ~ "20-25",
-                               exit > 25 & exit <= 30 ~ "25-30",
-                               exit > 30 & exit <= 35 ~ "30-35",
-                               exit > 35 & exit <= 40 ~ "35-40",
-                               exit > 40 & exit <= 45 ~ "40-45",
+  mutate(exit.char = case_when(exit > 40 & exit <= 45 ~ "40-45",
                                exit > 45 & exit <= 50 ~ "45-50",
                                exit > 50 & exit <= 55 ~ "50-55",
                                exit > 55 & exit <= 60 ~ "55-60",
@@ -65,6 +59,8 @@ df1$risk <- "Tree Fall"
 # Sickness ----
 
 df2 <- read.csv("sickness_time_to_first_risk_short_interval.csv")
+
+df2 <- subset(df2, male == 1)
 
 df2$exit <- ceiling(df2$exit)
 
@@ -101,15 +97,7 @@ df2 <- df2 %>%
 df2$exit.char <- as.character(df2$exit)
 
 df2 <- df2 %>%
-  mutate(exit.char = case_when(exit > 0 & exit <= 5 ~ "0-5",
-                               exit > 5 & exit <= 10 ~ "5-10",
-                               exit > 10 & exit <= 15 ~ "10-15",
-                               exit > 15 & exit <= 20 ~ "15-20",
-                               exit > 20 & exit <= 25 ~ "20-25",
-                               exit > 25 & exit <= 30 ~ "25-30",
-                               exit > 30 & exit <= 35 ~ "30-35",
-                               exit > 35 & exit <= 40 ~ "35-40",
-                               exit > 40 & exit <= 45 ~ "40-45",
+  mutate(exit.char = case_when(exit > 40 & exit <= 45 ~ "40-45",
                                exit > 45 & exit <= 50 ~ "45-50",
                                exit > 50 & exit <= 55 ~ "50-55",
                                exit > 55 & exit <= 60 ~ "55-60",
@@ -128,6 +116,8 @@ df2$risk <- "Sickness"
 # Animal Attack ----
 
 df3 <- read.csv("Animal_Attack_time_to_first_risk_short_interval.csv")
+
+df3 <- subset(df3, male == 1)
 
 df3$exit <- ceiling(df3$exit)
 
@@ -164,15 +154,7 @@ df3 <- df3 %>%
 df3$exit.char <- as.character(df3$exit)
 
 df3 <- df3 %>%
-  mutate(exit.char = case_when(exit > 0 & exit <= 5 ~ "0-5",
-                               exit > 5 & exit <= 10 ~ "5-10",
-                               exit > 10 & exit <= 15 ~ "10-15",
-                               exit > 15 & exit <= 20 ~ "15-20",
-                               exit > 20 & exit <= 25 ~ "20-25",
-                               exit > 25 & exit <= 30 ~ "25-30",
-                               exit > 30 & exit <= 35 ~ "30-35",
-                               exit > 35 & exit <= 40 ~ "35-40",
-                               exit > 40 & exit <= 45 ~ "40-45",
+  mutate(exit.char = case_when(exit > 40 & exit <= 45 ~ "40-45",
                                exit > 45 & exit <= 50 ~ "45-50",
                                exit > 50 & exit <= 55 ~ "50-55",
                                exit > 55 & exit <= 60 ~ "55-60",
@@ -192,6 +174,8 @@ df3$risk <- "Animal Attack"
 # Cut Self ----
 
 df4 <- read.csv("cut_self_time_to_first_risk_short_interval.csv")
+
+df4 <- subset(df4, male == 1)
 
 df4$exit <- ceiling(df4$exit)
 
@@ -228,15 +212,7 @@ df4 <- df4 %>%
 df4$exit.char <- as.character(df4$exit)
 
 df4 <- df4 %>%
-  mutate(exit.char = case_when(exit > 0 & exit <= 5 ~ "0-5",
-                               exit > 5 & exit <= 10 ~ "5-10",
-                               exit > 10 & exit <= 15 ~ "10-15",
-                               exit > 15 & exit <= 20 ~ "15-20",
-                               exit > 20 & exit <= 25 ~ "20-25",
-                               exit > 25 & exit <= 30 ~ "25-30",
-                               exit > 30 & exit <= 35 ~ "30-35",
-                               exit > 35 & exit <= 40 ~ "35-40",
-                               exit > 40 & exit <= 45 ~ "40-45",
+  mutate(exit.char = case_when(exit > 40 & exit <= 45 ~ "40-45",
                                exit > 45 & exit <= 50 ~ "45-50",
                                exit > 50 & exit <= 55 ~ "50-55",
                                exit > 55 & exit <= 60 ~ "55-60",
@@ -255,6 +231,8 @@ df4$risk <- "Cut Self"
 # Canoe Capsize ----
 
 df5 <- read.csv("canoe_capsize_time_to_first_risk_short_interval.csv")
+
+df5 <- subset(df5, male == 1)
 
 df5$exit <- ceiling(df5$exit)
 
@@ -284,15 +262,7 @@ df5 <- df5 %>%
 df5$exit.char <- as.character(df5$exit)
 
 df5 <- df5 %>%
-  mutate(exit.char = case_when(exit > 0 & exit <= 5 ~ "0-5",
-                               exit > 5 & exit <= 10 ~ "5-10",
-                               exit > 10 & exit <= 15 ~ "10-15",
-                               exit > 15 & exit <= 20 ~ "15-20",
-                               exit > 20 & exit <= 25 ~ "20-25",
-                               exit > 25 & exit <= 30 ~ "25-30",
-                               exit > 30 & exit <= 35 ~ "30-35",
-                               exit > 35 & exit <= 40 ~ "35-40",
-                               exit > 40 & exit <= 45 ~ "40-45",
+  mutate(exit.char = case_when(exit > 40 & exit <= 45 ~ "40-45",
                                exit > 45 & exit <= 50 ~ "45-50",
                                exit > 50 & exit <= 55 ~ "50-55",
                                exit > 55 & exit <= 60 ~ "55-60",
@@ -311,6 +281,8 @@ df5$risk <- "Canoe Capsize"
 # Fight ----
 
 df6 <- read.csv("fought_time_to_first_risk_short_interval.csv")
+
+df6 <- subset(df6, male == 1)
 
 df6$exit <- ceiling(df6$exit)
 
@@ -347,15 +319,7 @@ df6 <- df6 %>%
 df6$exit.char <- as.character(df6$exit)
 
 df6 <- df6 %>%
-  mutate(exit.char = case_when(exit > 0 & exit <= 5 ~ "0-5",
-                               exit > 5 & exit <= 10 ~ "5-10",
-                               exit > 10 & exit <= 15 ~ "10-15",
-                               exit > 15 & exit <= 20 ~ "15-20",
-                               exit > 20 & exit <= 25 ~ "20-25",
-                               exit > 25 & exit <= 30 ~ "25-30",
-                               exit > 30 & exit <= 35 ~ "30-35",
-                               exit > 35 & exit <= 40 ~ "35-40",
-                               exit > 40 & exit <= 45 ~ "40-45",
+  mutate(exit.char = case_when(exit > 40 & exit <= 45 ~ "40-45",
                                exit > 45 & exit <= 50 ~ "45-50",
                                exit > 50 & exit <= 55 ~ "50-55",
                                exit > 55 & exit <= 60 ~ "55-60",
@@ -378,10 +342,13 @@ df <- bind_rows(df1, df2, df3, df4, df5, df6)
 df$risk <- factor(df$risk, levels = c("Sickness", "Cut Self", "Animal Attack",
                                       "Tree Fall", "Fight", "Canoe Capsize"))
 
-df$exit.char <- factor(df$exit.char, levels = c("0-5", "5-10", "10-15", "15-20",
-                                            "20-25", "25-30", "30-35", "35-40",
-                                            "40-45", "45-50", "50-55", "55-60",
-                                            "60+"))
+df$exit.char <- factor(df$exit.char, levels = c("1", "2", "3", "4", "5", "6", "7", "8",
+                                                "9", "10", "11", "12", "13", "14", "15",
+                                                "16", "17", "18", "19", "20", "21", "22",
+                                                "23", "24", "25", "26", "27", "28", "29",
+                                                "30", "31", "32", "33", "34", "35", "36",
+                                                "37", "38", "39", "40", "40-45", "45-50", "50-55",
+                                                "55-60", "60+"))
 
 rm(df1, df2, df3, df4, df5, df6)
 
@@ -395,16 +362,17 @@ df$n_prop <- df$n * 365 * df$group_count
 df %>%
   ggplot(aes(x = exit.char, y = days_disabled_risk, group = risk, fill = risk)) +
   geom_area(position = 'stack', alpha = 0.8) +
-  viridis::scale_fill_viridis(discrete = T) +
+  colorspace::scale_fill_discrete_diverging(palette = "RedOr") +
   theme_classic(base_size = 18) +
   scale_x_discrete(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
   labs(fill = "") +
   xlab("Age of Occurrence") +
+  guides(x =  guide_axis(angle = 45)) +
   ylab("Days Disabled/Injured") +
-  ggtitle("ALL RISKS") +
+  ggtitle("All Risks (Male)") +
   theme(plot.title = element_text(size = 50, hjust = 0.5),
-        legend.position = c(0.75, 0.7))
+        legend.position = c(0.75, 0.8))
 
 
 # 2. Stacked proportion plot one year intervals ---------------------------
@@ -418,7 +386,8 @@ df %>%
   scale_y_continuous(expand = c(0, 0)) +
   labs(fill = "") +
   xlab("Age of Occurrence") +
+  guides(x =  guide_axis(angle = 45)) +
   ylab("Proportion of Days Disabled/Injured") +
-  ggtitle("ALL RISKS") +
+  ggtitle("All Risks (Male)") +
   theme(plot.title = element_text(size = 50, hjust = 0.5),
         legend.position = c(0.75, 0.7))
