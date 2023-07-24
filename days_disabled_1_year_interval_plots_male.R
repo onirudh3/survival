@@ -5,39 +5,36 @@ library(tidyverse)
 
 # Tree Fall ----
 
-df1 <- read.csv("tree_fall_time_to_first_risk_short_interval.csv")
+df1 <- read.csv("tree_fall_time_to_first_risk_short_interval.csv") # read time-to-first-risk data
 
 df1 <- subset(df1, male == 1)
 
-df1$exit <- ceiling(df1$exit)
-
-# df1 <- df1 %>%
-# filter(!near(round(exit), exit)) # to see which exits are fractions
+df1$exit <- ceiling(df1$exit) # round up values of exit, only affects those values where age at interview is equal to exit
 
 df1 <- df1 %>%
   mutate(tree_fall_days_disabled_1 =
            case_when(!is.na(tree_fall_days_disabled_2) ~
                        tree_fall_days_disabled_1 +
                        tree_fall_days_disabled_2,
-                     T ~ tree_fall_days_disabled_1))
+                     T ~ tree_fall_days_disabled_1)) # sum days disabled from different columns to get total days disabled
 
-df1 <- subset(df1, select = c(pid, exit, tree.fall.during.interval, tree_fall_days_disabled_1))
+df1 <- subset(df1, select = c(pid, exit, tree.fall.during.interval, tree_fall_days_disabled_1)) # select necessary columns
 
 df1 <- df1 %>%
   group_by(exit) %>%
-  mutate(n = n())
+  mutate(n = n()) # count the number of people in each exit interval
 
 df1 <- df1 %>%
-  filter(tree.fall.during.interval == 1)
+  filter(tree.fall.during.interval == 1) # filter for when the risk occurred
 
 df1 <- df1 %>%
   filter(!is.na(tree_fall_days_disabled_1)) # remove NA individuals
 
 df1 <- df1 %>%
   group_by(exit, n) %>%
-  summarise(days_disabled_risk = sum(tree_fall_days_disabled_1)) # get sum of days disabled
+  summarise(days_disabled_risk = sum(tree_fall_days_disabled_1)) # get total days disabled for each exit interval
 
-df1$exit.char <- as.character(df1$exit)
+df1$exit.char <- as.character(df1$exit) # new column to group ages above 40
 
 df1 <- df1 %>%
   mutate(exit.char = case_when(exit > 40 & exit <= 45 ~ "40-45",
@@ -45,15 +42,18 @@ df1 <- df1 %>%
                                exit > 50 & exit <= 55 ~ "50-55",
                                exit > 55 & exit <= 60 ~ "55-60",
                                exit > 60 ~ "60+",
-                               T ~ exit.char))
+                               T ~ exit.char)) # grouping ages above 40
 
 df1 <- df1 %>%
   group_by(exit.char) %>%
   summarise(group_count = n(),
             days_disabled_risk = sum(days_disabled_risk),
             n = mean(n))
+# get the count of the years present in the group
+# get the sum of days disabled for the different years in the group
+# get the average of people that are contributing years to the group
 
-df1$risk <- "Tree Fall"
+df1$risk <- "Tree Fall" # add risk category as identifier when merging all dataframes later
 
 
 # Sickness ----
@@ -361,8 +361,8 @@ df$n_prop <- df$n * 365 * df$group_count
 
 df %>%
   ggplot(aes(x = exit.char, y = days_disabled_risk, group = risk, fill = risk)) +
-  geom_area(position = 'stack', alpha = 0.8) +
-  colorspace::scale_fill_discrete_sequential(palette = "Reds", rev = F) +
+  geom_area(position = 'stack') +
+  viridis::scale_fill_viridis(option = "H", discrete = T) +
   theme_classic(base_size = 18) +
   scale_x_discrete(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
@@ -379,8 +379,8 @@ df %>%
 
 df %>%
   ggplot(aes(x = exit.char, y = days_disabled_risk / n_prop, group = risk, fill = risk)) +
-  geom_area(position = 'stack', alpha = 0.8) +
-  colorspace::scale_fill_discrete_sequential(palette = "Reds", rev = F) +
+  geom_area(position = 'stack') +
+  viridis::scale_fill_viridis(option = "H", discrete = T) +
   theme_classic(base_size = 18) +
   scale_x_discrete(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +

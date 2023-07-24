@@ -1705,6 +1705,44 @@ dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Cut Self Plots/coxme_plot_.RDS")
 
 
+# Model 8: coxme with calendar year ---------------------
+model8 <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + year + (1 | pid) +
+                  (1 | house.id) + (1 | region), df_first)
+saveRDS(model8, file = "Cut Self Tables/coxme_calendar_year.RDS")
+
+results <- extract_coxme_table(model8)
+b <- data.frame(confint(model8))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Calendar Year")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/model8.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Cut Self Plots/schoenfeld_res_calendar_year.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model8))
+dev.off()
+
 
 # Descriptive Plots -------------------------------------------------------
 # Make age.cat as factor

@@ -1704,6 +1704,14 @@ p
 dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Canoe Capsize Plots/coxme_plot_.RDS")
 
+
+
+# Model 8: coxme with calendar year --------------------- ERROR
+# model8 <- coxme(Surv(exit, canoe.capsize.during.interval) ~ strata(male) + year + (1 | pid) +
+#                   (1 | house.id) + (1 | region), df_first)
+
+
+
 # Descriptive Plots -------------------------------------------------------
 # Make age.cat as factor
 df$age.cat <- factor(df$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",

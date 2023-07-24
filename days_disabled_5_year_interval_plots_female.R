@@ -406,8 +406,8 @@ df$n_prop <- df$n * 365 * df$group_count
 
 df %>%
   ggplot(aes(x = exit.char, y = days_disabled_risk, group = risk, fill = risk)) +
-  geom_area(position = 'stack', alpha = 0.8) +
-  colorspace::scale_fill_discrete_sequential(palette = "YlGnBu", rev = F) +
+  geom_area(position = 'stack') +
+  viridis::scale_fill_viridis(option = "H", discrete = T) +
   theme_classic(base_size = 18) +
   scale_x_discrete(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
@@ -423,8 +423,8 @@ df %>%
 
 df %>%
   ggplot(aes(x = exit.char, y = days_disabled_risk / n_prop, group = risk, fill = risk)) +
-  geom_area(position = 'stack', alpha = 0.8) +
-  colorspace::scale_fill_discrete_sequential(palette = "YlGnBu", rev = F) +
+  geom_area(position = 'stack') +
+  viridis::scale_fill_viridis(option = "H", discrete = T) +
   theme_classic(base_size = 18) +
   scale_x_discrete(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
