@@ -1377,9 +1377,13 @@ p
 dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Animal Attack Combined Plots/coxme_plot_.RDS")
 
+# Mean centering year -----------------------------------------------------
+
+df_first <- df_first %>%
+  mutate(centered.year = year - mean(year), .after = year)
 
 # Model 8: coxme with calendar year ---------------------
-model8 <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + year + (1 | pid) +
+model8 <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + centered.year + (1 | pid) +
                   (1 | house.id) + (1 | region), df_first)
 saveRDS(model8, file = "Animal Attack Combined Tables/coxme_calendar_year.RDS")
 

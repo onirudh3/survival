@@ -1705,9 +1705,13 @@ dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Canoe Capsize Plots/coxme_plot_.RDS")
 
 
+# Mean centering year -----------------------------------------------------
+
+df_first <- df_first %>%
+  mutate(centered.year = year - mean(year), .after = year)
 
 # Model 8: coxme with calendar year --------------------- ERROR
-# model8 <- coxme(Surv(exit, canoe.capsize.during.interval) ~ strata(male) + year + (1 | pid) +
+# model8 <- coxme(Surv(exit, canoe.capsize.during.interval) ~ strata(male) + centered.year + (1 | pid) +
 #                   (1 | house.id) + (1 | region), df_first)
 
 
