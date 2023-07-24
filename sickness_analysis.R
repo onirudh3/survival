@@ -1098,39 +1098,6 @@ model6e <- coxme(Surv(exit, sickness.during.interval) ~ 1 + (1 | pid) + (1 | reg
                  data = df_first)
 # summary(model6e)
 
-## Comparing model fit ----
-aov_test <- anova(model6, model6a, model6b, model6c, model6d, model6e)
-aov_test
-
-aic_test <- AIC(model6, model6a, model6b, model6c, model6d, model6e)
-aic_test
-
-## Tabulating ----
-df_coxme <- cbind(aov_test, aic_test)
-df_coxme <- subset(df_coxme, select = -c(Df))
-df_coxme <- data.frame(t(df_coxme))
-colnames(df_coxme) <- c("1", "2", "3", "4", "5", "6")
-
-addtorow <- list()
-addtorow$pos <- list()
-addtorow$pos[[1]] <- -1
-addtorow$pos[[2]] <- 5
-addtorow$pos[[3]] <- 5
-addtorow$pos[[4]] <- 5
-addtorow$pos[[5]] <- 5
-addtorow$pos[[6]] <- 5
-addtorow$pos[[7]] <- 5
-addtorow$command <- c('\\hline',
-                      '\\hline',
-                      'PID RE & No & Yes & Yes & Yes & Yes & Yes \\\\\n',
-                      'House ID RE & No & No & Yes & Yes & Yes & Nested \\\\\n',
-                      'Region RE & No & No & No & Yes & No & Yes \\\\\n',
-                      'Region FE & No & No & No & No & Yes & No \\\\\n',
-                      '\\hline')
-x <- xtable(df_coxme, caption = "Sickness Mixed Effects Specifications")
-align(x) <- "lcccccc"
-print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model6.tex")
-
 ## Model 6f: Tree Fall ----
 model6f <- coxme(Surv(exit, sickness.during.interval) ~ strata(male) + (1 | pid) +
                    (1 | house.id) + (1 | region) + tree.fall.during.interval, df_first)
@@ -1747,11 +1714,38 @@ x <- xtable(results, caption = "Sickness \\vspace{-1em}")
 align(x) <- "lcccccc"
 print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model8.tex")
 
-# Plot Schoenfeld residuals
-pdf(file = "Sickness Plots/schoenfeld_res_calendar_year.pdf", height = 5, width = 7)
-ggcoxzph(cox.zph(model8))
-dev.off()
+## Comparing model fit ----
+aov_test <- anova(model6, model6a, model6b, model6c, model6d, model6e, model8)
+aov_test
 
+aic_test <- AIC(model6, model6a, model6b, model6c, model6d, model6e, model8)
+aic_test
+
+## Tabulating ----
+df_coxme <- cbind(aov_test, aic_test)
+df_coxme <- subset(df_coxme, select = -c(Df))
+df_coxme <- data.frame(t(df_coxme))
+colnames(df_coxme) <- c("1", "2", "3", "4", "5", "6", "Model 8")
+
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$pos[[6]] <- 5
+addtorow$pos[[7]] <- 5
+addtorow$command <- c('\\hline',
+                      '\\hline',
+                      'PID RE & No & Yes & Yes & Yes & Yes & Yes & Yes \\\\\n',
+                      'House ID RE & No & No & Yes & Yes & Yes & Nested & Yes \\\\\n',
+                      'Region RE & No & No & No & Yes & No & Yes & Yes \\\\\n',
+                      'Region FE & No & No & No & No & Yes & No & No \\\\\n',
+                      '\\hline')
+x <- xtable(df_coxme, caption = "Sickness Mixed Effects Specifications")
+align(x) <- "lccccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/model6.tex")
 
 # Descriptive Plots -------------------------------------------------------
 # Make age.cat as factor
