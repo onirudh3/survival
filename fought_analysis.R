@@ -34,6 +34,11 @@ eha::logrank(Surv(enter, exit, fought.during.interval), group = male, data = df)
 # Testing Proportional Hazards for region
 eha::logrank(Surv(enter, exit, fought.during.interval), group = region, data = df)
 
+# # Testing Proportional Hazards for calendar year tercile
+# df <- read.csv("fought_time_to_first_risk_short_interval.csv")
+# eha::logrank(Surv(enter, exit, fought.during.interval), group = tercile, data = df)
+# plot(survfit(Surv(enter, exit, fought.during.interval) ~ tercile, df))
+
 # Export results in table
 results <- data.frame("Coefficient" = summary(model1)$coefficients[,1],
                       "SE" = summary(model1)$coefficients[,3],
@@ -1754,6 +1759,82 @@ addtorow$command <- c('\\hline',
 x <- xtable(df_coxme, caption = "Fight Mixed Effects Specifications")
 align(x) <- "lccccccc"
 print(x, caption.placement = "top", add.to.row = addtorow, file = "Fight Tables/model6.tex")
+
+# Model 9: calendar year median split -------------------------------------
+model9 <- coxme(Surv(exit, fought.during.interval) ~ strata(male) + pre_median + (1 | pid) +
+                  (1 | house.id) + (1 | region), df_first)
+saveRDS(model9, file = "Fight Tables/coxme_calendar_year_median.RDS")
+
+results <- extract_coxme_table(model9)
+b <- data.frame(confint(model9))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Fight \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Fight Tables/model9.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Fight Plots/schoenfeld_res_median.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model9))
+dev.off()
+
+# Model 10: calendar year tercile split -------------------------------------
+
+model10 <- coxme(Surv(exit, fought.during.interval) ~ strata(male) + tercile + (1 | pid) +
+                   (1 | house.id) + (1 | region), df_first)
+saveRDS(model10, file = "Fight Tables/coxme_calendar_year_tercile.RDS")
+
+results <- extract_coxme_table(model10)
+b <- data.frame(confint(model10))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 2
+addtorow$pos[[4]] <- 2
+addtorow$pos[[5]] <- 2
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Fight \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Fight Tables/model10.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Fight Plots/schoenfeld_res_tercile.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model10))
+dev.off()
+
 
 
 # Descriptive Plots -------------------------------------------------------

@@ -34,6 +34,17 @@ dg <- dg %>%
   mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
 dg <- subset(dg, select = -c(YearBorn))
 
+# Calendar year median split variable
+dg$pre_median <- ifelse(dg$year < median(dg$year), sprintf("Pre %d", median(dg$year)), sprintf("Post %d", median(dg$year)))
+dg <- dg %>% relocate(pre_median, .after = year)
+
+# Calendar year tercile split variable
+dg$tercile <- fabricatr::split_quantile(dg$year, 3)
+dg <- dg %>% relocate(tercile, .after = pre_median)
+dg <- dg %>%
+  group_by(tercile) %>%
+  mutate(tercile = sprintf("Period %d-%d", min(year), max(year)), .after = pre_median)
+
 write.csv(dg, "tree_fall_time_to_first_risk_short_interval.csv", row.names = F)
 
 
@@ -61,6 +72,17 @@ dg <- dg %>%
   mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
 dg <- subset(dg, select = -c(YearBorn))
 
+# Calendar year median split variable
+dg$pre_median <- ifelse(dg$year < median(dg$year), sprintf("Pre %d", median(dg$year)), sprintf("Post %d", median(dg$year)))
+dg <- dg %>% relocate(pre_median, .after = year)
+
+# Calendar year tercile split variable
+dg$tercile <- fabricatr::split_quantile(dg$year, 3)
+dg <- dg %>% relocate(tercile, .after = pre_median)
+dg <- dg %>%
+  group_by(tercile) %>%
+  mutate(tercile = sprintf("Period %d-%d", min(year), max(year)), .after = pre_median)
+
 write.csv(dg, "snake_ray_bite_time_to_first_risk_short_interval.csv", row.names = F)
 
 
@@ -86,6 +108,17 @@ dg <- dg %>%
   group_by(pid) %>%
   mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
 dg <- subset(dg, select = -c(YearBorn))
+
+# Calendar year median split variable
+dg$pre_median <- ifelse(dg$year < median(dg$year), sprintf("Pre %d", median(dg$year)), sprintf("Post %d", median(dg$year)))
+dg <- dg %>% relocate(pre_median, .after = year)
+
+# Calendar year tercile split variable
+dg$tercile <- fabricatr::split_quantile(dg$year, 3)
+dg <- dg %>% relocate(tercile, .after = pre_median)
+dg <- dg %>%
+  group_by(tercile) %>%
+  mutate(tercile = sprintf("Period %d-%d", min(year), max(year)), .after = pre_median)
 
 write.csv(dg, "sickness_time_to_first_risk_short_interval.csv", row.names = F)
 
@@ -113,6 +146,17 @@ dg <- dg %>%
   mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
 dg <- subset(dg, select = -c(YearBorn))
 
+# Calendar year median split variable
+dg$pre_median <- ifelse(dg$year < median(dg$year), sprintf("Pre %d", median(dg$year)), sprintf("Post %d", median(dg$year)))
+dg <- dg %>% relocate(pre_median, .after = year)
+
+# Calendar year tercile split variable
+dg$tercile <- fabricatr::split_quantile(dg$year, 3)
+dg <- dg %>% relocate(tercile, .after = pre_median)
+dg <- dg %>%
+  group_by(tercile) %>%
+  mutate(tercile = sprintf("Period %d-%d", min(year), max(year)), .after = pre_median)
+
 write.csv(dg, "fought_time_to_first_risk_short_interval.csv", row.names = F)
 
 
@@ -138,6 +182,17 @@ dg <- dg %>%
   group_by(pid) %>%
   mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
 dg <- subset(dg, select = -c(YearBorn))
+
+# Calendar year median split variable
+dg$pre_median <- ifelse(dg$year < median(dg$year), sprintf("Pre %d", median(dg$year)), sprintf("Post %d", median(dg$year)))
+dg <- dg %>% relocate(pre_median, .after = year)
+
+# Calendar year tercile split variable
+dg$tercile <- fabricatr::split_quantile(dg$year, 3)
+dg <- dg %>% relocate(tercile, .after = pre_median)
+dg <- dg %>%
+  group_by(tercile) %>%
+  mutate(tercile = sprintf("Period %d-%d", min(year), max(year)), .after = pre_median)
 
 write.csv(dg, "animal_attack_time_to_first_risk_short_interval.csv", row.names = F)
 
@@ -165,6 +220,17 @@ dg <- dg %>%
   mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
 dg <- subset(dg, select = -c(YearBorn))
 
+# Calendar year median split variable
+dg$pre_median <- ifelse(dg$year < median(dg$year), sprintf("Pre %d", median(dg$year)), sprintf("Post %d", median(dg$year)))
+dg <- dg %>% relocate(pre_median, .after = year)
+
+# Calendar year tercile split variable
+dg$tercile <- fabricatr::split_quantile(dg$year, 3)
+dg <- dg %>% relocate(tercile, .after = pre_median)
+dg <- dg %>%
+  group_by(tercile) %>%
+  mutate(tercile = sprintf("Period %d-%d", min(year), max(year)), .after = pre_median)
+
 write.csv(dg, "canoe_capsize_time_to_first_risk_short_interval.csv", row.names = F)
 
 
@@ -191,6 +257,17 @@ dg <- dg %>%
   mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
 dg <- subset(dg, select = -c(YearBorn))
 
+# Calendar year median split variable
+dg$pre_median <- ifelse(dg$year < median(dg$year), sprintf("Pre %d", median(dg$year)), sprintf("Post %d", median(dg$year)))
+dg <- dg %>% relocate(pre_median, .after = year)
+
+# Calendar year tercile split variable
+dg$tercile <- fabricatr::split_quantile(dg$year, 3)
+dg <- dg %>% relocate(tercile, .after = pre_median)
+dg <- dg %>%
+  group_by(tercile) %>%
+  mutate(tercile = sprintf("Period %d-%d", min(year), max(year)), .after = pre_median)
+
 write.csv(dg, "cut_self_time_to_first_risk_short_interval.csv", row.names = F)
 
 
@@ -216,6 +293,17 @@ dg <- dg %>%
   group_by(pid) %>%
   mutate(year = seq(first(YearBorn), length.out = n()), .after = age)
 dg <- subset(dg, select = -c(YearBorn))
+
+# Calendar year median split variable
+dg$pre_median <- ifelse(dg$year < median(dg$year), sprintf("Pre %d", median(dg$year)), sprintf("Post %d", median(dg$year)))
+dg <- dg %>% relocate(pre_median, .after = year)
+
+# Calendar year tercile split variable
+dg$tercile <- fabricatr::split_quantile(dg$year, 3)
+dg <- dg %>% relocate(tercile, .after = pre_median)
+dg <- dg %>%
+  group_by(tercile) %>%
+  mutate(tercile = sprintf("Period %d-%d", min(year), max(year)), .after = pre_median)
 
 write.csv(dg, "Animal_Attack_combined_time_to_first_risk_short_interval.csv", row.names = F)
 

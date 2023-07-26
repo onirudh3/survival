@@ -37,6 +37,11 @@ eha::logrank(Surv(enter, exit, tree.fall.during.interval), group = male, data = 
 # Testing Proportional Hazards for region
 eha::logrank(Surv(enter, exit, tree.fall.during.interval), group = region, data = df)
 
+# # Testing Proportional Hazards for calendar year tercile
+# df <- read.csv("tree_fall_time_to_first_risk_short_interval.csv")
+# eha::logrank(Surv(enter, exit, tree.fall.during.interval), group = tercile, data = df)
+# plot(survfit(Surv(enter, exit, tree.fall.during.interval) ~ tercile, df))
+
 # Export results in table
 results <- data.frame("Coefficient" = summary(model1)$coefficients[,1],
                       "SE" = summary(model1)$coefficients[,3],
@@ -1733,17 +1738,20 @@ align(x) <- "lcccccc"
 print(x, caption.placement = "top", add.to.row = addtorow, file = "Tree Fall Tables/model8.tex")
 
 ## Comparing model fit ----
-aov_test <- anova(model6, model6a, model6b, model6c, model6d, model6e, model8)
+model8 <- readRDS("Tree Fall Tables/coxme_calendar_year.RDS")
+model10 <- readRDS("Tree Fall Tables/coxme_calendar_year_tercile.RDS")
+
+aov_test <- anova(model6, model6a, model6b, model6c, model8, model10)
 aov_test
 
-aic_test <- AIC(model6, model6a, model6b, model6c, model6d, model6e, model8)
+aic_test <- AIC(model6, model6a, model6b, model6c, model8, model10)
 aic_test
 
 ## Tabulating ----
 df_coxme <- cbind(aov_test, aic_test)
 df_coxme <- subset(df_coxme, select = -c(Df))
 df_coxme <- data.frame(t(df_coxme))
-colnames(df_coxme) <- c("1", "2", "3", "4", "5", "6", "Model 8")
+colnames(df_coxme) <- c("1", "2", "3", "4", "Model 8", "Model 10")
 
 addtorow <- list()
 addtorow$pos <- list()
@@ -1756,15 +1764,91 @@ addtorow$pos[[6]] <- 5
 addtorow$pos[[7]] <- 5
 addtorow$command <- c('\\hline',
                       '\\hline',
-                      'PID RE & No & Yes & Yes & Yes & Yes & Yes & Yes \\\\\n',
-                      'House ID RE & No & No & Yes & Yes & Yes & Nested & Yes \\\\\n',
-                      'Region RE & No & No & No & Yes & No & Yes & Yes \\\\\n',
-                      'Region FE & No & No & No & No & Yes & No & No \\\\\n',
+                      'PID RE & No & Yes & Yes & Yes & Yes \\\\\n',
+                      'House ID RE & No & No & Yes & Yes & Yes \\\\\n',
+                      'Region RE & No & No & No & Yes & Yes \\\\\n',
+                      'Region FE & No & No & No & No & No \\\\\n',
                       '\\hline')
 x <- xtable(df_coxme, caption = "Tree Fall Mixed Effects Specifications")
 align(x) <- "lccccccc"
 print(x, caption.placement = "top", add.to.row = addtorow, file = "Tree Fall Tables/model6.tex")
 
+
+
+# Model 9: calendar year median split -------------------------------------
+model9 <- coxme(Surv(exit, tree.fall.during.interval) ~ strata(male) + pre_median + (1 | pid) +
+                  (1 | house.id) + (1 | region), df_first)
+saveRDS(model9, file = "Tree Fall Tables/coxme_calendar_year_median.RDS")
+
+results <- extract_coxme_table(model9)
+b <- data.frame(confint(model9))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Tree Fall \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Tree Fall Tables/model9.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Tree Fall Plots/schoenfeld_res_median.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model9))
+dev.off()
+
+# Model 10: calendar year tercile split -------------------------------------
+
+model10 <- coxme(Surv(exit, tree.fall.during.interval) ~ strata(male) + tercile + (1 | pid) +
+                   (1 | house.id) + (1 | region), df_first)
+saveRDS(model10, file = "Tree Fall Tables/coxme_calendar_year_tercile.RDS")
+
+results <- extract_coxme_table(model10)
+b <- data.frame(confint(model10))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 2
+addtorow$pos[[4]] <- 2
+addtorow$pos[[5]] <- 2
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Tree Fall \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Tree Fall Tables/model10.tex")
+
+# Plot Schoenfeld residuals
+pdf(file = "Tree Fall Plots/schoenfeld_res_tercile.pdf", height = 5, width = 7)
+ggcoxzph(cox.zph(model10))
+dev.off()
 
 
 # Visualizing hazard and calendar year ------------------------------------
