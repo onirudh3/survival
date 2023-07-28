@@ -84,11 +84,249 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tabl
 
 # Sex ---------------------------------------------------------------------
 # PH violated for sex
-model2 <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) +
-                  (1 | pid) + (1 | house.id), df)
-c <- data.frame(t(data.frame(VarCorr(model2))))
+# Tree Fall - Error in ikmat %*% fcoef : NA/NaN/Inf in foreign function call (arg 9)
+# model2a <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) +
+#                    tree.fall.during.interval + (1 | pid) + (1 | house.id), df)
+# saveRDS(model2a, file = "Cut Self Tables/sex_tree_fall.RDS")
+# results <- extract_coxme_table(model2a)
+# b <- data.frame(confint(model2a))
+# results <- cbind(results, b)
+# results <- round(results, 3)
+# results <- results %>% rename("Coef" = "beta",
+#                               "exp(Coef)" = "exp_beta",
+#                               "SE" = "se",
+#                               "Lower CI" = "X2.5..",
+#                               "Upper CI" = "X97.5..")
+# rownames(results) <- c("Tree Fall")
+# results <- data.frame(t(results))
+# results <- data.frame(t(results))
+# addtorow <- list()
+# addtorow$pos <- list()
+# addtorow$pos[[1]] <- -1
+# addtorow$pos[[2]] <- 1
+# addtorow$pos[[3]] <- 1
+# addtorow$pos[[4]] <- 1
+# addtorow$pos[[5]] <- 1
+# addtorow$command <- c('\\hline ',
+#                       '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+#                       'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+#                       'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+#                       '\\hline ')
+# x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
+# align(x) <- "lcccccc"
+# print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/sex_tree_fall.tex")
+# c <- data.frame(t(data.frame(VarCorr(model2a))))
+# colnames(c) <- c("RE Variance")
+# print(xtable(c), file = "Cut Self Tables/sexvar_tree_fall.tex")
+# # Plot Schoenfeld residuals
+# pdf(file = "Cut Self Plots/sex_schoenfeld_tree_fall.pdf", height = 5, width = 7)
+# survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/sex_tree_fall.RDS")))
+# dev.off()
+
+# Sickness
+model2b <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) +
+                   sickness.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model2b, file = "Cut Self Tables/sex_sickness.RDS")
+results <- extract_coxme_table(model2b)
+b <- data.frame(confint(model2b))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Sickness")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/sex_sickness.tex")
+c <- data.frame(t(data.frame(VarCorr(model2b))))
 colnames(c) <- c("RE Variance")
-print(xtable(c), file = "Cut Self Tables/sexvar.tex")
+print(xtable(c), file = "Cut Self Tables/sexvar_sickness.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Cut Self Plots/sex_schoenfeld_sickness.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/sex_sickness.RDS")))
+dev.off()
+
+# Animal Attack
+model2c <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) +
+                   Animal_Attack.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model2c, file = "Cut Self Tables/sex_Animal_Attack.RDS")
+results <- extract_coxme_table(model2c)
+b <- data.frame(confint(model2c))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Animal Attack")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/sex_Animal_Attack.tex")
+c <- data.frame(t(data.frame(VarCorr(model2c))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Cut Self Tables/sexvar_Animal_Attack.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Cut Self Plots/sex_schoenfeld_Animal_Attack.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/sex_Animal_Attack.RDS")))
+dev.off()
+
+# Canoe Capsize
+model2d <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) +
+                   canoe.capsize.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model2d, file = "Cut Self Tables/sex_canoe_capsize.RDS")
+results <- extract_coxme_table(model2d)
+b <- data.frame(confint(model2d))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Canoe Capsize")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/sex_canoe_capsize.tex")
+c <- data.frame(t(data.frame(VarCorr(model2d))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Cut Self Tables/sexvar_canoe_capsize.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Cut Self Plots/sex_schoenfeld_canoe_capsize.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/sex_canoe_capsize.RDS")))
+dev.off()
+
+# Fight
+model2e <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) +
+                   fought.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model2e, file = "Cut Self Tables/sex_fight.RDS")
+results <- extract_coxme_table(model2e)
+b <- data.frame(confint(model2e))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Fight")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/sex_fight.tex")
+c <- data.frame(t(data.frame(VarCorr(model2e))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Cut Self Tables/sexvar_fight.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Cut Self Plots/sex_schoenfeld_fight.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/sex_fight.RDS")))
+dev.off()
+
+# Plot
+df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Cut Self Tables/sex_fight.RDS")), data.frame(confint(readRDS("Cut Self Tables/sex_fight.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Cut Self Tables/sex_Animal_Attack.RDS")), data.frame(confint(readRDS("Cut Self Tables/sex_Animal_Attack.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Cut Self Tables/sex_sickness.RDS")), data.frame(confint(readRDS("Cut Self Tables/sex_sickness.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Cut Self Tables/sex_canoe_capsize.RDS")), data.frame(confint(readRDS("Cut Self Tables/sex_canoe_capsize.RDS")))))
+
+df_hazard_plot <- round(df_hazard_plot, 3)
+df_hazard_plot$X2.5.. <- exp(df_hazard_plot$X2.5..)
+df_hazard_plot$X97.5.. <- exp(df_hazard_plot$X97.5..)
+df_hazard_plot <- rownames_to_column(df_hazard_plot, "covariate")
+
+ph_df <- bind_rows(data.frame(cox.zph(readRDS("Cut Self Tables/sex_fight.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Cut Self Tables/sex_Animal_Attack.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Cut Self Tables/sex_sickness.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Cut Self Tables/sex_canoe_capsize.RDS"))$table))
+ph_df <- ph_df %>% filter(!duplicated(ph_df))
+ph_df <- rownames_to_column(ph_df, "covariate")
+
+df_hazard_plot <- left_join(df_hazard_plot, ph_df, by = "covariate")
+df_hazard_plot <- df_hazard_plot %>%
+  mutate(p.y = case_when(p.y <= 0.05 ~ "Violates PH", T ~ "Does Not Violate PH"),
+         covariate = case_when(covariate == "fought.during.interval" ~ "Fight",
+                               covariate == "Animal_Attack.during.interval" ~ "Animal Attack",
+                               covariate == "sickness.during.interval" ~ "Sickness",
+                               covariate == "canoe.capsize.during.interval" ~ "Canoe Capsize"))
+
+df_hazard_plot$p.y <- as.factor(df_hazard_plot$p.y)
+df_hazard_plot <- subset(df_hazard_plot, !is.na(covariate))
+
+df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sickness", "Cut Self", "Animal Attack",
+                                                                        "Tree Fall", "Fight", "Canoe Capsize"))
+
+pdf(file = "Cut Self Plots/sex_panel_plot.pdf", height = 6.5, width = 6)
+p <- df_hazard_plot %>%
+  ggplot() +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9) +
+  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
+  labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID and House ID") +
+  geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
+  theme_classic(base_size = 16) +
+  guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
+  ggtitle("Outcome Variable: Cut Self") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5)) +
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 17))
+p
+dev.off()
+saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Cut Self Plots/sex_panel_plot.RDS")
 
 # Sex + Region ------------------------------------------------------------
 # PH violated for region
@@ -331,13 +569,13 @@ df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sicknes
 pdf(file = "Cut Self Plots/region_panel_plot.pdf", height = 6.5, width = 6)
 p <- df_hazard_plot %>%
   ggplot() +
-  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity") +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9) +
   geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
   labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID and House ID") +
-  geom_segment(aes(x = 0, y = 1, xend = 5.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
   scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
   theme_classic(base_size = 16) +
-  guides(x =  guide_axis(angle = 90)) +
+  guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
   ggtitle("Outcome Variable: Cut Self") +
   theme(plot.title = element_text(size = 20, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 19))
@@ -585,13 +823,13 @@ df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sicknes
 pdf(file = "Cut Self Plots/tercile_panel_plot.pdf", height = 6.5, width = 6)
 p <- df_hazard_plot %>%
   ggplot() +
-  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity") +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9) +
   geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
   labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID and House ID") +
-  geom_segment(aes(x = 0, y = 1, xend = 5.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
   scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
   theme_classic(base_size = 16) +
-  guides(x =  guide_axis(angle = 90)) +
+  guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
   ggtitle("Outcome Variable: Cut Self") +
   theme(plot.title = element_text(size = 20, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 10.5))
@@ -603,18 +841,13 @@ saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Cut Self Plots/tercile_
 
 # PID RE ------------------------------------------------------------------
 
-# Sex + Region ------------------------------------------------------------
-# PH violated for region
-model5 <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) +
-                  (1 | pid), df)
-c <- data.frame(t(data.frame(VarCorr(model5))))
-colnames(c) <- c("RE Variance")
-print(xtable(c), file = "Cut Self Tables/regionvar_1.tex")
 
+# Sex ---------------------------------------------------------------------
+# PH violated for sex
 # Tree Fall
-model5a <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) +
+model5a <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) +
                    tree.fall.during.interval + (1 | pid), df)
-saveRDS(model5a, file = "Cut Self Tables/region_tree_fall_1.RDS")
+saveRDS(model5a, file = "Cut Self Tables/sex_tree_fall_1.RDS")
 results <- extract_coxme_table(model5a)
 b <- data.frame(confint(model5a))
 results <- cbind(results, b)
@@ -641,19 +874,19 @@ addtorow$command <- c('\\hline ',
                       '\\hline ')
 x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
 align(x) <- "lcccccc"
-print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/region_tree_fall_1.tex")
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/sex_tree_fall_1.tex")
 c <- data.frame(t(data.frame(VarCorr(model5a))))
 colnames(c) <- c("RE Variance")
-print(xtable(c), file = "Cut Self Tables/regionvar_tree_fall_1.tex")
+print(xtable(c), file = "Cut Self Tables/sexvar_tree_fall_1.tex")
 # Plot Schoenfeld residuals
-pdf(file = "Cut Self Plots/region_schoenfeld_tree_fall_1.pdf", height = 5, width = 7)
-survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/region_tree_fall_1.RDS")))
+pdf(file = "Cut Self Plots/sex_schoenfeld_tree_fall_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/sex_tree_fall_1.RDS")))
 dev.off()
 
 # Sickness
-model5b <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) +
+model5b <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) +
                    sickness.during.interval + (1 | pid), df)
-saveRDS(model5b, file = "Cut Self Tables/region_sickness_1.RDS")
+saveRDS(model5b, file = "Cut Self Tables/sex_sickness_1.RDS")
 results <- extract_coxme_table(model5b)
 b <- data.frame(confint(model5b))
 results <- cbind(results, b)
@@ -680,19 +913,19 @@ addtorow$command <- c('\\hline ',
                       '\\hline ')
 x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
 align(x) <- "lcccccc"
-print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/region_sickness_1.tex")
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/sex_sickness_1.tex")
 c <- data.frame(t(data.frame(VarCorr(model5b))))
 colnames(c) <- c("RE Variance")
-print(xtable(c), file = "Cut Self Tables/regionvar_sickness_1.tex")
+print(xtable(c), file = "Cut Self Tables/sexvar_sickness_1.tex")
 # Plot Schoenfeld residuals
-pdf(file = "Cut Self Plots/region_schoenfeld_sickness_1.pdf", height = 5, width = 7)
-survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/region_sickness_1.RDS")))
+pdf(file = "Cut Self Plots/sex_schoenfeld_sickness_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/sex_sickness_1.RDS")))
 dev.off()
 
 # Animal Attack
-model5c <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) +
+model5c <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) +
                    Animal_Attack.during.interval + (1 | pid), df)
-saveRDS(model5c, file = "Cut Self Tables/region_Animal_Attack_1.RDS")
+saveRDS(model5c, file = "Cut Self Tables/sex_Animal_Attack_1.RDS")
 results <- extract_coxme_table(model5c)
 b <- data.frame(confint(model5c))
 results <- cbind(results, b)
@@ -719,19 +952,19 @@ addtorow$command <- c('\\hline ',
                       '\\hline ')
 x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
 align(x) <- "lcccccc"
-print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/region_Animal_Attack_1.tex")
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/sex_Animal_Attack_1.tex")
 c <- data.frame(t(data.frame(VarCorr(model5c))))
 colnames(c) <- c("RE Variance")
-print(xtable(c), file = "Cut Self Tables/regionvar_Animal_Attack_1.tex")
+print(xtable(c), file = "Cut Self Tables/sexvar_Animal_Attack_1.tex")
 # Plot Schoenfeld residuals
-pdf(file = "Cut Self Plots/region_schoenfeld_Animal_Attack_1.pdf", height = 5, width = 7)
-survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/region_Animal_Attack_1.RDS")))
+pdf(file = "Cut Self Plots/sex_schoenfeld_Animal_Attack_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/sex_Animal_Attack_1.RDS")))
 dev.off()
 
 # Canoe Capsize
-model5d <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) +
+model5d <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) +
                    canoe.capsize.during.interval + (1 | pid), df)
-saveRDS(model5d, file = "Cut Self Tables/region_canoe_capsize_1.RDS")
+saveRDS(model5d, file = "Cut Self Tables/sex_canoe_capsize_1.RDS")
 results <- extract_coxme_table(model5d)
 b <- data.frame(confint(model5d))
 results <- cbind(results, b)
@@ -758,19 +991,19 @@ addtorow$command <- c('\\hline ',
                       '\\hline ')
 x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
 align(x) <- "lcccccc"
-print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/region_canoe_capsize_1.tex")
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/sex_canoe_capsize_1.tex")
 c <- data.frame(t(data.frame(VarCorr(model5d))))
 colnames(c) <- c("RE Variance")
-print(xtable(c), file = "Cut Self Tables/regionvar_canoe_capsize_1.tex")
+print(xtable(c), file = "Cut Self Tables/sexvar_canoe_capsize_1.tex")
 # Plot Schoenfeld residuals
-pdf(file = "Cut Self Plots/region_schoenfeld_canoe_capsize_1.pdf", height = 5, width = 7)
-survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/region_canoe_capsize_1.RDS")))
+pdf(file = "Cut Self Plots/sex_schoenfeld_canoe_capsize_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/sex_canoe_capsize_1.RDS")))
 dev.off()
 
 # Fight
-model5e <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) +
+model5e <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) +
                    fought.during.interval + (1 | pid), df)
-saveRDS(model5e, file = "Cut Self Tables/region_fight_1.RDS")
+saveRDS(model5e, file = "Cut Self Tables/sex_fight_1.RDS")
 results <- extract_coxme_table(model5e)
 b <- data.frame(confint(model5e))
 results <- cbind(results, b)
@@ -797,8 +1030,263 @@ addtorow$command <- c('\\hline ',
                       '\\hline ')
 x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
 align(x) <- "lcccccc"
-print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/region_fight_1.tex")
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/sex_fight_1.tex")
 c <- data.frame(t(data.frame(VarCorr(model5e))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Cut Self Tables/sexvar_fight_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Cut Self Plots/sex_schoenfeld_fight_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/sex_fight_1.RDS")))
+dev.off()
+
+# Plot
+df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Cut Self Tables/sex_fight_1.RDS")), data.frame(confint(readRDS("Cut Self Tables/sex_fight_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Cut Self Tables/sex_Animal_Attack_1.RDS")), data.frame(confint(readRDS("Cut Self Tables/sex_Animal_Attack_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Cut Self Tables/sex_tree_fall_1.RDS")), data.frame(confint(readRDS("Cut Self Tables/sex_tree_fall_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Cut Self Tables/sex_sickness_1.RDS")), data.frame(confint(readRDS("Cut Self Tables/sex_sickness_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Cut Self Tables/sex_canoe_capsize_1.RDS")), data.frame(confint(readRDS("Cut Self Tables/sex_canoe_capsize_1.RDS")))))
+
+df_hazard_plot <- round(df_hazard_plot, 3)
+df_hazard_plot$X2.5.. <- exp(df_hazard_plot$X2.5..)
+df_hazard_plot$X97.5.. <- exp(df_hazard_plot$X97.5..)
+df_hazard_plot <- rownames_to_column(df_hazard_plot, "covariate")
+
+ph_df <- bind_rows(data.frame(cox.zph(readRDS("Cut Self Tables/sex_fight_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Cut Self Tables/sex_Animal_Attack_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Cut Self Tables/sex_tree_fall_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Cut Self Tables/sex_sickness_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Cut Self Tables/sex_canoe_capsize_1.RDS"))$table))
+ph_df <- ph_df %>% filter(!duplicated(ph_df))
+ph_df <- rownames_to_column(ph_df, "covariate")
+
+df_hazard_plot <- left_join(df_hazard_plot, ph_df, by = "covariate")
+df_hazard_plot <- df_hazard_plot %>%
+  mutate(p.y = case_when(p.y <= 0.05 ~ "Violates PH", T ~ "Does Not Violate PH"),
+         covariate = case_when(covariate == "fought.during.interval" ~ "Fight",
+                               covariate == "Animal_Attack.during.interval" ~ "Animal Attack",
+                               covariate == "tree.fall.during.interval" ~ "Tree Fall",
+                               covariate == "sickness.during.interval" ~ "Sickness",
+                               covariate == "canoe.capsize.during.interval" ~ "Canoe Capsize"))
+
+df_hazard_plot$p.y <- as.factor(df_hazard_plot$p.y)
+df_hazard_plot <- subset(df_hazard_plot, !is.na(covariate))
+
+df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sickness", "Cut Self", "Animal Attack",
+                                                                        "Tree Fall", "Fight", "Canoe Capsize"))
+
+pdf(file = "Cut Self Plots/sex_panel_plot_1.pdf", height = 6.5, width = 6)
+p <- df_hazard_plot %>%
+  ggplot() +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9) +
+  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
+  labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID") +
+  geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
+  theme_classic(base_size = 16) +
+  guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
+  ggtitle("Outcome Variable: Cut Self") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5)) +
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 17))
+p
+dev.off()
+saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Cut Self Plots/sex_panel_plot_1.RDS")
+
+# Sex + Region ------------------------------------------------------------
+# PH violated for region
+model6 <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) +
+                  (1 | pid), df)
+c <- data.frame(t(data.frame(VarCorr(model6))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Cut Self Tables/regionvar_1.tex")
+
+# Tree Fall
+model6a <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) +
+                   tree.fall.during.interval + (1 | pid), df)
+saveRDS(model6a, file = "Cut Self Tables/region_tree_fall_1.RDS")
+results <- extract_coxme_table(model6a)
+b <- data.frame(confint(model6a))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Tree Fall")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/region_tree_fall_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6a))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Cut Self Tables/regionvar_tree_fall_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Cut Self Plots/region_schoenfeld_tree_fall_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/region_tree_fall_1.RDS")))
+dev.off()
+
+# Sickness
+model6b <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) +
+                   sickness.during.interval + (1 | pid), df)
+saveRDS(model6b, file = "Cut Self Tables/region_sickness_1.RDS")
+results <- extract_coxme_table(model6b)
+b <- data.frame(confint(model6b))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Sickness")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/region_sickness_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6b))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Cut Self Tables/regionvar_sickness_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Cut Self Plots/region_schoenfeld_sickness_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/region_sickness_1.RDS")))
+dev.off()
+
+# Animal Attack
+model6c <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) +
+                   Animal_Attack.during.interval + (1 | pid), df)
+saveRDS(model6c, file = "Cut Self Tables/region_Animal_Attack_1.RDS")
+results <- extract_coxme_table(model6c)
+b <- data.frame(confint(model6c))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Animal Attack")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/region_Animal_Attack_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6c))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Cut Self Tables/regionvar_Animal_Attack_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Cut Self Plots/region_schoenfeld_Animal_Attack_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/region_Animal_Attack_1.RDS")))
+dev.off()
+
+# Canoe Capsize
+model6d <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) +
+                   canoe.capsize.during.interval + (1 | pid), df)
+saveRDS(model6d, file = "Cut Self Tables/region_canoe_capsize_1.RDS")
+results <- extract_coxme_table(model6d)
+b <- data.frame(confint(model6d))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Canoe Capsize")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/region_canoe_capsize_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6d))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Cut Self Tables/regionvar_canoe_capsize_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Cut Self Plots/region_schoenfeld_canoe_capsize_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/region_canoe_capsize_1.RDS")))
+dev.off()
+
+# Fight
+model6e <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) +
+                   fought.during.interval + (1 | pid), df)
+saveRDS(model6e, file = "Cut Self Tables/region_fight_1.RDS")
+results <- extract_coxme_table(model6e)
+b <- data.frame(confint(model6e))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Fight")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/region_fight_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6e))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Cut Self Tables/regionvar_fight_1.tex")
 # Plot Schoenfeld residuals
@@ -844,13 +1332,13 @@ df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sicknes
 pdf(file = "Cut Self Plots/region_panel_plot_1.pdf", height = 6.5, width = 6)
 p <- df_hazard_plot %>%
   ggplot() +
-  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity") +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9) +
   geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
   labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID") +
-  geom_segment(aes(x = 0, y = 1, xend = 5.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
   scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
   theme_classic(base_size = 16) +
-  guides(x =  guide_axis(angle = 90)) +
+  guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
   ggtitle("Outcome Variable: Cut Self") +
   theme(plot.title = element_text(size = 20, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 19))
@@ -858,19 +1346,19 @@ p
 dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Cut Self Plots/region_panel_plot_1.RDS")
 
-# Sex + Region + Calendar Year Tercile WITHOUT HOUSE ID RE ----------------
+# Sex + Region + Calendar Year Tercile ------------------------------------
 # PH violated for tercile
-model6 <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) + strata(tercile) + (1 | pid), df)
-c <- data.frame(t(data.frame(VarCorr(model6))))
+model7 <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) + strata(tercile) + (1 | pid), df)
+c <- data.frame(t(data.frame(VarCorr(model7))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Cut Self Tables/tercilevar_1.tex")
 
 # Tree Fall
-model6a <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
+model7a <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
                    tree.fall.during.interval + (1 | pid), df)
-saveRDS(model6a, file = "Cut Self Tables/tercile_tree_fall_1.RDS")
-results <- extract_coxme_table(model6a)
-b <- data.frame(confint(model6a))
+saveRDS(model7a, file = "Cut Self Tables/tercile_tree_fall_1.RDS")
+results <- extract_coxme_table(model7a)
+b <- data.frame(confint(model7a))
 results <- cbind(results, b)
 results <- round(results, 3)
 results <- results %>% rename("Coef" = "beta",
@@ -896,7 +1384,7 @@ addtorow$command <- c('\\hline ',
 x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
 align(x) <- "lcccccc"
 print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/tercile_tree_fall_1.tex")
-c <- data.frame(t(data.frame(VarCorr(model6a))))
+c <- data.frame(t(data.frame(VarCorr(model7a))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Cut Self Tables/tercilevar_tree_fall_1.tex")
 # Plot Schoenfeld residuals
@@ -905,11 +1393,11 @@ survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/tercile_tree_fall_1.RDS")))
 dev.off()
 
 # Sickness
-model6b <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
+model7b <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
                    sickness.during.interval + (1 | pid), df)
-saveRDS(model6b, file = "Cut Self Tables/tercile_sickness_1.RDS")
-results <- extract_coxme_table(model6b)
-b <- data.frame(confint(model6b))
+saveRDS(model7b, file = "Cut Self Tables/tercile_sickness_1.RDS")
+results <- extract_coxme_table(model7b)
+b <- data.frame(confint(model7b))
 results <- cbind(results, b)
 results <- round(results, 3)
 results <- results %>% rename("Coef" = "beta",
@@ -935,7 +1423,7 @@ addtorow$command <- c('\\hline ',
 x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
 align(x) <- "lcccccc"
 print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/tercile_sickness_1.tex")
-c <- data.frame(t(data.frame(VarCorr(model6b))))
+c <- data.frame(t(data.frame(VarCorr(model7b))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Cut Self Tables/tercilevar_sickness_1.tex")
 # Plot Schoenfeld residuals
@@ -944,11 +1432,11 @@ survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/tercile_sickness_1.RDS")))
 dev.off()
 
 # Animal Attack
-model6c <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
+model7c <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
                    Animal_Attack.during.interval + (1 | pid), df)
-saveRDS(model6c, file = "Cut Self Tables/tercile_Animal_Attack_1.RDS")
-results <- extract_coxme_table(model6c)
-b <- data.frame(confint(model6c))
+saveRDS(model7c, file = "Cut Self Tables/tercile_Animal_Attack_1.RDS")
+results <- extract_coxme_table(model7c)
+b <- data.frame(confint(model7c))
 results <- cbind(results, b)
 results <- round(results, 3)
 results <- results %>% rename("Coef" = "beta",
@@ -974,7 +1462,7 @@ addtorow$command <- c('\\hline ',
 x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
 align(x) <- "lcccccc"
 print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/tercile_Animal_Attack_1.tex")
-c <- data.frame(t(data.frame(VarCorr(model6c))))
+c <- data.frame(t(data.frame(VarCorr(model7c))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Cut Self Tables/tercilevar_Animal_Attack_1.tex")
 # Plot Schoenfeld residuals
@@ -983,11 +1471,11 @@ survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/tercile_Animal_Attack_1.RDS
 dev.off()
 
 # Canoe Capsize
-model6d <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
+model7d <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
                    canoe.capsize.during.interval + (1 | pid), df)
-saveRDS(model6d, file = "Cut Self Tables/tercile_canoe_capsize_1.RDS")
-results <- extract_coxme_table(model6d)
-b <- data.frame(confint(model6d))
+saveRDS(model7d, file = "Cut Self Tables/tercile_canoe_capsize_1.RDS")
+results <- extract_coxme_table(model7d)
+b <- data.frame(confint(model7d))
 results <- cbind(results, b)
 results <- round(results, 3)
 results <- results %>% rename("Coef" = "beta",
@@ -1013,7 +1501,7 @@ addtorow$command <- c('\\hline ',
 x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
 align(x) <- "lcccccc"
 print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/tercile_canoe_capsize_1.tex")
-c <- data.frame(t(data.frame(VarCorr(model6d))))
+c <- data.frame(t(data.frame(VarCorr(model7d))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Cut Self Tables/tercilevar_canoe_capsize_1.tex")
 # Plot Schoenfeld residuals
@@ -1022,11 +1510,11 @@ survminer::ggcoxzph(cox.zph(readRDS("Cut Self Tables/tercile_canoe_capsize_1.RDS
 dev.off()
 
 # Fight
-model6e <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
+model7e <- coxme(Surv(exit, cut.self.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
                    fought.during.interval + (1 | pid), df)
-saveRDS(model6e, file = "Cut Self Tables/tercile_fight_1.RDS")
-results <- extract_coxme_table(model6e)
-b <- data.frame(confint(model6e))
+saveRDS(model7e, file = "Cut Self Tables/tercile_fight_1.RDS")
+results <- extract_coxme_table(model7e)
+b <- data.frame(confint(model7e))
 results <- cbind(results, b)
 results <- round(results, 3)
 results <- results %>% rename("Coef" = "beta",
@@ -1052,7 +1540,7 @@ addtorow$command <- c('\\hline ',
 x <- xtable(results, caption = "Cut Self \\vspace{-1em}")
 align(x) <- "lcccccc"
 print(x, caption.placement = "top", add.to.row = addtorow, file = "Cut Self Tables/tercile_fight_1.tex")
-c <- data.frame(t(data.frame(VarCorr(model6e))))
+c <- data.frame(t(data.frame(VarCorr(model7e))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Cut Self Tables/tercilevar_fight_1.tex")
 # Plot Schoenfeld residuals
@@ -1098,13 +1586,13 @@ df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sicknes
 pdf(file = "Cut Self Plots/tercile_panel_plot_1.pdf", height = 6.5, width = 6)
 p <- df_hazard_plot %>%
   ggplot() +
-  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity") +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9) +
   geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
   labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID") +
-  geom_segment(aes(x = 0, y = 1, xend = 5.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
   scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
   theme_classic(base_size = 16) +
-  guides(x =  guide_axis(angle = 90)) +
+  guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
   ggtitle("Outcome Variable: Cut Self") +
   theme(plot.title = element_text(size = 20, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 21))

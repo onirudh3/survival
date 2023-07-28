@@ -2926,7 +2926,7 @@ annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp 
                 bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
 dev.off()
 
-# Panel plot for cox mixed effects models C -------------------------------
+# Panel plot region 1 -------------------------------
 
 figure <- ggarrange(readRDS("Sickness Plots/region_panel_plot.RDS") + rremove("ylab") + rremove("xlab"),
                     readRDS("Cut Self Plots/region_panel_plot.RDS") + rremove("ylab") + rremove("xlab"),
@@ -2940,7 +2940,7 @@ annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp 
                 bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
 dev.off()
 
-# Panel plot for cox mixed effects models D -------------------------------
+# Panel plot region 2 -------------------------------
 
 figure <- ggarrange(readRDS("Sickness Plots/region_panel_plot_1.RDS") + rremove("ylab") + rremove("xlab"),
                     readRDS("Cut Self Plots/region_panel_plot_1.RDS") + rremove("ylab") + rremove("xlab"),
@@ -2954,7 +2954,7 @@ annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp 
                 bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
 dev.off()
 
-# Panel plot for cox mixed effects models E -------------------------------
+# Panel plot tercile 1 -------------------------------
 ph_legend <- as_ggplot(get_legend(readRDS("Fight Plots/tercile_panel_plot.RDS") +
                                     guides(fill = guide_legend(nrow = 1))))
 
@@ -2974,7 +2974,7 @@ annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp 
                 bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
 dev.off()
 
-# Panel plot for cox mixed effects models F -------------------------------
+# Panel plot tercile 2 -------------------------------
 ph_legend <- as_ggplot(get_legend(readRDS("Fight Plots/tercile_panel_plot_1.RDS") +
                                     guides(fill = guide_legend(nrow = 1))))
 
@@ -2986,6 +2986,46 @@ figure <- ggarrange(readRDS("Sickness Plots/tercile_panel_plot_1.RDS") + rremove
                     readRDS("Canoe Capsize Plots/tercile_panel_plot_1.RDS") + rremove("ylab") + rremove("xlab"),
                     common.legend = T)
 pdf(file = "Panel Plots/tercile_panel_plot_1.pdf", height = 15, width = 15)
+annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp = gpar(cex = 1.7)),
+                bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
+dev.off()
+
+# Panel plot sex 1 -------------------------------
+ph_legend <- as_ggplot(get_legend(readRDS("Fight Plots/sex_panel_plot.RDS") +
+                                    guides(fill = guide_legend(nrow = 1))))
+
+figure <- ggarrange(readRDS("Sickness Plots/sex_panel_plot.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Cut Self Plots/sex_panel_plot.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Animal Attack Combined Plots/sex_panel_plot.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Tree Fall Plots/sex_panel_plot.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Fight Plots/sex_panel_plot.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Canoe Capsize Plots/sex_panel_plot.RDS") + rremove("ylab") + rremove("xlab"),
+                    "",
+                    ph_legend,
+                    "",
+                    legend = "none",
+                    heights = c(1, 1, 0.2))
+pdf(file = "Panel Plots/sex_panel_plot.pdf", height = 15, width = 15)
+annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp = gpar(cex = 1.7)),
+                bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
+dev.off()
+
+# Panel plot sex 2 -------------------------------
+ph_legend <- as_ggplot(get_legend(readRDS("Fight Plots/sex_panel_plot_1.RDS") +
+                                    guides(fill = guide_legend(nrow = 1))))
+
+figure <- ggarrange(readRDS("Sickness Plots/sex_panel_plot_1.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Cut Self Plots/sex_panel_plot_1.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Animal Attack Combined Plots/sex_panel_plot_1.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Tree Fall Plots/sex_panel_plot_1.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Fight Plots/sex_panel_plot_1.RDS") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Canoe Capsize Plots/sex_panel_plot_1.RDS") + rremove("ylab") + rremove("xlab"),
+                    "",
+                    ph_legend,
+                    "",
+                    legend = "none",
+                    heights = c(1, 1, 0.2))
+pdf(file = "Panel Plots/sex_panel_plot_1.pdf", height = 15, width = 15)
 annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp = gpar(cex = 1.7)),
                 bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
 dev.off()
