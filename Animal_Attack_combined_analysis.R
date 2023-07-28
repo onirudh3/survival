@@ -1,6 +1,8 @@
 # Libraries and data import -----------------------------------------------
 
 library(coxme)
+library(xtable)
+library(tidyverse)
 
 # Import time-to-first-risk data
 df <- read.csv("Animal_Attack_combined_time_to_first_risk_short_interval.csv")
@@ -29,24 +31,31 @@ model1c <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
                    (1 | house.id), data = df)
 
 model1d <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
-                   (1 | house.id) + (1 | strata(region)), data = df)
+                   (1 | house.id) + strata(region), data = df)
 
-model1e <- readRDS("Animal Attack Combined Tables/coxme_calendar_year.RDS")
+model1e <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
+                   (1 | house.id) + strata(region) + strata(male), data = df)
 
-model1f <- readRDS("Animal Attack Combined Tables/coxme_calendar_year_tercile.RDS")
+model1f <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
+                   (1 | house.id) + strata(region) + strata(male) +
+                   strata(tercile), data = df)
+
+model1g <- coxme(Surv(exit, Animal_Attack.during.interval) ~ 1 + (1 | pid) +
+                   strata(region) + strata(male) + strata(tercile), data = df)
+
 
 ## Comparing model fit
-aov_test <- anova(model1a, model1b, model1c, model1d, model1e, model1f)
+aov_test <- anova(model1a, model1b, model1c, model1d, model1e, model1f, model1g)
 aov_test
 
-aic_test <- AIC(model1a, model1b, model1c, model1d, model1e, model1f)
+aic_test <- AIC(model1a, model1b, model1c, model1d, model1e, model1f, model1g)
 aic_test
 
 ## Tabulating
 df_coxme <- cbind(aov_test, aic_test)
 df_coxme <- subset(df_coxme, select = -c(Df))
 df_coxme <- data.frame(t(df_coxme))
-colnames(df_coxme) <- c("1", "2", "3", "4", "5", "6")
+colnames(df_coxme) <- c("1", "2", "3", "4", "5", "6", "7")
 
 addtorow <- list()
 addtorow$pos <- list()
@@ -58,19 +67,21 @@ addtorow$pos[[5]] <- 5
 addtorow$pos[[6]] <- 5
 addtorow$pos[[7]] <- 5
 addtorow$pos[[8]] <- 5
-addtorow$pos[[9]] <- 5
 addtorow$command <- c('\\hline',
                       '\\hline',
-                      'PID RE & No & Yes & Yes & Yes & Yes & Yes \\\\\n',
-                      'House ID RE & No & No & Yes & Yes & Yes & Yes \\\\\n',
-                      'Region FE & No & No & No & Yes & Yes & Yes \\\\\n',
-                      'Male FE (Stratified) & No & No & No & No & Yes & Yes \\\\\n',
-                      'Calendar Year FE & No & No & No & No & Yes & No \\\\\n',
-                      'Tercile FE & No & No & No & No & No & Yes \\\\\n',
+                      'PID RE & No & Yes & Yes & Yes & Yes & Yes & Yes \\\\\n',
+                      'House ID RE & No & No & Yes & Yes & Yes & Yes & No \\\\\n',
+                      'Region FE (Stratified) & No & No & No & Yes & Yes & Yes & Yes \\\\\n',
+                      'Male FE (Stratified) & No & No & No & No & Yes & Yes & Yes \\\\\n',
+                      'Tercile FE (Stratified) & No & No & No & No & No & Yes & Yes \\\\\n',
                       '\\hline')
 x <- xtable(df_coxme, caption = "Animal Attack Mixed Effects Specifications")
-align(x) <- "lcccccc"
+align(x) <- "lccccccc"
 print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/mixed_effects_summary.tex")
+
+
+# PID and House ID RE -----------------------------------------------------
+
 
 # Sex ---------------------------------------------------------------------
 # PH violated for sex
@@ -122,6 +133,10 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack
 c <- data.frame(t(data.frame(VarCorr(model3a))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Animal Attack Combined Tables/regionvar_tree_fall.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/region_schoenfeld_tree_fall.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/region_tree_fall.RDS")))
+dev.off()
 
 # Sickness
 model3b <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) +
@@ -157,6 +172,10 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack
 c <- data.frame(t(data.frame(VarCorr(model3b))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Animal Attack Combined Tables/regionvar_sickness.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/region_schoenfeld_sickness.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/region_sickness.RDS")))
+dev.off()
 
 # Cut Self - ERROR
 # model3c <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) +
@@ -227,6 +246,10 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack
 c <- data.frame(t(data.frame(VarCorr(model3d))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Animal Attack Combined Tables/regionvar_canoe_capsize.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/region_schoenfeld_canoe_capsize.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/region_canoe_capsize.RDS")))
+dev.off()
 
 # Fight
 model3e <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) +
@@ -262,6 +285,10 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack
 c <- data.frame(t(data.frame(VarCorr(model3e))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Animal Attack Combined Tables/regionvar_fight.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/region_schoenfeld_fight.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/region_fight.RDS")))
+dev.off()
 
 # Plot
 df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/region_fight.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/region_fight.RDS")))),
@@ -292,10 +319,13 @@ df_hazard_plot <- df_hazard_plot %>%
 df_hazard_plot$p.y <- as.factor(df_hazard_plot$p.y)
 df_hazard_plot <- subset(df_hazard_plot, !is.na(covariate))
 
+df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sickness", "Cut Self", "Animal Attack",
+                                                                        "Tree Fall", "Fight", "Canoe Capsize"))
+
 pdf(file = "Animal Attack Combined Plots/region_panel_plot.pdf", height = 6.5, width = 6)
 p <- df_hazard_plot %>%
   ggplot() +
-  geom_bar(aes(x = reorder(covariate, -exp_beta), y = exp_beta, fill = p.y), stat = "identity") +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity") +
   geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
   labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID and House ID") +
   geom_segment(aes(x = 0, y = 1, xend = 5.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
@@ -350,6 +380,10 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack
 c <- data.frame(t(data.frame(VarCorr(model4a))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Animal Attack Combined Tables/tercilevar_tree_fall.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/tercile_schoenfeld_tree_fall.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/tercile_tree_fall.RDS")))
+dev.off()
 
 # Sickness
 model4b <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
@@ -385,6 +419,10 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack
 c <- data.frame(t(data.frame(VarCorr(model4b))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Animal Attack Combined Tables/tercilevar_sickness.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/tercile_schoenfeld_sickness.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/tercile_sickness.RDS")))
+dev.off()
 
 # Cut Self
 model4c <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
@@ -420,6 +458,10 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack
 c <- data.frame(t(data.frame(VarCorr(model4c))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Animal Attack Combined Tables/tercilevar_cut_self.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/tercile_schoenfeld_cut_self.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/tercile_cut_self.RDS")))
+dev.off()
 
 # Canoe Capsize
 model4d <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
@@ -455,6 +497,10 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack
 c <- data.frame(t(data.frame(VarCorr(model4d))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Animal Attack Combined Tables/tercilevar_canoe_capsize.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/tercile_schoenfeld_canoe_capsize.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/tercile_canoe_capsize.RDS")))
+dev.off()
 
 # Fight
 model4e <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
@@ -490,6 +536,10 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack
 c <- data.frame(t(data.frame(VarCorr(model4e))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Animal Attack Combined Tables/tercilevar_fight.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/tercile_schoenfeld_fight.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/tercile_fight.RDS")))
+dev.off()
 
 # Plot
 df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/tercile_fight.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/tercile_fight.RDS")))),
@@ -523,10 +573,13 @@ df_hazard_plot <- df_hazard_plot %>%
 df_hazard_plot$p.y <- as.factor(df_hazard_plot$p.y)
 df_hazard_plot <- subset(df_hazard_plot, !is.na(covariate))
 
+df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sickness", "Cut Self", "Animal Attack",
+                                                                        "Tree Fall", "Fight", "Canoe Capsize"))
+
 pdf(file = "Animal Attack Combined Plots/tercile_panel_plot.pdf", height = 6.5, width = 6)
 p <- df_hazard_plot %>%
   ggplot() +
-  geom_bar(aes(x = reorder(covariate, -exp_beta), y = exp_beta, fill = p.y), stat = "identity") +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity") +
   geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
   labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID and House ID") +
   geom_segment(aes(x = 0, y = 1, xend = 5.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
@@ -539,3 +592,502 @@ p <- df_hazard_plot %>%
 p
 dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Animal Attack Combined Plots/tercile_panel_plot.RDS")
+
+
+
+# PID RE ------------------------------------------------------------------
+
+# Sex + Region ------------------------------------------------------------
+# PH violated for region
+model5 <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) +
+                  (1 | pid), df)
+c <- data.frame(t(data.frame(VarCorr(model5))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Animal Attack Combined Tables/regionvar_1.tex")
+
+# Tree Fall
+model5a <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) +
+                   tree.fall.during.interval + (1 | pid), df)
+saveRDS(model5a, file = "Animal Attack Combined Tables/region_tree_fall_1.RDS")
+results <- extract_coxme_table(model5a)
+b <- data.frame(confint(model5a))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Tree Fall")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Animal Attack \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/region_tree_fall_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model5a))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Animal Attack Combined Tables/regionvar_tree_fall_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/region_schoenfeld_tree_fall_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/region_tree_fall_1.RDS")))
+dev.off()
+
+# Sickness
+model5b <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) +
+                   sickness.during.interval + (1 | pid), df)
+saveRDS(model5b, file = "Animal Attack Combined Tables/region_sickness_1.RDS")
+results <- extract_coxme_table(model5b)
+b <- data.frame(confint(model5b))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Sickness")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Animal Attack \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/region_sickness_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model5b))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Animal Attack Combined Tables/regionvar_sickness_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/region_schoenfeld_sickness_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/region_sickness_1.RDS")))
+dev.off()
+
+# Cut Self
+model5c <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) +
+                   cut.self.during.interval + (1 | pid), df)
+saveRDS(model5c, file = "Animal Attack Combined Tables/region_cut_self_1.RDS")
+results <- extract_coxme_table(model5c)
+b <- data.frame(confint(model5c))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Cut Self")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Animal Attack \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/region_cut_self_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model5c))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Animal Attack Combined Tables/regionvar_cut_self_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/region_schoenfeld_cut_self_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/region_cut_self_1.RDS")))
+dev.off()
+
+# Canoe Capsize - ERROR
+# model5d <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) +
+#                    canoe.capsize.during.interval + (1 | pid), df)
+# saveRDS(model5d, file = "Animal Attack Combined Tables/region_canoe_capsize_1.RDS")
+# results <- extract_coxme_table(model5d)
+# b <- data.frame(confint(model5d))
+# results <- cbind(results, b)
+# results <- round(results, 3)
+# results <- results %>% rename("Coef" = "beta",
+#                               "exp(Coef)" = "exp_beta",
+#                               "SE" = "se",
+#                               "Lower CI" = "X2.5..",
+#                               "Upper CI" = "X97.5..")
+# rownames(results) <- c("Canoe Capsize")
+# results <- data.frame(t(results))
+# results <- data.frame(t(results))
+# addtorow <- list()
+# addtorow$pos <- list()
+# addtorow$pos[[1]] <- -1
+# addtorow$pos[[2]] <- 1
+# addtorow$pos[[3]] <- 1
+# addtorow$pos[[4]] <- 1
+# addtorow$pos[[5]] <- 1
+# addtorow$command <- c('\\hline ',
+#                       '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+#                       'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+#                       'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+#                       '\\hline ')
+# x <- xtable(results, caption = "Animal Attack \\vspace{-1em}")
+# align(x) <- "lcccccc"
+# print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/region_canoe_capsize_1.tex")
+# c <- data.frame(t(data.frame(VarCorr(model5d))))
+# colnames(c) <- c("RE Variance")
+# print(xtable(c), file = "Animal Attack Combined Tables/regionvar_canoe_capsize_1.tex")
+
+# Fight
+model5e <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) +
+                   fought.during.interval + (1 | pid), df)
+saveRDS(model5e, file = "Animal Attack Combined Tables/region_fight_1.RDS")
+results <- extract_coxme_table(model5e)
+b <- data.frame(confint(model5e))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Fight")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Animal Attack \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/region_fight_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model5e))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Animal Attack Combined Tables/regionvar_fight_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/region_schoenfeld_fight_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/region_fight_1.RDS")))
+dev.off()
+
+# Plot
+df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/region_fight_1.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/region_fight_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/region_tree_fall_1.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/region_tree_fall_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/region_cut_self_1.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/region_cut_self_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/region_sickness_1.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/region_sickness_1.RDS")))))
+
+df_hazard_plot <- round(df_hazard_plot, 3)
+df_hazard_plot$X2.5.. <- exp(df_hazard_plot$X2.5..)
+df_hazard_plot$X97.5.. <- exp(df_hazard_plot$X97.5..)
+df_hazard_plot <- rownames_to_column(df_hazard_plot, "covariate")
+
+ph_df <- bind_rows(data.frame(cox.zph(readRDS("Animal Attack Combined Tables/region_fight_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Animal Attack Combined Tables/region_tree_fall_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Animal Attack Combined Tables/region_cut_self_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Animal Attack Combined Tables/region_sickness_1.RDS"))$table))
+ph_df <- ph_df %>% filter(!duplicated(ph_df))
+ph_df <- rownames_to_column(ph_df, "covariate")
+
+df_hazard_plot <- left_join(df_hazard_plot, ph_df, by = "covariate")
+df_hazard_plot <- df_hazard_plot %>%
+  mutate(p.y = case_when(p.y <= 0.05 ~ "Violates PH", T ~ "Does Not Violate PH"),
+         covariate = case_when(covariate == "fought.during.interval" ~ "Fight",
+                               covariate == "tree.fall.during.interval" ~ "Tree Fall",
+                               covariate == "cut.self.during.interval" ~ "Cut Self",
+                               covariate == "sickness.during.interval" ~ "Sickness"))
+
+df_hazard_plot$p.y <- as.factor(df_hazard_plot$p.y)
+df_hazard_plot <- subset(df_hazard_plot, !is.na(covariate))
+
+df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sickness", "Cut Self", "Animal Attack",
+                                                                        "Tree Fall", "Fight", "Canoe Capsize"))
+
+pdf(file = "Animal Attack Combined Plots/region_panel_plot_1.pdf", height = 6.5, width = 6)
+p <- df_hazard_plot %>%
+  ggplot() +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity") +
+  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
+  labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID and House ID") +
+  geom_segment(aes(x = 0, y = 1, xend = 5.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
+  theme_classic(base_size = 16) +
+  guides(x =  guide_axis(angle = 90)) +
+  ggtitle("Outcome Variable: Animal Attack") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5)) +
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 19))
+p
+dev.off()
+saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Animal Attack Combined Plots/region_panel_plot_1.RDS")
+
+# Sex + Region + Calendar Year Tercile WITHOUT HOUSE ID RE ----------------
+# PH violated for tercile
+model6 <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) + strata(tercile) + (1 | pid), df)
+c <- data.frame(t(data.frame(VarCorr(model6))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Animal Attack Combined Tables/tercilevar_1.tex")
+
+# Tree Fall
+model6a <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
+                   tree.fall.during.interval + (1 | pid), df)
+saveRDS(model6a, file = "Animal Attack Combined Tables/tercile_tree_fall_1.RDS")
+results <- extract_coxme_table(model6a)
+b <- data.frame(confint(model6a))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Tree Fall")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Animal Attack \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/tercile_tree_fall_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6a))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Animal Attack Combined Tables/tercilevar_tree_fall_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/tercile_schoenfeld_tree_fall_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/tercile_tree_fall_1.RDS")))
+dev.off()
+
+# Sickness
+model6b <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
+                   sickness.during.interval + (1 | pid), df)
+saveRDS(model6b, file = "Animal Attack Combined Tables/tercile_sickness_1.RDS")
+results <- extract_coxme_table(model6b)
+b <- data.frame(confint(model6b))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Sickness")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Animal Attack \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/tercile_sickness_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6b))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Animal Attack Combined Tables/tercilevar_sickness_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/tercile_schoenfeld_sickness_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/tercile_sickness_1.RDS")))
+dev.off()
+
+# Cut Self
+model6c <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
+                   cut.self.during.interval + (1 | pid), df)
+saveRDS(model6c, file = "Animal Attack Combined Tables/tercile_cut_self_1.RDS")
+results <- extract_coxme_table(model6c)
+b <- data.frame(confint(model6c))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Cut Self")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Animal Attack \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/tercile_cut_self_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6c))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Animal Attack Combined Tables/tercilevar_cut_self_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/tercile_schoenfeld_cut_self_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/tercile_cut_self_1.RDS")))
+dev.off()
+
+# Canoe Capsize - ERROR
+# model6d <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
+#                    canoe.capsize.during.interval + (1 | pid), df)
+# saveRDS(model6d, file = "Animal Attack Combined Tables/tercile_canoe_capsize_1.RDS")
+# results <- extract_coxme_table(model6d)
+# b <- data.frame(confint(model6d))
+# results <- cbind(results, b)
+# results <- round(results, 3)
+# results <- results %>% rename("Coef" = "beta",
+#                               "exp(Coef)" = "exp_beta",
+#                               "SE" = "se",
+#                               "Lower CI" = "X2.5..",
+#                               "Upper CI" = "X97.5..")
+# rownames(results) <- c("Canoe Capsize")
+# results <- data.frame(t(results))
+# results <- data.frame(t(results))
+# addtorow <- list()
+# addtorow$pos <- list()
+# addtorow$pos[[1]] <- -1
+# addtorow$pos[[2]] <- 1
+# addtorow$pos[[3]] <- 1
+# addtorow$pos[[4]] <- 1
+# addtorow$pos[[5]] <- 1
+# addtorow$command <- c('\\hline ',
+#                       '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+#                       'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+#                       'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+#                       '\\hline ')
+# x <- xtable(results, caption = "Animal Attack \\vspace{-1em}")
+# align(x) <- "lcccccc"
+# print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/tercile_canoe_capsize_1.tex")
+# c <- data.frame(t(data.frame(VarCorr(model6d))))
+# colnames(c) <- c("RE Variance")
+# print(xtable(c), file = "Animal Attack Combined Tables/tercilevar_canoe_capsize_1.tex")
+
+# Fight
+model6e <- coxme(Surv(exit, Animal_Attack.during.interval) ~ strata(male) + strata(region) + strata(tercile) +
+                   fought.during.interval + (1 | pid), df)
+saveRDS(model6e, file = "Animal Attack Combined Tables/tercile_fight_1.RDS")
+results <- extract_coxme_table(model6e)
+b <- data.frame(confint(model6e))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Fight")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 1
+addtorow$pos[[3]] <- 1
+addtorow$pos[[4]] <- 1
+addtorow$pos[[5]] <- 1
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Animal Attack \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Animal Attack Combined Tables/tercile_fight_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6e))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Animal Attack Combined Tables/tercilevar_fight_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Animal Attack Combined Plots/tercile_schoenfeld_fight_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Animal Attack Combined Tables/tercile_fight_1.RDS")))
+dev.off()
+
+# Plot
+df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/tercile_fight_1.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/tercile_fight_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/tercile_tree_fall_1.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/tercile_tree_fall_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/tercile_sickness_1.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/tercile_sickness_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Animal Attack Combined Tables/tercile_cut_self_1.RDS")), data.frame(confint(readRDS("Animal Attack Combined Tables/tercile_cut_self_1.RDS")))))
+
+df_hazard_plot <- round(df_hazard_plot, 3)
+df_hazard_plot$X2.5.. <- exp(df_hazard_plot$X2.5..)
+df_hazard_plot$X97.5.. <- exp(df_hazard_plot$X97.5..)
+df_hazard_plot <- rownames_to_column(df_hazard_plot, "covariate")
+
+ph_df <- bind_rows(data.frame(cox.zph(readRDS("Animal Attack Combined Tables/tercile_fight_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Animal Attack Combined Tables/tercile_tree_fall_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Animal Attack Combined Tables/tercile_sickness_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Animal Attack Combined Tables/tercile_cut_self_1.RDS"))$table))
+ph_df <- ph_df %>% filter(!duplicated(ph_df))
+ph_df <- rownames_to_column(ph_df, "covariate")
+
+df_hazard_plot <- left_join(df_hazard_plot, ph_df, by = "covariate")
+df_hazard_plot <- df_hazard_plot %>%
+  mutate(p.y = case_when(p.y <= 0.05 ~ "Violates PH", T ~ "Does Not Violate PH"),
+         covariate = case_when(covariate == "fought.during.interval" ~ "Fight",
+                               covariate == "tree.fall.during.interval" ~ "Tree Fall",
+                               covariate == "sickness.during.interval" ~ "Sickness",
+                               covariate == "cut.self.during.interval" ~ "Cut Self"))
+
+df_hazard_plot$p.y <- as.factor(df_hazard_plot$p.y)
+df_hazard_plot <- subset(df_hazard_plot, !is.na(covariate))
+
+df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sickness", "Cut Self", "Animal Attack",
+                                                                        "Tree Fall", "Fight", "Canoe Capsize"))
+
+pdf(file = "Animal Attack Combined Plots/tercile_panel_plot_1.pdf", height = 6.5, width = 6)
+p <- df_hazard_plot %>%
+  ggplot() +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity") +
+  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
+  labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID") +
+  geom_segment(aes(x = 0, y = 1, xend = 5.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
+  theme_classic(base_size = 16) +
+  guides(x =  guide_axis(angle = 90)) +
+  ggtitle("Outcome Variable: Animal Attack") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5)) +
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 21))
+p
+dev.off()
+saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Animal Attack Combined Plots/tercile_panel_plot_1.RDS")
