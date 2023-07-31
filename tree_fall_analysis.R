@@ -415,7 +415,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Sickness")
+rownames(results) <- c("Male", "Sickness", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -454,7 +454,7 @@ dev.off()
 #                               "SE" = "se",
 #                               "Lower CI" = "X2.5..",
 #                               "Upper CI" = "X97.5..")
-# rownames(results) <- c("Male", "Male x Age", "Animal Attack")
+# rownames(results) <- c("Male", "Animal Attack", "Male x Age")
 # results <- data.frame(t(results))
 # results <- data.frame(t(results))
 # addtorow <- list()
@@ -493,7 +493,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Cut Self")
+rownames(results) <- c("Male", "Cut Self", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -532,7 +532,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Canoe Capsize")
+rownames(results) <- c("Male", "Canoe Capsize", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -571,7 +571,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Fight")
+rownames(results) <- c("Male", "Fight", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -895,7 +895,7 @@ print(xtable(c), file = "Tree Fall Tables/regionvar_interaction.tex")
 #                               "SE" = "se",
 #                               "Lower CI" = "X2.5..",
 #                               "Upper CI" = "X97.5..")
-# rownames(results) <- c("Male", "Male x Age", "Sickness")
+# rownames(results) <- c("Male", "Sickness", "Male x Age")
 # results <- data.frame(t(results))
 # results <- data.frame(t(results))
 # addtorow <- list()
@@ -935,7 +935,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Animal Attack")
+rownames(results) <- c("Male", "Animal Attack", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -974,7 +974,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Cut Self")
+rownames(results) <- c("Male", "Cut Self", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -1013,7 +1013,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Canoe Capsize")
+rownames(results) <- c("Male", "Canoe Capsize", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -1052,7 +1052,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Fight")
+rownames(results) <- c("Male", "Fight", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -1460,7 +1460,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Sickness")
+rownames(results) <- c("Male", "Sickness", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -1499,7 +1499,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Animal Attack")
+rownames(results) <- c("Male", "Animal Attack", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -1538,7 +1538,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Cut Self")
+rownames(results) <- c("Male", "Cut Self", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -1577,7 +1577,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Canoe Capsize")
+rownames(results) <- c("Male", "Canoe Capsize", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -1616,7 +1616,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Fight")
+rownames(results) <- c("Male", "Fight", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -2029,7 +2029,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Sickness")
+rownames(results) <- c("Male", "Sickness", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -2068,7 +2068,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Animal Attack")
+rownames(results) <- c("Male", "Animal Attack", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -2107,7 +2107,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Cut Self")
+rownames(results) <- c("Male", "Cut Self", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -2146,7 +2146,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Canoe Capsize")
+rownames(results) <- c("Male", "Canoe Capsize", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -2185,7 +2185,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Fight")
+rownames(results) <- c("Male", "Fight", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -2595,7 +2595,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Sickness")
+rownames(results) <- c("Male", "Sickness", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -2635,7 +2635,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Animal Attack")
+rownames(results) <- c("Male", "Animal Attack", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -2675,7 +2675,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Cut Self")
+rownames(results) <- c("Male", "Cut Self", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -2714,7 +2714,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Canoe Capsize")
+rownames(results) <- c("Male", "Canoe Capsize", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -2753,7 +2753,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Fight")
+rownames(results) <- c("Male", "Fight", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -3163,7 +3163,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Sickness")
+rownames(results) <- c("Male", "Sickness", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -3202,7 +3202,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Animal Attack")
+rownames(results) <- c("Male", "Animal Attack", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -3241,7 +3241,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Cut Self")
+rownames(results) <- c("Male", "Cut Self", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
@@ -3280,7 +3280,7 @@ dev.off()
 #                               "SE" = "se",
 #                               "Lower CI" = "X2.5..",
 #                               "Upper CI" = "X97.5..")
-# rownames(results) <- c("Male", "Male x Age", "Canoe Capsize")
+# rownames(results) <- c("Male", "Canoe Capsize", "Male x Age")
 # results <- data.frame(t(results))
 # results <- data.frame(t(results))
 # addtorow <- list()
@@ -3319,7 +3319,7 @@ results <- results %>% rename("Coef" = "beta",
                               "SE" = "se",
                               "Lower CI" = "X2.5..",
                               "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age", "Fight")
+rownames(results) <- c("Male", "Fight", "Male x Age")
 results <- data.frame(t(results))
 results <- data.frame(t(results))
 addtorow <- list()
