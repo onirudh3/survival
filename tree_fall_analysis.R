@@ -119,6 +119,39 @@ c <- data.frame(t(data.frame(VarCorr(model2))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Tree Fall Tables/sexvar.tex")
 
+# Interaction
+model2interaction <- coxme(Surv(exit, tree.fall.during.interval) ~ male + male:exit + (1 | pid) + (1 | house.id), df)
+results <- extract_coxme_table(model2interaction)
+b <- data.frame(confint(model2interaction))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 2
+addtorow$pos[[4]] <- 2
+addtorow$pos[[5]] <- 2
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Tree Fall \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Tree Fall Tables/sex_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model2interaction))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Tree Fall Tables/sexvar_interaction.tex")
+
 # Sickness
 model2a <- coxme(Surv(exit, tree.fall.during.interval) ~ male + sickness.during.interval +
                    (1 | pid) + (1 | house.id), df)
@@ -400,6 +433,39 @@ c <- data.frame(t(data.frame(VarCorr(model3))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Tree Fall Tables/regionvar.tex")
 
+# Interaction
+model3interaction <- coxme(Surv(exit, tree.fall.during.interval) ~ male + male:exit + strata(region) + (1 | pid) + (1 | house.id), df)
+results <- extract_coxme_table(model3interaction)
+b <- data.frame(confint(model3interaction))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 2
+addtorow$pos[[4]] <- 2
+addtorow$pos[[5]] <- 2
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Tree Fall \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Tree Fall Tables/region_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model3interaction))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Tree Fall Tables/regionvar_interaction.tex")
+
 # Sickness
 model3a <- coxme(Surv(exit, tree.fall.during.interval) ~ male + sickness.during.interval +
                    strata(region) + (1 | pid) + (1 | house.id), df)
@@ -571,7 +637,6 @@ saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Tree Fall Plots/region_
 
 # Sex + Region + Calendar Year Tercile ------------------------------------
 # PH violated for tercile
-
 model4 <- coxme(Surv(exit, tree.fall.during.interval) ~ male + strata(region) +
                   strata(tercile) + (1 | pid) + (1 | house.id), df)
 results <- extract_coxme_table(model4)
@@ -604,6 +669,40 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Tree Fall Tab
 c <- data.frame(t(data.frame(VarCorr(model4))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Tree Fall Tables/tercilevar.tex")
+
+# Interaction
+model4interaction <- coxme(Surv(exit, tree.fall.during.interval) ~ male + male:exit + strata(region) +
+                             strata(tercile) + (1 | pid) + (1 | house.id), df)
+results <- extract_coxme_table(model4interaction)
+b <- data.frame(confint(model4interaction))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 2
+addtorow$pos[[4]] <- 2
+addtorow$pos[[5]] <- 2
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Tree Fall \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Tree Fall Tables/tercile_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model4interaction))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Tree Fall Tables/tercilevar_interaction.tex")
 
 # Sickness
 model4a <- coxme(Surv(exit, tree.fall.during.interval) ~ male + sickness.during.interval +
@@ -894,6 +993,39 @@ c <- data.frame(t(data.frame(VarCorr(model5))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Tree Fall Tables/sexvar_1.tex")
 
+# Interaction
+model5interaction <- coxme(Surv(exit, tree.fall.during.interval) ~ male + male:exit + (1 | pid), df)
+results <- extract_coxme_table(model5interaction)
+b <- data.frame(confint(model5interaction))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 2
+addtorow$pos[[4]] <- 2
+addtorow$pos[[5]] <- 2
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Tree Fall \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Tree Fall Tables/sex_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model5interaction))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Tree Fall Tables/sexvar_interaction_1.tex")
+
 # Sickness
 model5a <- coxme(Surv(exit, tree.fall.during.interval) ~ male + sickness.during.interval +
                    (1 | pid), df)
@@ -1175,6 +1307,39 @@ c <- data.frame(t(data.frame(VarCorr(model6))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Tree Fall Tables/regionvar_1.tex")
 
+# Interaction
+model6interaction <- coxme(Surv(exit, tree.fall.during.interval) ~ male + male:exit + strata(region) + (1 | pid), df)
+results <- extract_coxme_table(model6interaction)
+b <- data.frame(confint(model6interaction))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 2
+addtorow$pos[[4]] <- 2
+addtorow$pos[[5]] <- 2
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Tree Fall \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Tree Fall Tables/region_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6interaction))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Tree Fall Tables/regionvar_interaction_1.tex")
+
 # Sickness
 model6a <- coxme(Surv(exit, tree.fall.during.interval) ~ male + sickness.during.interval +
                    strata(region) + (1 | pid), df)
@@ -1427,7 +1592,6 @@ saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Tree Fall Plots/region_
 
 # Sex + Region + Calendar Year Tercile-------------------------------------
 # PH violated for tercile
-
 model7 <- coxme(Surv(exit, tree.fall.during.interval) ~ male + strata(region) +
                   strata(tercile) + (1 | pid), df)
 results <- extract_coxme_table(model7)
@@ -1460,6 +1624,40 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Tree Fall Tab
 c <- data.frame(t(data.frame(VarCorr(model7))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Tree Fall Tables/tercilevar_1.tex")
+
+# Interaction
+model7interaction <- coxme(Surv(exit, tree.fall.during.interval) ~ male + male:exit + strata(region) +
+                             strata(tercile) + (1 | pid), df)
+results <- extract_coxme_table(model7interaction)
+b <- data.frame(confint(model7interaction))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 2
+addtorow$pos[[4]] <- 2
+addtorow$pos[[5]] <- 2
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Tree Fall \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Tree Fall Tables/tercile_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model7interaction))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Tree Fall Tables/tercilevar_interaction_1.tex")
 
 # Sickness
 model7a <- coxme(Surv(exit, tree.fall.during.interval) ~ male + sickness.during.interval +
