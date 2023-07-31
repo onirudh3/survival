@@ -119,39 +119,6 @@ c <- data.frame(t(data.frame(VarCorr(model2))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Sickness Tables/sexvar.tex")
 
-# Interaction
-model2interaction <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + (1 | pid) + (1 | house.id), df)
-results <- extract_coxme_table(model2interaction)
-b <- data.frame(confint(model2interaction))
-results <- cbind(results, b)
-results <- round(results, 3)
-results <- results %>% rename("Coef" = "beta",
-                              "exp(Coef)" = "exp_beta",
-                              "SE" = "se",
-                              "Lower CI" = "X2.5..",
-                              "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age")
-results <- data.frame(t(results))
-results <- data.frame(t(results))
-addtorow <- list()
-addtorow$pos <- list()
-addtorow$pos[[1]] <- -1
-addtorow$pos[[2]] <- 2
-addtorow$pos[[3]] <- 2
-addtorow$pos[[4]] <- 2
-addtorow$pos[[5]] <- 2
-addtorow$command <- c('\\hline ',
-                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
-                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
-                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
-                      '\\hline ')
-x <- xtable(results, caption = "Sickness \\vspace{-1em}")
-align(x) <- "lcccccc"
-print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_interaction.tex")
-c <- data.frame(t(data.frame(VarCorr(model2interaction))))
-colnames(c) <- c("RE Variance")
-print(xtable(c), file = "Sickness Tables/sexvar_interaction.tex")
-
 # Tree Fall
 model2a <- coxme(Surv(exit, sickness.during.interval) ~ male +
                    tree.fall.during.interval + (1 | pid) + (1 | house.id), df)
@@ -191,44 +158,44 @@ pdf(file = "Sickness Plots/sex_schoenfeld_tree_fall.pdf", height = 5, width = 7)
 survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/sex_tree_fall.RDS")))
 dev.off()
 
-# Animal Attack
-model2b <- coxme(Surv(exit, sickness.during.interval) ~ male +
-                   Animal_Attack.during.interval + (1 | pid) + (1 | house.id), df)
-saveRDS(model2b, file = "Sickness Tables/sex_Animal_Attack.RDS")
-results <- extract_coxme_table(model2b)
-b <- data.frame(confint(model2b))
-results <- cbind(results, b)
-results <- round(results, 3)
-results <- results %>% rename("Coef" = "beta",
-                              "exp(Coef)" = "exp_beta",
-                              "SE" = "se",
-                              "Lower CI" = "X2.5..",
-                              "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Animal Attack")
-results <- data.frame(t(results))
-results <- data.frame(t(results))
-addtorow <- list()
-addtorow$pos <- list()
-addtorow$pos[[1]] <- -1
-addtorow$pos[[2]] <- 2
-addtorow$pos[[3]] <- 2
-addtorow$pos[[4]] <- 2
-addtorow$pos[[5]] <- 2
-addtorow$command <- c('\\hline ',
-                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
-                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
-                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
-                      '\\hline ')
-x <- xtable(results, caption = "Sickness \\vspace{-1em}")
-align(x) <- "lcccccc"
-print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_Animal_Attack.tex")
-c <- data.frame(t(data.frame(VarCorr(model2b))))
-colnames(c) <- c("RE Variance")
-print(xtable(c), file = "Sickness Tables/sexvar_Animal_Attack.tex")
-# Plot Schoenfeld residuals
-pdf(file = "Sickness Plots/sex_schoenfeld_Animal_Attack.pdf", height = 5, width = 7)
-survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/sex_Animal_Attack.RDS")))
-dev.off()
+# Animal Attack Error in ikmat %*% fcoef : NA/NaN/Inf in foreign function call (arg 9)
+# model2b <- coxme(Surv(exit, sickness.during.interval) ~ male +
+#                    Animal_Attack.during.interval + (1 | pid) + (1 | house.id), df)
+# saveRDS(model2b, file = "Sickness Tables/sex_Animal_Attack.RDS")
+# results <- extract_coxme_table(model2b)
+# b <- data.frame(confint(model2b))
+# results <- cbind(results, b)
+# results <- round(results, 3)
+# results <- results %>% rename("Coef" = "beta",
+#                               "exp(Coef)" = "exp_beta",
+#                               "SE" = "se",
+#                               "Lower CI" = "X2.5..",
+#                               "Upper CI" = "X97.5..")
+# rownames(results) <- c("Male", "Animal Attack")
+# results <- data.frame(t(results))
+# results <- data.frame(t(results))
+# addtorow <- list()
+# addtorow$pos <- list()
+# addtorow$pos[[1]] <- -1
+# addtorow$pos[[2]] <- 2
+# addtorow$pos[[3]] <- 2
+# addtorow$pos[[4]] <- 2
+# addtorow$pos[[5]] <- 2
+# addtorow$command <- c('\\hline ',
+#                       '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+#                       'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+#                       'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+#                       '\\hline ')
+# x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+# align(x) <- "lcccccc"
+# print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_Animal_Attack.tex")
+# c <- data.frame(t(data.frame(VarCorr(model2b))))
+# colnames(c) <- c("RE Variance")
+# print(xtable(c), file = "Sickness Tables/sexvar_Animal_Attack.tex")
+# # Plot Schoenfeld residuals
+# pdf(file = "Sickness Plots/sex_schoenfeld_Animal_Attack.pdf", height = 5, width = 7)
+# survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/sex_Animal_Attack.RDS")))
+# dev.off()
 
 # Cut Self
 model2c <- coxme(Surv(exit, sickness.during.interval) ~ male +
@@ -350,7 +317,6 @@ dev.off()
 # Plot
 df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Sickness Tables/sex_fight.RDS")), data.frame(confint(readRDS("Sickness Tables/sex_fight.RDS")))),
                             cbind(extract_coxme_table(readRDS("Sickness Tables/sex_tree_fall.RDS")), data.frame(confint(readRDS("Sickness Tables/sex_tree_fall.RDS")))),
-                            cbind(extract_coxme_table(readRDS("Sickness Tables/sex_Animal_Attack.RDS")), data.frame(confint(readRDS("Sickness Tables/sex_Animal_Attack.RDS")))),
                             cbind(extract_coxme_table(readRDS("Sickness Tables/sex_cut_self.RDS")), data.frame(confint(readRDS("Sickness Tables/sex_cut_self.RDS")))),
                             cbind(extract_coxme_table(readRDS("Sickness Tables/sex_canoe_capsize.RDS")), data.frame(confint(readRDS("Sickness Tables/sex_canoe_capsize.RDS")))))
 
@@ -361,7 +327,6 @@ df_hazard_plot <- rownames_to_column(df_hazard_plot, "covariate")
 
 ph_df <- bind_rows(data.frame(cox.zph(readRDS("Sickness Tables/sex_fight.RDS"))$table),
                    data.frame(cox.zph(readRDS("Sickness Tables/sex_tree_fall.RDS"))$table),
-                   data.frame(cox.zph(readRDS("Sickness Tables/sex_Animal_Attack.RDS"))$table),
                    data.frame(cox.zph(readRDS("Sickness Tables/sex_cut_self.RDS"))$table),
                    data.frame(cox.zph(readRDS("Sickness Tables/sex_canoe_capsize.RDS"))$table))
 ph_df <- ph_df %>% filter(!duplicated(ph_df))
@@ -372,7 +337,6 @@ df_hazard_plot <- df_hazard_plot %>%
   mutate(p.y = case_when(p.y <= 0.05 ~ "Violates PH", T ~ "Does Not Violate PH"),
          covariate = case_when(covariate == "fought.during.interval" ~ "Fight",
                                covariate == "tree.fall.during.interval" ~ "Tree Fall",
-                               covariate == "Animal_Attack.during.interval" ~ "Animal Attack",
                                covariate == "cut.self.during.interval" ~ "Cut Self",
                                covariate == "canoe.capsize.during.interval" ~ "Canoe Capsize"))
 
@@ -398,6 +362,283 @@ p <- df_hazard_plot %>%
 p
 dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Sickness Plots/sex_panel_plot.RDS")
+
+
+# Sex + Interaction -------------------------------------------------------
+
+# Ph not violated for sex
+model2interaction <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + (1 | pid) + (1 | house.id), df)
+results <- extract_coxme_table(model2interaction)
+b <- data.frame(confint(model2interaction))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 2
+addtorow$pos[[4]] <- 2
+addtorow$pos[[5]] <- 2
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model2interaction))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/sexvar_interaction.tex")
+
+# Tree Fall
+model2interactiona <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit +
+                              tree.fall.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model2interactiona, file = "Sickness Tables/sex_tree_fall_interaction.RDS")
+results <- extract_coxme_table(model2interactiona)
+b <- data.frame(confint(model2interactiona))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Tree Fall")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 3
+addtorow$pos[[3]] <- 3
+addtorow$pos[[4]] <- 3
+addtorow$pos[[5]] <- 3
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_tree_fall_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model2interactiona))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/sexvar_tree_fall_interaction.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/sex_schoenfeld_tree_fall_interaction.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/sex_tree_fall_interaction.RDS")))
+dev.off()
+
+# Animal Attack Error in ikmat %*% fcoef : NA/NaN/Inf in foreign function call (arg 9)
+# model2interactionb <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit +
+#                               Animal_Attack.during.interval + (1 | pid) + (1 | house.id), df)
+# saveRDS(model2interactionb, file = "Sickness Tables/sex_Animal_Attack_interaction.RDS")
+# results <- extract_coxme_table(model2interactionb)
+# b <- data.frame(confint(model2interactionb))
+# results <- cbind(results, b)
+# results <- round(results, 3)
+# results <- results %>% rename("Coef" = "beta",
+#                               "exp(Coef)" = "exp_beta",
+#                               "SE" = "se",
+#                               "Lower CI" = "X2.5..",
+#                               "Upper CI" = "X97.5..")
+# rownames(results) <- c("Male", "Male x Age", "Animal Attack")
+# results <- data.frame(t(results))
+# results <- data.frame(t(results))
+# addtorow <- list()
+# addtorow$pos <- list()
+# addtorow$pos[[1]] <- -1
+# addtorow$pos[[2]] <- 3
+# addtorow$pos[[3]] <- 3
+# addtorow$pos[[4]] <- 3
+# addtorow$pos[[5]] <- 3
+# addtorow$command <- c('\\hline ',
+#                       '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+#                       'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+#                       'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+#                       '\\hline ')
+# x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+# align(x) <- "lcccccc"
+# print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_Animal_Attack_interaction.tex")
+# c <- data.frame(t(data.frame(VarCorr(model2interactionb))))
+# colnames(c) <- c("RE Variance")
+# print(xtable(c), file = "Sickness Tables/sexvar_Animal_Attack_interaction.tex")
+# # Plot Schoenfeld residuals
+# pdf(file = "Sickness Plots/sex_schoenfeld_Animal_Attack_interaction.pdf", height = 5, width = 7)
+# survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/sex_Animal_Attack_interaction.RDS")))
+# dev.off()
+
+# Cut Self Error in optim(par = c(-0.446287102628419, -0.446287102628419), fn = function (theta non-finite finite-difference value [2]
+# model2interactionc <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit +
+#                               cut.self.during.interval + (1 | pid) + (1 | house.id), df)
+# saveRDS(model2interactionc, file = "Sickness Tables/sex_cut_self_interaction.RDS")
+# results <- extract_coxme_table(model2interactionc)
+# b <- data.frame(confint(model2interactionc))
+# results <- cbind(results, b)
+# results <- round(results, 3)
+# results <- results %>% rename("Coef" = "beta",
+#                               "exp(Coef)" = "exp_beta",
+#                               "SE" = "se",
+#                               "Lower CI" = "X2.5..",
+#                               "Upper CI" = "X97.5..")
+# rownames(results) <- c("Male", "Male x Age", "Cut Self")
+# results <- data.frame(t(results))
+# results <- data.frame(t(results))
+# addtorow <- list()
+# addtorow$pos <- list()
+# addtorow$pos[[1]] <- -1
+# addtorow$pos[[2]] <- 3
+# addtorow$pos[[3]] <- 3
+# addtorow$pos[[4]] <- 3
+# addtorow$pos[[5]] <- 3
+# addtorow$command <- c('\\hline ',
+#                       '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+#                       'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+#                       'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+#                       '\\hline ')
+# x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+# align(x) <- "lcccccc"
+# print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_cut_self_interaction.tex")
+# c <- data.frame(t(data.frame(VarCorr(model2interactionc))))
+# colnames(c) <- c("RE Variance")
+# print(xtable(c), file = "Sickness Tables/sexvar_cut_self_interaction.tex")
+# # Plot Schoenfeld residuals
+# pdf(file = "Sickness Plots/sex_schoenfeld_cut_self_interaction.pdf", height = 5, width = 7)
+# survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/sex_cut_self_interaction.RDS")))
+# dev.off()
+
+# Canoe Capsize
+model2interactiond <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit +
+                              canoe.capsize.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model2interactiond, file = "Sickness Tables/sex_canoe_capsize_interaction.RDS")
+results <- extract_coxme_table(model2interactiond)
+b <- data.frame(confint(model2interactiond))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Canoe Capsize")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 3
+addtorow$pos[[3]] <- 3
+addtorow$pos[[4]] <- 3
+addtorow$pos[[5]] <- 3
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_canoe_capsize_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model2interactiond))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/sexvar_canoe_capsize_interaction.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/sex_schoenfeld_canoe_capsize_interaction.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/sex_canoe_capsize_interaction.RDS")))
+dev.off()
+
+# Fight
+model2interactione <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit +
+                              fought.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model2interactione, file = "Sickness Tables/sex_fight_interaction.RDS")
+results <- extract_coxme_table(model2interactione)
+b <- data.frame(confint(model2interactione))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Fight")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 3
+addtorow$pos[[3]] <- 3
+addtorow$pos[[4]] <- 3
+addtorow$pos[[5]] <- 3
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_fight_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model2interactione))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/sexvar_fight_interaction.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/sex_schoenfeld_fight_interaction.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/sex_fight_interaction.RDS")))
+dev.off()
+
+# Plot
+df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Sickness Tables/sex_fight_interaction.RDS")), data.frame(confint(readRDS("Sickness Tables/sex_fight_interaction.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/sex_tree_fall_interaction.RDS")), data.frame(confint(readRDS("Sickness Tables/sex_tree_fall_interaction.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/sex_canoe_capsize_interaction.RDS")), data.frame(confint(readRDS("Sickness Tables/sex_canoe_capsize_interaction.RDS")))))
+
+df_hazard_plot <- round(df_hazard_plot, 3)
+df_hazard_plot$X2.5.. <- exp(df_hazard_plot$X2.5..)
+df_hazard_plot$X97.5.. <- exp(df_hazard_plot$X97.5..)
+df_hazard_plot <- rownames_to_column(df_hazard_plot, "covariate")
+
+ph_df <- bind_rows(data.frame(cox.zph(readRDS("Sickness Tables/sex_fight_interaction.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/sex_tree_fall_interaction.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/sex_canoe_capsize_interaction.RDS"))$table))
+ph_df <- ph_df %>% filter(!duplicated(ph_df))
+ph_df <- rownames_to_column(ph_df, "covariate")
+
+df_hazard_plot <- left_join(df_hazard_plot, ph_df, by = "covariate")
+df_hazard_plot <- df_hazard_plot %>%
+  mutate(p.y = case_when(p.y <= 0.05 ~ "Violates PH", T ~ "Does Not Violate PH"),
+         covariate = case_when(covariate == "fought.during.interval" ~ "Fight",
+                               covariate == "tree.fall.during.interval" ~ "Tree Fall",
+                               covariate == "canoe.capsize.during.interval" ~ "Canoe Capsize"))
+
+df_hazard_plot$p.y <- as.factor(df_hazard_plot$p.y)
+df_hazard_plot <- subset(df_hazard_plot, !is.na(covariate))
+
+df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sickness", "Cut Self", "Animal Attack",
+                                                                        "Tree Fall", "Fight", "Canoe Capsize"))
+
+pdf(file = "Sickness Plots/sex_panel_plot_interaction.pdf", height = 6.5, width = 6)
+p <- df_hazard_plot %>%
+  ggplot() +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9) +
+  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
+  labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID and House ID") +
+  geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
+  theme_classic(base_size = 16) +
+  guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
+  ggtitle("Outcome Variable: Sickness") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5)) +
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 17))
+p
+dev.off()
+saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Sickness Plots/sex_panel_plot_interaction.RDS")
 
 # Sex + Region ------------------------------------------------------------
 # PH not violated for region
@@ -432,39 +673,6 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tabl
 c <- data.frame(t(data.frame(VarCorr(model3))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Sickness Tables/regionvar.tex")
-
-# Interaction
-model3interaction <- coxme(Surv(exit, sickness.during.interval) ~ male + region + male:exit + (1 | pid) + (1 | house.id), df)
-results <- extract_coxme_table(model3interaction)
-b <- data.frame(confint(model3interaction))
-results <- cbind(results, b)
-results <- round(results, 3)
-results <- results %>% rename("Coef" = "beta",
-                              "exp(Coef)" = "exp_beta",
-                              "SE" = "se",
-                              "Lower CI" = "X2.5..",
-                              "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Near San Borja", "Upriver", "Male x Age")
-results <- data.frame(t(results))
-results <- data.frame(t(results))
-addtorow <- list()
-addtorow$pos <- list()
-addtorow$pos[[1]] <- -1
-addtorow$pos[[2]] <- 4
-addtorow$pos[[3]] <- 4
-addtorow$pos[[4]] <- 4
-addtorow$pos[[5]] <- 4
-addtorow$command <- c('\\hline ',
-                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
-                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
-                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
-                      '\\hline ')
-x <- xtable(results, caption = "Sickness \\vspace{-1em}")
-align(x) <- "lcccccc"
-print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_interaction.tex")
-c <- data.frame(t(data.frame(VarCorr(model3interaction))))
-colnames(c) <- c("RE Variance")
-print(xtable(c), file = "Sickness Tables/regionvar_interaction.tex")
 
 # Tree Fall
 model3a <- coxme(Surv(exit, sickness.during.interval) ~ male + region +
@@ -713,6 +921,289 @@ p
 dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Sickness Plots/region_panel_plot.RDS")
 
+
+# Sex + Region + Interaction ----------------------------------------------
+
+# ph not violated for region
+model3interaction <- coxme(Surv(exit, sickness.during.interval) ~ male + region + male:exit + (1 | pid) + (1 | house.id), df)
+results <- extract_coxme_table(model3interaction)
+b <- data.frame(confint(model3interaction))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Near San Borja", "Upriver", "Male x Age")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 4
+addtorow$pos[[3]] <- 4
+addtorow$pos[[4]] <- 4
+addtorow$pos[[5]] <- 4
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model3interaction))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/regionvar_interaction.tex")
+
+# Tree Fall
+model3interactiona <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region +
+                              tree.fall.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model3interactiona, file = "Sickness Tables/region_tree_fall_interaction.RDS")
+results <- extract_coxme_table(model3interactiona)
+b <- data.frame(confint(model3interactiona))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Tree Fall")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_tree_fall_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model3interactiona))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/regionvar_tree_fall_interaction.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/region_schoenfeld_tree_fall_interaction.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/region_tree_fall_interaction.RDS")))
+dev.off()
+
+# Animal Attack
+model3interactionb <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region +
+                              Animal_Attack.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model3interactionb, file = "Sickness Tables/region_Animal_Attack_interaction.RDS")
+results <- extract_coxme_table(model3interactionb)
+b <- data.frame(confint(model3interactionb))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Animal Attack")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_Animal_Attack_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model3interactionb))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/regionvar_Animal_Attack_interaction.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/region_schoenfeld_Animal_Attack_interaction.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/region_Animal_Attack_interaction.RDS")))
+dev.off()
+
+# Cut Self
+model3interactionc <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region +
+                              cut.self.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model3interactionc, file = "Sickness Tables/region_cut_self_interaction.RDS")
+results <- extract_coxme_table(model3interactionc)
+b <- data.frame(confint(model3interactionc))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Cut Self")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_cut_self_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model3interactionc))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/regionvar_cut_self_interaction.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/region_schoenfeld_cut_self_interaction.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/region_cut_self_interaction.RDS")))
+dev.off()
+
+# Canoe Capsize
+model3interactiond <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region +
+                              canoe.capsize.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model3interactiond, file = "Sickness Tables/region_canoe_capsize_interaction.RDS")
+results <- extract_coxme_table(model3interactiond)
+b <- data.frame(confint(model3interactiond))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Canoe Capsize")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_canoe_capsize_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model3interactiond))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/regionvar_canoe_capsize_interaction.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/region_schoenfeld_canoe_capsize_interaction.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/region_canoe_capsize_interaction.RDS")))
+dev.off()
+
+# Fight
+model3interactione <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region +
+                              fought.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model3interactione, file = "Sickness Tables/region_fight_interaction.RDS")
+results <- extract_coxme_table(model3interactione)
+b <- data.frame(confint(model3interactione))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Fight")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_fight_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model3interactione))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/regionvar_fight_interaction.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/region_schoenfeld_fight_interaction.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/region_fight_interaction.RDS")))
+dev.off()
+
+# Plot
+df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Sickness Tables/region_fight_interaction.RDS")), data.frame(confint(readRDS("Sickness Tables/region_fight_interaction.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/region_tree_fall_interaction.RDS")), data.frame(confint(readRDS("Sickness Tables/region_tree_fall_interaction.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/region_Animal_Attack_interaction.RDS")), data.frame(confint(readRDS("Sickness Tables/region_Animal_Attack_interaction.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/region_cut_self_interaction.RDS")), data.frame(confint(readRDS("Sickness Tables/region_cut_self_interaction.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/region_canoe_capsize_interaction.RDS")), data.frame(confint(readRDS("Sickness Tables/region_canoe_capsize_interaction.RDS")))))
+
+df_hazard_plot <- round(df_hazard_plot, 3)
+df_hazard_plot$X2.5.. <- exp(df_hazard_plot$X2.5..)
+df_hazard_plot$X97.5.. <- exp(df_hazard_plot$X97.5..)
+df_hazard_plot <- rownames_to_column(df_hazard_plot, "covariate")
+
+ph_df <- bind_rows(data.frame(cox.zph(readRDS("Sickness Tables/region_fight_interaction.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/region_tree_fall_interaction.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/region_Animal_Attack_interaction.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/region_cut_self_interaction.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/region_canoe_capsize_interaction.RDS"))$table))
+ph_df <- ph_df %>% filter(!duplicated(ph_df))
+ph_df <- rownames_to_column(ph_df, "covariate")
+
+df_hazard_plot <- left_join(df_hazard_plot, ph_df, by = "covariate")
+df_hazard_plot <- df_hazard_plot %>%
+  mutate(p.y = case_when(p.y <= 0.05 ~ "Violates PH", T ~ "Does Not Violate PH"),
+         covariate = case_when(covariate == "fought.during.interval" ~ "Fight",
+                               covariate == "tree.fall.during.interval" ~ "Tree Fall",
+                               covariate == "Animal_Attack.during.interval" ~ "Animal Attack",
+                               covariate == "cut.self.during.interval" ~ "Cut Self",
+                               covariate == "canoe.capsize.during.interval" ~ "Canoe Capsize"))
+
+df_hazard_plot$p.y <- as.factor(df_hazard_plot$p.y)
+df_hazard_plot <- subset(df_hazard_plot, !is.na(covariate))
+
+df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sickness", "Cut Self", "Animal Attack",
+                                                                        "Tree Fall", "Fight", "Canoe Capsize"))
+
+pdf(file = "Sickness Plots/region_panel_plot_interaction.pdf", height = 6.5, width = 6)
+p <- df_hazard_plot %>%
+  ggplot() +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9) +
+  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
+  labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID and House ID") +
+  geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
+  theme_classic(base_size = 16) +
+  guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
+  ggtitle("Outcome Variable: Sickness") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5)) +
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 19))
+p
+dev.off()
+saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Sickness Plots/region_panel_plot_interaction.RDS")
+
 # Sex + Region + Calendar Year Tercile ------------------------------------
 # PH violated for tercile
 model4 <- coxme(Surv(exit, sickness.during.interval) ~ male + region + strata(tercile) + (1 | pid) + (1 | house.id), df)
@@ -746,39 +1237,6 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tabl
 c <- data.frame(t(data.frame(VarCorr(model4))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Sickness Tables/tercilevar.tex")
-
-# Interaction
-model4interaction <- coxme(Surv(exit, sickness.during.interval) ~ male + region + male:exit + strata(tercile) + (1 | pid) + (1 | house.id), df)
-results <- extract_coxme_table(model4interaction)
-b <- data.frame(confint(model4interaction))
-results <- cbind(results, b)
-results <- round(results, 3)
-results <- results %>% rename("Coef" = "beta",
-                              "exp(Coef)" = "exp_beta",
-                              "SE" = "se",
-                              "Lower CI" = "X2.5..",
-                              "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Near San Borja", "Upriver", "Male x Age")
-results <- data.frame(t(results))
-results <- data.frame(t(results))
-addtorow <- list()
-addtorow$pos <- list()
-addtorow$pos[[1]] <- -1
-addtorow$pos[[2]] <- 4
-addtorow$pos[[3]] <- 4
-addtorow$pos[[4]] <- 4
-addtorow$pos[[5]] <- 4
-addtorow$command <- c('\\hline ',
-                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
-                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
-                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
-                      '\\hline ')
-x <- xtable(results, caption = "Sickness \\vspace{-1em}")
-align(x) <- "lcccccc"
-print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_interaction.tex")
-c <- data.frame(t(data.frame(VarCorr(model4interaction))))
-colnames(c) <- c("RE Variance")
-print(xtable(c), file = "Sickness Tables/tercilevar_interaction.tex")
 
 # Tree Fall - ERROR
 # model4a <- coxme(Surv(exit, sickness.during.interval) ~ male + region + strata(tercile) +
@@ -1021,6 +1479,287 @@ dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Sickness Plots/tercile_panel_plot.RDS")
 
 
+# Sex + Region + Tercile + Interaction ------------------------------------
+
+# ph violated for tercile
+model4interaction <- coxme(Surv(exit, sickness.during.interval) ~ male + region + male:exit + strata(tercile) + (1 | pid) + (1 | house.id), df)
+results <- extract_coxme_table(model4interaction)
+b <- data.frame(confint(model4interaction))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Near San Borja", "Upriver", "Male x Age")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 4
+addtorow$pos[[3]] <- 4
+addtorow$pos[[4]] <- 4
+addtorow$pos[[5]] <- 4
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model4interaction))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/tercilevar_interaction.tex")
+
+# Tree Fall
+model4interactiona <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region + strata(tercile) +
+                              tree.fall.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model4interactiona, file = "Sickness Tables/tercile_tree_fall_interaction.RDS")
+results <- extract_coxme_table(model4interactiona)
+b <- data.frame(confint(model4interactiona))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Tree Fall")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_tree_fall_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model4interactiona))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/tercilevar_tree_fall_interaction.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/tercile_schoenfeld_tree_fall_interaction.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/tercile_tree_fall_interaction.RDS")))
+dev.off()
+
+# Animal Attack
+model4interactionb <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region + strata(tercile) +
+                              Animal_Attack.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model4interactionb, file = "Sickness Tables/tercile_Animal_Attack_interaction.RDS")
+results <- extract_coxme_table(model4interactionb)
+b <- data.frame(confint(model4interactionb))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Animal Attack")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_Animal_Attack_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model4interactionb))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/tercilevar_Animal_Attack_interaction.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/tercile_schoenfeld_Animal_Attack_interaction.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/tercile_Animal_Attack_interaction.RDS")))
+dev.off()
+
+# Cut Self
+model4interactionc <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region + strata(tercile) +
+                              cut.self.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model4interactionc, file = "Sickness Tables/tercile_cut_self_interaction.RDS")
+results <- extract_coxme_table(model4interactionc)
+b <- data.frame(confint(model4interactionc))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Cut Self")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_cut_self_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model4interactionc))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/tercilevar_cut_self_interaction.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/tercile_schoenfeld_cut_self_interaction.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/tercile_cut_self_interaction.RDS")))
+dev.off()
+
+# Canoe Capsize
+model4interactiond <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region + strata(tercile) +
+                              canoe.capsize.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model4interactiond, file = "Sickness Tables/tercile_canoe_capsize_interaction.RDS")
+results <- extract_coxme_table(model4interactiond)
+b <- data.frame(confint(model4interactiond))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Canoe Capsize")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_canoe_capsize_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model4interactiond))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/tercilevar_canoe_capsize_interaction.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/tercile_schoenfeld_canoe_capsize_interaction.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/tercile_canoe_capsize_interaction.RDS")))
+dev.off()
+
+# Fight
+model4interactione <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region + strata(tercile) +
+                              fought.during.interval + (1 | pid) + (1 | house.id), df)
+saveRDS(model4interactione, file = "Sickness Tables/tercile_fight_interaction.RDS")
+results <- extract_coxme_table(model4interactione)
+b <- data.frame(confint(model4interactione))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Fight")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_fight_interaction.tex")
+c <- data.frame(t(data.frame(VarCorr(model4interactione))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/tercilevar_fight_interaction.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/tercile_schoenfeld_fight_interaction.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/tercile_fight_interaction.RDS")))
+dev.off()
+
+# Plot
+df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Sickness Tables/tercile_fight_interaction.RDS")), data.frame(confint(readRDS("Sickness Tables/tercile_fight_interaction.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/tercile_Animal_Attack_interaction.RDS")), data.frame(confint(readRDS("Sickness Tables/tercile_Animal_Attack_interaction.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/tercile_cut_self_interaction.RDS")), data.frame(confint(readRDS("Sickness Tables/tercile_cut_self_interaction.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/tercile_tree_fall_interaction.RDS")), data.frame(confint(readRDS("Sickness Tables/tercile_tree_fall_interaction.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/tercile_canoe_capsize_interaction.RDS")), data.frame(confint(readRDS("Sickness Tables/tercile_canoe_capsize_interaction.RDS")))))
+
+df_hazard_plot <- round(df_hazard_plot, 3)
+df_hazard_plot$X2.5.. <- exp(df_hazard_plot$X2.5..)
+df_hazard_plot$X97.5.. <- exp(df_hazard_plot$X97.5..)
+df_hazard_plot <- rownames_to_column(df_hazard_plot, "covariate")
+
+ph_df <- bind_rows(data.frame(cox.zph(readRDS("Sickness Tables/tercile_fight_interaction.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/tercile_Animal_Attack_interaction.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/tercile_cut_self_interaction.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/tercile_tree_fall_interaction.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/tercile_canoe_capsize_interaction.RDS"))$table))
+ph_df <- ph_df %>% filter(!duplicated(ph_df))
+ph_df <- rownames_to_column(ph_df, "covariate")
+
+df_hazard_plot <- left_join(df_hazard_plot, ph_df, by = "covariate")
+df_hazard_plot <- df_hazard_plot %>%
+  mutate(p.y = case_when(p.y <= 0.05 ~ "Violates PH", T ~ "Does Not Violate PH"),
+         covariate = case_when(covariate == "fought.during.interval" ~ "Fight",
+                               covariate == "Animal_Attack.during.interval" ~ "Animal Attack",
+                               covariate == "cut.self.during.interval" ~ "Cut Self",
+                               covariate == "tree.fall.during.interval" ~ "Tree Fall",
+                               covariate == "canoe.capsize.during.interval" ~ "Canoe Capsize"))
+
+df_hazard_plot$p.y <- as.factor(df_hazard_plot$p.y)
+df_hazard_plot <- subset(df_hazard_plot, !is.na(covariate))
+
+df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sickness", "Cut Self", "Animal Attack",
+                                                                        "Tree Fall", "Fight", "Canoe Capsize"))
+
+pdf(file = "Sickness Plots/tercile_panel_plot_interaction.pdf", height = 6.5, width = 6)
+p <- df_hazard_plot %>%
+  ggplot() +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9) +
+  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
+  labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID and House ID") +
+  geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
+  theme_classic(base_size = 16) +
+  guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
+  ggtitle("Outcome Variable: Sickness") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5)) +
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 10.5))
+p
+dev.off()
+saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Sickness Plots/tercile_panel_plot_interaction.RDS")
 
 
 # PID RE ------------------------------------------------------------------
@@ -1058,39 +1797,6 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tabl
 c <- data.frame(t(data.frame(VarCorr(model5))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Sickness Tables/sexvar_1.tex")
-
-# Interaction
-model5interaction <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + (1 | pid), df)
-results <- extract_coxme_table(model5interaction)
-b <- data.frame(confint(model5interaction))
-results <- cbind(results, b)
-results <- round(results, 3)
-results <- results %>% rename("Coef" = "beta",
-                              "exp(Coef)" = "exp_beta",
-                              "SE" = "se",
-                              "Lower CI" = "X2.5..",
-                              "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Male x Age")
-results <- data.frame(t(results))
-results <- data.frame(t(results))
-addtorow <- list()
-addtorow$pos <- list()
-addtorow$pos[[1]] <- -1
-addtorow$pos[[2]] <- 2
-addtorow$pos[[3]] <- 2
-addtorow$pos[[4]] <- 2
-addtorow$pos[[5]] <- 2
-addtorow$command <- c('\\hline ',
-                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
-                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
-                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
-                      '\\hline ')
-x <- xtable(results, caption = "Sickness \\vspace{-1em}")
-align(x) <- "lcccccc"
-print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_interaction_1.tex")
-c <- data.frame(t(data.frame(VarCorr(model5interaction))))
-colnames(c) <- c("RE Variance")
-print(xtable(c), file = "Sickness Tables/sexvar_interaction_1.tex")
 
 # Tree Fall
 model5a <- coxme(Surv(exit, sickness.during.interval) ~ male +
@@ -1339,6 +2045,289 @@ p
 dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Sickness Plots/sex_panel_plot_1.RDS")
 
+
+# Sex + Interaction -------------------------------------------------------
+
+# ph not violated for sex
+model5interaction <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + (1 | pid), df)
+results <- extract_coxme_table(model5interaction)
+b <- data.frame(confint(model5interaction))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 2
+addtorow$pos[[3]] <- 2
+addtorow$pos[[4]] <- 2
+addtorow$pos[[5]] <- 2
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model5interaction))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/sexvar_interaction_1.tex")
+
+# Tree Fall
+model5interactiona <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit +
+                              tree.fall.during.interval + (1 | pid), df)
+saveRDS(model5interactiona, file = "Sickness Tables/sex_tree_fall_interaction_1.RDS")
+results <- extract_coxme_table(model5interactiona)
+b <- data.frame(confint(model5interactiona))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Tree Fall")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 3
+addtorow$pos[[3]] <- 3
+addtorow$pos[[4]] <- 3
+addtorow$pos[[5]] <- 3
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_tree_fall_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model5interactiona))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/sexvar_tree_fall_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/sex_schoenfeld_tree_fall_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/sex_tree_fall_interaction_1.RDS")))
+dev.off()
+
+# Animal Attack
+model5interactionb <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit +
+                              Animal_Attack.during.interval + (1 | pid), df)
+saveRDS(model5interactionb, file = "Sickness Tables/sex_Animal_Attack_interaction_1.RDS")
+results <- extract_coxme_table(model5interactionb)
+b <- data.frame(confint(model5interactionb))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Animal Attack")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 3
+addtorow$pos[[3]] <- 3
+addtorow$pos[[4]] <- 3
+addtorow$pos[[5]] <- 3
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_Animal_Attack_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model5interactionb))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/sexvar_Animal_Attack_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/sex_schoenfeld_Animal_Attack_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/sex_Animal_Attack_interaction_1.RDS")))
+dev.off()
+
+# Cut Self
+model5interactionc <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit +
+                              cut.self.during.interval + (1 | pid), df)
+saveRDS(model5interactionc, file = "Sickness Tables/sex_cut_self_interaction_1.RDS")
+results <- extract_coxme_table(model5interactionc)
+b <- data.frame(confint(model5interactionc))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Cut Self")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 3
+addtorow$pos[[3]] <- 3
+addtorow$pos[[4]] <- 3
+addtorow$pos[[5]] <- 3
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_cut_self_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model5interactionc))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/sexvar_cut_self_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/sex_schoenfeld_cut_self_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/sex_cut_self_interaction_1.RDS")))
+dev.off()
+
+# Canoe Capsize
+model5interactiond <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit +
+                              canoe.capsize.during.interval + (1 | pid), df)
+saveRDS(model5interactiond, file = "Sickness Tables/sex_canoe_capsize_interaction_1.RDS")
+results <- extract_coxme_table(model5interactiond)
+b <- data.frame(confint(model5interactiond))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Canoe Capsize")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 3
+addtorow$pos[[3]] <- 3
+addtorow$pos[[4]] <- 3
+addtorow$pos[[5]] <- 3
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_canoe_capsize_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model5interactiond))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/sexvar_canoe_capsize_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/sex_schoenfeld_canoe_capsize_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/sex_canoe_capsize_interaction_1.RDS")))
+dev.off()
+
+# Fight
+model5interactione <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit +
+                              fought.during.interval + (1 | pid), df)
+saveRDS(model5interactione, file = "Sickness Tables/sex_fight_interaction_1.RDS")
+results <- extract_coxme_table(model5interactione)
+b <- data.frame(confint(model5interactione))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Fight")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 3
+addtorow$pos[[3]] <- 3
+addtorow$pos[[4]] <- 3
+addtorow$pos[[5]] <- 3
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/sex_fight_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model5interactione))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/sexvar_fight_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/sex_schoenfeld_fight_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/sex_fight_interaction_1.RDS")))
+dev.off()
+
+# Plot
+df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Sickness Tables/sex_fight_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/sex_fight_interaction_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/sex_tree_fall_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/sex_tree_fall_interaction_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/sex_Animal_Attack_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/sex_Animal_Attack_interaction_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/sex_cut_self_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/sex_cut_self_interaction_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/sex_canoe_capsize_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/sex_canoe_capsize_interaction_1.RDS")))))
+
+df_hazard_plot <- round(df_hazard_plot, 3)
+df_hazard_plot$X2.5.. <- exp(df_hazard_plot$X2.5..)
+df_hazard_plot$X97.5.. <- exp(df_hazard_plot$X97.5..)
+df_hazard_plot <- rownames_to_column(df_hazard_plot, "covariate")
+
+ph_df <- bind_rows(data.frame(cox.zph(readRDS("Sickness Tables/sex_fight_interaction_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/sex_tree_fall_interaction_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/sex_Animal_Attack_interaction_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/sex_cut_self_interaction_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/sex_canoe_capsize_interaction_1.RDS"))$table))
+ph_df <- ph_df %>% filter(!duplicated(ph_df))
+ph_df <- rownames_to_column(ph_df, "covariate")
+
+df_hazard_plot <- left_join(df_hazard_plot, ph_df, by = "covariate")
+df_hazard_plot <- df_hazard_plot %>%
+  mutate(p.y = case_when(p.y <= 0.05 ~ "Violates PH", T ~ "Does Not Violate PH"),
+         covariate = case_when(covariate == "fought.during.interval" ~ "Fight",
+                               covariate == "tree.fall.during.interval" ~ "Tree Fall",
+                               covariate == "Animal_Attack.during.interval" ~ "Animal Attack",
+                               covariate == "cut.self.during.interval" ~ "Cut Self",
+                               covariate == "canoe.capsize.during.interval" ~ "Canoe Capsize"))
+
+df_hazard_plot$p.y <- as.factor(df_hazard_plot$p.y)
+df_hazard_plot <- subset(df_hazard_plot, !is.na(covariate))
+
+df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sickness", "Cut Self", "Animal Attack",
+                                                                        "Tree Fall", "Fight", "Canoe Capsize"))
+
+pdf(file = "Sickness Plots/sex_panel_plot_interaction_1.pdf", height = 6.5, width = 6)
+p <- df_hazard_plot %>%
+  ggplot() +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9) +
+  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
+  labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID") +
+  geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
+  theme_classic(base_size = 16) +
+  guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
+  ggtitle("Outcome Variable: Sickness") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5)) +
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 17))
+p
+dev.off()
+saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Sickness Plots/sex_panel_plot_interaction_1.RDS")
+
 # Sex + Region ------------------------------------------------------------
 # PH not violated for region
 model6 <- coxme(Surv(exit, sickness.during.interval) ~ male + region + (1 | pid), df)
@@ -1372,39 +2361,6 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tabl
 c <- data.frame(t(data.frame(VarCorr(model6))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Sickness Tables/regionvar_1.tex")
-
-# Interaction
-model6interaction <- coxme(Surv(exit, sickness.during.interval) ~ male + region + male:exit + (1 | pid), df)
-results <- extract_coxme_table(model6interaction)
-b <- data.frame(confint(model6interaction))
-results <- cbind(results, b)
-results <- round(results, 3)
-results <- results %>% rename("Coef" = "beta",
-                              "exp(Coef)" = "exp_beta",
-                              "SE" = "se",
-                              "Lower CI" = "X2.5..",
-                              "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Near San Borja", "Upriver", "Male x Age")
-results <- data.frame(t(results))
-results <- data.frame(t(results))
-addtorow <- list()
-addtorow$pos <- list()
-addtorow$pos[[1]] <- -1
-addtorow$pos[[2]] <- 4
-addtorow$pos[[3]] <- 4
-addtorow$pos[[4]] <- 4
-addtorow$pos[[5]] <- 4
-addtorow$command <- c('\\hline ',
-                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
-                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
-                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
-                      '\\hline ')
-x <- xtable(results, caption = "Sickness \\vspace{-1em}")
-align(x) <- "lcccccc"
-print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_interaction_1.tex")
-c <- data.frame(t(data.frame(VarCorr(model6interaction))))
-colnames(c) <- c("RE Variance")
-print(xtable(c), file = "Sickness Tables/regionvar_interaction_1.tex")
 
 # Tree Fall
 model6a <- coxme(Surv(exit, sickness.during.interval) ~ male + region +
@@ -1654,6 +2610,288 @@ dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Sickness Plots/region_panel_plot_1.RDS")
 
 
+# Sex + Region + Interaction ----------------------------------------------
+
+# PH not violated for region
+model6interaction <- coxme(Surv(exit, sickness.during.interval) ~ male + region + male:exit + (1 | pid), df)
+results <- extract_coxme_table(model6interaction)
+b <- data.frame(confint(model6interaction))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Near San Borja", "Upriver", "Male x Age")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 4
+addtorow$pos[[3]] <- 4
+addtorow$pos[[4]] <- 4
+addtorow$pos[[5]] <- 4
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6interaction))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/regionvar_interaction_1.tex")
+
+# Tree Fall
+model6interactiona <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region +
+                              tree.fall.during.interval + (1 | pid), df)
+saveRDS(model6interactiona, file = "Sickness Tables/region_tree_fall_interaction_1.RDS")
+results <- extract_coxme_table(model6interactiona)
+b <- data.frame(confint(model6interactiona))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Tree Fall")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_tree_fall_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6interactiona))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/regionvar_tree_fall_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/region_schoenfeld_tree_fall_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/region_tree_fall_interaction_1.RDS")))
+dev.off()
+
+# Animal Attack
+model6interactionb <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region +
+                              Animal_Attack.during.interval + (1 | pid), df)
+saveRDS(model6interactionb, file = "Sickness Tables/region_Animal_Attack_interaction_1.RDS")
+results <- extract_coxme_table(model6interactionb)
+b <- data.frame(confint(model6interactionb))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Animal Attack")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_Animal_Attack_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6interactionb))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/regionvar_Animal_Attack_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/region_schoenfeld_Animal_Attack_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/region_Animal_Attack_interaction_1.RDS")))
+dev.off()
+
+# Cut Self
+model6interactionc <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region +
+                              cut.self.during.interval + (1 | pid), df)
+saveRDS(model6interactionc, file = "Sickness Tables/region_cut_self_interaction_1.RDS")
+results <- extract_coxme_table(model6interactionc)
+b <- data.frame(confint(model6interactionc))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Cut Self")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_cut_self_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6interactionc))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/regionvar_cut_self_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/region_schoenfeld_cut_self_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/region_cut_self_interaction_1.RDS")))
+dev.off()
+
+# Canoe Capsize
+model6interactiond <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region +
+                              canoe.capsize.during.interval + (1 | pid), df)
+saveRDS(model6interactiond, file = "Sickness Tables/region_canoe_capsize_interaction_1.RDS")
+results <- extract_coxme_table(model6interactiond)
+b <- data.frame(confint(model6interactiond))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Canoe Capsize")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_canoe_capsize_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6interactiond))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/regionvar_canoe_capsize_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/region_schoenfeld_canoe_capsize_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/region_canoe_capsize_interaction_1.RDS")))
+dev.off()
+
+# Fight
+model6interactione <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region +
+                              fought.during.interval + (1 | pid), df)
+saveRDS(model6interactione, file = "Sickness Tables/region_fight_interaction_1.RDS")
+results <- extract_coxme_table(model6interactione)
+b <- data.frame(confint(model6interactione))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Fight")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/region_fight_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model6interactione))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/regionvar_fight_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/region_schoenfeld_fight_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/region_fight_interaction_1.RDS")))
+dev.off()
+
+# Plot
+df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Sickness Tables/region_fight_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/region_fight_interaction_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/region_tree_fall_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/region_tree_fall_interaction_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/region_Animal_Attack_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/region_Animal_Attack_interaction_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/region_cut_self_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/region_cut_self_interaction_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/region_canoe_capsize_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/region_canoe_capsize_interaction_1.RDS")))))
+
+df_hazard_plot <- round(df_hazard_plot, 3)
+df_hazard_plot$X2.5.. <- exp(df_hazard_plot$X2.5..)
+df_hazard_plot$X97.5.. <- exp(df_hazard_plot$X97.5..)
+df_hazard_plot <- rownames_to_column(df_hazard_plot, "covariate")
+
+ph_df <- bind_rows(data.frame(cox.zph(readRDS("Sickness Tables/region_fight_interaction_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/region_tree_fall_interaction_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/region_Animal_Attack_interaction_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/region_cut_self_interaction_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/region_canoe_capsize_interaction_1.RDS"))$table))
+ph_df <- ph_df %>% filter(!duplicated(ph_df))
+ph_df <- rownames_to_column(ph_df, "covariate")
+
+df_hazard_plot <- left_join(df_hazard_plot, ph_df, by = "covariate")
+df_hazard_plot <- df_hazard_plot %>%
+  mutate(p.y = case_when(p.y <= 0.05 ~ "Violates PH", T ~ "Does Not Violate PH"),
+         covariate = case_when(covariate == "fought.during.interval" ~ "Fight",
+                               covariate == "tree.fall.during.interval" ~ "Tree Fall",
+                               covariate == "Animal_Attack.during.interval" ~ "Animal Attack",
+                               covariate == "cut.self.during.interval" ~ "Cut Self",
+                               covariate == "canoe.capsize.during.interval" ~ "Canoe Capsize"))
+
+df_hazard_plot$p.y <- as.factor(df_hazard_plot$p.y)
+df_hazard_plot <- subset(df_hazard_plot, !is.na(covariate))
+
+df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sickness", "Cut Self", "Animal Attack",
+                                                                        "Tree Fall", "Fight", "Canoe Capsize"))
+
+pdf(file = "Sickness Plots/region_panel_plot_interaction_1.pdf", height = 6.5, width = 6)
+p <- df_hazard_plot %>%
+  ggplot() +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9) +
+  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
+  labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID") +
+  geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
+  theme_classic(base_size = 16) +
+  guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
+  ggtitle("Outcome Variable: Sickness") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5)) +
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 19))
+p
+dev.off()
+saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Sickness Plots/region_panel_plot_interaction_1.RDS")
+
 # Sex + Region + Calendar Year Tercile ------------------------------------
 # PH violated for tercile
 model7 <- coxme(Surv(exit, sickness.during.interval) ~ male + region + strata(tercile) + (1 | pid), df)
@@ -1687,39 +2925,6 @@ print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tabl
 c <- data.frame(t(data.frame(VarCorr(model7))))
 colnames(c) <- c("RE Variance")
 print(xtable(c), file = "Sickness Tables/tercilevar_1.tex")
-
-# Interaction
-model7interaction <- coxme(Surv(exit, sickness.during.interval) ~ male + region + male:exit + strata(tercile) + (1 | pid), df)
-results <- extract_coxme_table(model7interaction)
-b <- data.frame(confint(model7interaction))
-results <- cbind(results, b)
-results <- round(results, 3)
-results <- results %>% rename("Coef" = "beta",
-                              "exp(Coef)" = "exp_beta",
-                              "SE" = "se",
-                              "Lower CI" = "X2.5..",
-                              "Upper CI" = "X97.5..")
-rownames(results) <- c("Male", "Near San Borja", "Upriver", "Male x Age")
-results <- data.frame(t(results))
-results <- data.frame(t(results))
-addtorow <- list()
-addtorow$pos <- list()
-addtorow$pos[[1]] <- -1
-addtorow$pos[[2]] <- 4
-addtorow$pos[[3]] <- 4
-addtorow$pos[[4]] <- 4
-addtorow$pos[[5]] <- 4
-addtorow$command <- c('\\hline ',
-                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
-                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
-                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
-                      '\\hline ')
-x <- xtable(results, caption = "Sickness \\vspace{-1em}")
-align(x) <- "lcccccc"
-print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_interaction_1.tex")
-c <- data.frame(t(data.frame(VarCorr(model7interaction))))
-colnames(c) <- c("RE Variance")
-print(xtable(c), file = "Sickness Tables/tercilevar_interaction_1.tex")
 
 # Tree Fall
 model7a <- coxme(Surv(exit, sickness.during.interval) ~ male + region + strata(tercile) +
@@ -1967,3 +3172,286 @@ p <- df_hazard_plot %>%
 p
 dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Sickness Plots/tercile_panel_plot_1.RDS")
+
+
+# Sex + Region + Tercile + Interaction ------------------------------------
+
+# PH violated for tercile
+model7interaction <- coxme(Surv(exit, sickness.during.interval) ~ male + region + male:exit + strata(tercile) + (1 | pid), df)
+results <- extract_coxme_table(model7interaction)
+b <- data.frame(confint(model7interaction))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Near San Borja", "Upriver", "Male x Age")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 4
+addtorow$pos[[3]] <- 4
+addtorow$pos[[4]] <- 4
+addtorow$pos[[5]] <- 4
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model7interaction))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/tercilevar_interaction_1.tex")
+
+# Tree Fall
+model7interactiona <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region + strata(tercile) +
+                              tree.fall.during.interval + (1 | pid), df)
+saveRDS(model7interactiona, file = "Sickness Tables/tercile_tree_fall_interaction_1.RDS")
+results <- extract_coxme_table(model7interactiona)
+b <- data.frame(confint(model7interactiona))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Tree Fall")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_tree_fall_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model7interactiona))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/tercilevar_tree_fall_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/tercile_schoenfeld_tree_fall_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/tercile_tree_fall_interaction_1.RDS")))
+dev.off()
+
+# Animal Attack
+model7interactionb <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region + strata(tercile) +
+                              Animal_Attack.during.interval + (1 | pid), df)
+saveRDS(model7interactionb, file = "Sickness Tables/tercile_Animal_Attack_interaction_1.RDS")
+results <- extract_coxme_table(model7interactionb)
+b <- data.frame(confint(model7interactionb))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Animal Attack")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_Animal_Attack_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model7interactionb))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/tercilevar_Animal_Attack_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/tercile_schoenfeld_Animal_Attack_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/tercile_Animal_Attack_interaction_1.RDS")))
+dev.off()
+
+# Cut Self
+model7interactionc <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region + strata(tercile) +
+                              cut.self.during.interval + (1 | pid), df)
+saveRDS(model7interactionc, file = "Sickness Tables/tercile_cut_self_interaction_1.RDS")
+results <- extract_coxme_table(model7interactionc)
+b <- data.frame(confint(model7interactionc))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Cut Self")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_cut_self_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model7interactionc))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/tercilevar_cut_self_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/tercile_schoenfeld_cut_self_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/tercile_cut_self_interaction_1.RDS")))
+dev.off()
+
+# Canoe Capsize
+model7interactiond <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region + strata(tercile) +
+                              canoe.capsize.during.interval + (1 | pid), df)
+saveRDS(model7interactiond, file = "Sickness Tables/tercile_canoe_capsize_interaction_1.RDS")
+results <- extract_coxme_table(model7interactiond)
+b <- data.frame(confint(model7interactiond))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Canoe Capsize")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_canoe_capsize_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model7interactiond))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/tercilevar_canoe_capsize_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/tercile_schoenfeld_canoe_capsize_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/tercile_canoe_capsize_interaction_1.RDS")))
+dev.off()
+
+# Fight
+model7interactione <- coxme(Surv(exit, sickness.during.interval) ~ male + male:exit + region + strata(tercile) +
+                              fought.during.interval + (1 | pid), df)
+saveRDS(model7interactione, file = "Sickness Tables/tercile_fight_interaction_1.RDS")
+results <- extract_coxme_table(model7interactione)
+b <- data.frame(confint(model7interactione))
+results <- cbind(results, b)
+results <- round(results, 3)
+results <- results %>% rename("Coef" = "beta",
+                              "exp(Coef)" = "exp_beta",
+                              "SE" = "se",
+                              "Lower CI" = "X2.5..",
+                              "Upper CI" = "X97.5..")
+rownames(results) <- c("Male", "Male x Age", "Near San Borja", "Upriver", "Fight")
+results <- data.frame(t(results))
+results <- data.frame(t(results))
+addtorow <- list()
+addtorow$pos <- list()
+addtorow$pos[[1]] <- -1
+addtorow$pos[[2]] <- 5
+addtorow$pos[[3]] <- 5
+addtorow$pos[[4]] <- 5
+addtorow$pos[[5]] <- 5
+addtorow$command <- c('\\hline ',
+                      '\\hline No. of Individuals &  &  &  \\multicolumn{2}{c}{388}  &  &  \\\\',
+                      'No. of Intervals &  &  &  \\multicolumn{2}{c}{10,738}  &  &  \\\\',
+                      'No. of Risk Years &  &  &  \\multicolumn{2}{c}{10,618.31}  &  & \\\\ ',
+                      '\\hline ')
+x <- xtable(results, caption = "Sickness \\vspace{-1em}")
+align(x) <- "lcccccc"
+print(x, caption.placement = "top", add.to.row = addtorow, file = "Sickness Tables/tercile_fight_interaction_1.tex")
+c <- data.frame(t(data.frame(VarCorr(model7interactione))))
+colnames(c) <- c("RE Variance")
+print(xtable(c), file = "Sickness Tables/tercilevar_fight_interaction_1.tex")
+# Plot Schoenfeld residuals
+pdf(file = "Sickness Plots/tercile_schoenfeld_fight_interaction_1.pdf", height = 5, width = 7)
+survminer::ggcoxzph(cox.zph(readRDS("Sickness Tables/tercile_fight_interaction_1.RDS")))
+dev.off()
+
+# Plot
+df_hazard_plot <- bind_rows(cbind(extract_coxme_table(readRDS("Sickness Tables/tercile_fight_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/tercile_fight_interaction_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/tercile_tree_fall_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/tercile_tree_fall_interaction_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/tercile_Animal_Attack_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/tercile_Animal_Attack_interaction_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/tercile_cut_self_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/tercile_cut_self_interaction_1.RDS")))),
+                            cbind(extract_coxme_table(readRDS("Sickness Tables/tercile_canoe_capsize_interaction_1.RDS")), data.frame(confint(readRDS("Sickness Tables/tercile_canoe_capsize_interaction_1.RDS")))))
+
+df_hazard_plot <- round(df_hazard_plot, 3)
+df_hazard_plot$X2.5.. <- exp(df_hazard_plot$X2.5..)
+df_hazard_plot$X97.5.. <- exp(df_hazard_plot$X97.5..)
+df_hazard_plot <- rownames_to_column(df_hazard_plot, "covariate")
+
+ph_df <- bind_rows(data.frame(cox.zph(readRDS("Sickness Tables/tercile_fight_interaction_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/tercile_tree_fall_interaction_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/tercile_Animal_Attack_interaction_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/tercile_cut_self_interaction_1.RDS"))$table),
+                   data.frame(cox.zph(readRDS("Sickness Tables/tercile_canoe_capsize_interaction_1.RDS"))$table))
+ph_df <- ph_df %>% filter(!duplicated(ph_df))
+ph_df <- rownames_to_column(ph_df, "covariate")
+
+df_hazard_plot <- left_join(df_hazard_plot, ph_df, by = "covariate")
+df_hazard_plot <- df_hazard_plot %>%
+  mutate(p.y = case_when(p.y <= 0.05 ~ "Violates PH", T ~ "Does Not Violate PH"),
+         covariate = case_when(covariate == "fought.during.interval" ~ "Fight",
+                               covariate == "Animal_Attack.during.interval" ~ "Animal Attack",
+                               covariate == "cut.self.during.interval" ~ "Cut Self",
+                               covariate == "tree.fall.during.interval" ~ "Tree Fall",
+                               covariate == "canoe.capsize.during.interval" ~ "Canoe Capsize"))
+
+df_hazard_plot$p.y <- as.factor(df_hazard_plot$p.y)
+df_hazard_plot <- subset(df_hazard_plot, !is.na(covariate))
+
+df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sickness", "Cut Self", "Animal Attack",
+                                                                        "Tree Fall", "Fight", "Canoe Capsize"))
+
+pdf(file = "Sickness Plots/tercile_panel_plot_interaction_1.pdf", height = 6.5, width = 6)
+p <- df_hazard_plot %>%
+  ggplot() +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9) +
+  geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
+  labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "Cox Model with RE for PID") +
+  geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
+  scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
+  theme_classic(base_size = 16) +
+  guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
+  ggtitle("Outcome Variable: Sickness") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5)) +
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 21))
+p
+dev.off()
+saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Sickness Plots/tercile_panel_plot_interaction_1.RDS")
