@@ -603,7 +603,7 @@ p <- df_hazard_plot %>%
   geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
   labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "PID and House ID RE, Male and Region FE") +
   geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-  scale_fill_manual(values = c("green3", "gray30", "gray30", "gray70", "pink3")) +
+  scale_fill_manual(values = c("green3", "gray30", "gray30", "gray30", "pink3")) +
   theme_classic(base_size = 20) +
   guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
   ggtitle("Outcome Variable:

@@ -3040,16 +3040,16 @@ dev.off()
 
 # Final panel plot --------------------------------------------------------
 
-d <- data.frame(x = c("Sickness", "Subsistence", "Tree Fall", "Fight"),
-                y = c(1, 1, 1, 1))
+d <- data.frame(x = c("Sickness", "Subsistence", "Fight"),
+                y = c(1, 1, 1))
 
-d$x <- factor(d$x, levels = c("Sickness", "Subsistence", "Tree Fall", "Fight"))
+d$x <- factor(d$x, levels = c("Sickness", "Subsistence", "Fight"))
 
 b <- d %>% ggplot() +
   geom_bar(aes(x, fill = x), alpha = 0.8) +
   theme(legend.position = "bottom") +
   labs(fill = "") +
-  scale_fill_manual(values = c("green3", "gray30", "gray70", "pink3"))+
+  scale_fill_manual(values = c("green3", "gray30", "pink3"))+
   theme_classic(base_size = 20)
 
 ph_legend <- as_ggplot(get_legend(b + guides(fill = guide_legend(nrow = 1))))
@@ -3065,7 +3065,7 @@ figure <- ggarrange(readRDS("Sickness Plots/region_panel_plot.RDS") + rremove("y
                     "",
                     legend = "none",
                     heights = c(1, 1, 0.1))
-pdf(file = "Panel Plots/final_panel_plot.pdf", height = 15, width = 15)
+pdf(file = "Panel Plots/final_panel_plot1.pdf", height = 15, width = 15)
 annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp = gpar(cex = 1.7)),
                 bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
 dev.off()
