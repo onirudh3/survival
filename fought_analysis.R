@@ -1325,17 +1325,17 @@ df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sicknes
 pdf(file = "Fight Plots/region_panel_plot_1.pdf", height = 6.5, width = 6)
 p <- df_hazard_plot %>%
   ggplot() +
-  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9) +
+  geom_bar(aes(x = covariate, y = exp_beta, fill = p.y), stat = "identity", width = 0.9, alpha = 1) +
   geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
   labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "PID RE, Male and Region FE") +
   geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-  scale_fill_manual(values = c("lightseagreen", "lightcoral")) +
+  scale_fill_manual(values = c("pink3", "lightcoral")) +
   theme_classic(base_size = 20) +
   guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
   ggtitle("Outcome Variable:
 Fight") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 19))
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 19)) + theme(legend.position = "none")
 p
 dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Fight Plots/region_panel_plot_1.RDS")

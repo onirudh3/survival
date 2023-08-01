@@ -175,6 +175,8 @@ dev.off()
 
 ## Survival Curves ----
 # null model
+# img <- png::readPNG("C:/Users/oniru/OneDrive/color.png")
+
 m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Tree Fall Plots/survival_function_time_to_first_risk.pdf", height = 5)
@@ -2823,13 +2825,17 @@ dev.off()
 
 
 # Panel plot for survival curves ------------------------------------------
+# annotate("rect", xmin = 0, xmax = 20, ymin = 0, ymax = Inf, alpha = 0.5, fill = "black")
 
-figure <- ggarrange(readRDS("Sickness Plots/survival_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
-          readRDS("Cut Self Plots/survival_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
-          readRDS("Animal Attack Combined Plots/survival_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
-          readRDS("Tree Fall Plots/survival_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
-          readRDS("Fight Plots/survival_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
-          readRDS("Canoe Capsize Plots/survival_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"))
+
+
+figure <- ggarrange(readRDS("Sickness Plots/survival_function_time_to_first_risk.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.05, fill = "green") + rremove("ylab") + rremove("xlab"),
+          readRDS("Cut Self Plots/survival_function_time_to_first_risk.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"),
+          readRDS("Animal Attack Combined Plots/survival_function_time_to_first_risk.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"),
+          readRDS("Tree Fall Plots/survival_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 20, ymin = 0, ymax = Inf, alpha = 0.05, fill = "black") +
+            annotate("rect", xmin = 20, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"),
+          readRDS("Fight Plots/survival_function_time_to_first_risk.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.05, fill = "red") + rremove("ylab") + rremove("xlab"),
+          readRDS("Canoe Capsize Plots/survival_function_time_to_first_risk.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"))
 
 pdf(file = "Panel Plots/survival.pdf", height = 9, width = 15)
 annotate_figure(figure, left = textGrob("Percentage Not Experienced Risk", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
@@ -2840,12 +2846,13 @@ dev.off()
 
 # Panel plot for survival curves by gender --------------------------------
 
-figure <- ggarrange(readRDS("Sickness Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Cut Self Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Animal Attack Combined Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Tree Fall Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Fight Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Canoe Capsize Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+figure <- ggarrange(readRDS("Sickness Plots/survival_function_time_to_first_risk_by_gender.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.05, fill = "green") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Cut Self Plots/survival_function_time_to_first_risk_by_gender.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Animal Attack Combined Plots/survival_function_time_to_first_risk_by_gender.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Tree Fall Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 20, ymin = 0, ymax = Inf, alpha = 0.05, fill = "black") +
+                      annotate("rect", xmin = 20, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Fight Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.05, fill = "red"),
+                    readRDS("Canoe Capsize Plots/survival_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black"),
                     common.legend = T, legend = "bottom")
 
 pdf(file = "Panel Plots/survival_by_gender.pdf", height = 9, width = 15)
@@ -2857,12 +2864,13 @@ dev.off()
 
 # Panel plot for hazard curves --------------------------------------------
 
-figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Cut Self Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Animal Attack Combined Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Tree Fall Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Fight Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab"))
+figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.05, fill = "green"),
+                    readRDS("Cut Self Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black"),
+                    readRDS("Animal Attack Combined Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black"),
+                    readRDS("Tree Fall Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 20, ymin = 0, ymax = Inf, alpha = 0.05, fill = "black") +
+                      annotate("rect", xmin = 20, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Fight Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.05, fill = "red"),
+                    readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black"))
 
 pdf(file = "Panel Plots/hazard.pdf", height = 9, width = 15)
 annotate_figure(figure, left = textGrob("Hazard", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
@@ -2871,12 +2879,13 @@ dev.off()
 
 # Panel plot for hazard curves by gender ----------------------------------
 
-figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Cut Self Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Animal Attack Combined Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Tree Fall Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Fight Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab"),
+figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.05, fill = "green"),
+                    readRDS("Cut Self Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black"),
+                    readRDS("Animal Attack Combined Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black"),
+                    readRDS("Tree Fall Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 20, ymin = 0, ymax = Inf, alpha = 0.05, fill = "black") +
+                      annotate("rect", xmin = 20, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"),
+                    readRDS("Fight Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.05, fill = "red"),
+                    readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk_by_gender.RDS") + rremove("ylab") + rremove("xlab") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black"),
                     common.legend = T, legend = "bottom")
 
 pdf(file = "Panel Plots/hazard_by_gender.pdf", height = 9, width = 15)
@@ -3036,8 +3045,7 @@ figure <- ggarrange(readRDS("Sickness Plots/region_panel_plot.RDS") + rremove("y
                     readRDS("Animal Attack Combined Plots/sex_panel_plot.RDS") + rremove("ylab") + rremove("xlab"),
                     readRDS("Tree Fall Plots/sex_panel_plot.RDS") + rremove("ylab") + rremove("xlab"),
                     readRDS("Fight Plots/region_panel_plot_1.RDS") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Canoe Capsize Plots/region_panel_plot.RDS") + rremove("ylab") + rremove("xlab"),
-                    common.legend = T, legend = "bottom")
+                    readRDS("Canoe Capsize Plots/region_panel_plot.RDS") + rremove("ylab") + rremove("xlab"))
 pdf(file = "Panel Plots/final_panel_plot.pdf", height = 15, width = 15)
 annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp = gpar(cex = 1.7)),
                 bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
