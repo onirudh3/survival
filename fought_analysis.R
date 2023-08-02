@@ -1331,8 +1331,7 @@ p <- df_hazard_plot %>%
   theme_classic(base_size = 20) +
   guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
   geom_text(data = subset(df_hazard_plot, fdr < 0.05), aes(x = covariate, y = X97.5..), label = "*", nudge_y = 0.1, size = 10) +
-  ggtitle("Outcome Variable:
-Fight") +
+  ggtitle("Fight") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 19)) + theme(legend.position = "none")
 p
