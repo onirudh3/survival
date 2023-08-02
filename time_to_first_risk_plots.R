@@ -3049,51 +3049,51 @@ b <- d %>% ggplot() +
   geom_bar(aes(x, fill = x), alpha = 0.8) +
   theme(legend.position = "bottom") +
   labs(fill = "") +
-  scale_fill_manual(values = c("#ebffeb", "#ebebeb", "#ffebeb"))+
+  scale_fill_manual(values = c("green3", "gray50", "pink3"))+
   theme_classic(base_size = 20)
 
 ph_legend <- as_ggplot(get_legend(b + guides(fill = guide_legend(nrow = 1))))
 
-#f5f5f5
+# gray50
 
 figure <- ggarrange(readRDS("Sickness Plots/region_panel_plot.RDS") + rremove("ylab") + rremove("xlab") +
                       geom_bar(aes(x = covariate, y = exp_beta, fill = covariate), stat = "identity", width = 0.9) +
                       geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
                       geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-                      scale_fill_manual(values = c("#ebebeb", "#ebebeb", "#ebebeb", "#ffebeb", "#ebebeb")),
+                      scale_fill_manual(values = c("gray50", "gray50", "gray50", "pink3", "gray50")),
                     readRDS("Cut Self Plots/region_panel_plot.RDS") + rremove("ylab") + rremove("xlab") +
                       geom_bar(aes(x = covariate, y = exp_beta, fill = covariate), stat = "identity", width = 0.9) +
                       geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
                       geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-                      scale_fill_manual(values = c("#ebffeb", "#ebebeb", "#ebebeb", "#ffebeb", "#ebebeb")),
+                      scale_fill_manual(values = c("green3", "gray50", "gray50", "pink3", "gray50")),
                     readRDS("Animal Attack Combined Plots/sex_panel_plot.RDS") + rremove("ylab") + rremove("xlab") +
                       geom_bar(aes(x = covariate, y = exp_beta, fill = covariate), stat = "identity", width = 0.9) +
                       geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
                       geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-                      scale_fill_manual(values = c("#ebffeb", "#ebebeb", "#ebebeb", "#ffebeb", "#ebebeb")),
+                      scale_fill_manual(values = c("green3", "gray50", "gray50", "pink3", "gray50")),
                     readRDS("Tree Fall Plots/sex_panel_plot.RDS") + rremove("ylab") + rremove("xlab") +
                       geom_bar(aes(x = covariate, y = exp_beta, fill = covariate), stat = "identity", width = 0.9) +
                       geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
                       geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-                      scale_fill_manual(values = c("#ebffeb", "#ebebeb", "#ebebeb", "#ffebeb", "#ebebeb")),
+                      scale_fill_manual(values = c("green3", "gray50", "gray50", "pink3", "gray50")),
                     readRDS("Fight Plots/region_panel_plot_1.RDS") + rremove("ylab") + rremove("xlab") +
                       geom_bar(aes(x = covariate, y = exp_beta, fill = covariate), stat = "identity", width = 0.9) +
                       geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
                       geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-                      scale_fill_manual(values = c("#ebffeb", "#ebebeb", "#ebebeb", "#ebebeb", "#ebebeb")),
+                      scale_fill_manual(values = c("green3", "gray50", "gray50", "gray50", "gray50")),
                     readRDS("Canoe Capsize Plots/region_panel_plot.RDS") + rremove("ylab") + rremove("xlab") +
                       geom_bar(aes(x = covariate, y = exp_beta, fill = covariate), stat = "identity", width = 0.9) +
                       geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
                       geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-                      scale_fill_manual(values = c("#ebffeb", "#ebebeb", "#ebebeb", "#ebebeb", "#ffebeb")),
+                      scale_fill_manual(values = c("green3", "gray50", "gray50", "gray50", "pink3")),
                     "",
                     ph_legend,
                     "",
                     legend = "none",
                     heights = c(1, 1, 0.1))
-pdf(file = "Panel Plots/final_panel_plot3.pdf", height = 15, width = 15)
+pdf(file = "Panel Plots/final_panel_plot1.pdf", height = 15, width = 15)
 annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp = gpar(cex = 1.7)),
-                bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
+                bottom = grid::textGrob("Time-varying covariate: occurrence of event [*FDR significant]", gp = gpar(cex = 1.7)))
 dev.off()
 
 

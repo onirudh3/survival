@@ -596,12 +596,15 @@ df_hazard_plot <- subset(df_hazard_plot, !is.na(covariate))
 df_hazard_plot$covariate <- factor(df_hazard_plot$covariate, levels = c("Sickness", "Cut Self", "Animal Attack",
                                                                         "Tree Fall", "Fight", "Canoe Capsize"))
 
+df_hazard_plot$fdr <- FDRestimation::p.fdr(df_hazard_plot$p.x, threshold = 0.05)$fdrs
+
 pdf(file = "Canoe Capsize Plots/region_panel_plot.pdf", height = 6.5, width = 6)
 p <- df_hazard_plot %>%
   ggplot() +
   labs(x = "", y = "Hazard Ratio", fill = "", subtitle = "PID and House ID RE, Male and Region FE") +
   theme_classic(base_size = 20) +
   guides(x =  guide_axis(angle = 90)) + scale_x_discrete(drop = F) +
+  geom_text(data = subset(df_hazard_plot, fdr < 0.05), aes(x = covariate, y = X97.5..), label = "*", nudge_y = 0.1, size = 10) +
   ggtitle("Outcome Variable:
 Canoe Capsize") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
