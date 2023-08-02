@@ -37,7 +37,7 @@ df %>%
   mutate(prop = prop.table(n)) %>%
   filter(event == 1) %>%
   ggplot() +
-  geom_line(aes(x = age.cat, y = prop, group = 1), color = "#ebffeb",
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "green3",
             linewidth = 2) +
   geom_text(aes(x = age.cat, y = prop,
                 label = scales::percent(prop)), size = 3) +
@@ -112,7 +112,7 @@ df_short %>%
   mutate(prop = prop.table(n)) %>%
   filter(tree.fall.during.interval == 1) %>%
   ggplot() +
-  geom_line(aes(x = age.cat, y = prop, group = 1), color = "#ebffeb",
+  geom_line(aes(x = age.cat, y = prop, group = 1), color = "green3",
             linewidth = 2) +
   geom_text(aes(x = age.cat, y = prop,
                 label = scales::percent(prop)), size = 3) +
@@ -181,7 +181,7 @@ m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Tree Fall Plots/survival_function_time_to_first_risk.pdf", height = 5)
 p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
-         surv.colour = "#ffebeb") +
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Tree Fall") +
@@ -267,7 +267,7 @@ pdf(file = "Tree Fall Plots/hazard_function_time_to_first_risk.pdf", height = 5)
 p <- ggplot(df_surv, aes(x = time, y = hazard)) +
   geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "#ffebeb") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
@@ -542,7 +542,7 @@ m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Snake Bite Plots/survival_function_time_to_first_risk.pdf", height = 5)
 p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
-         surv.colour = "#ffebeb") +
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Snake/Ray Bite") +
@@ -617,7 +617,7 @@ pdf(file = "Snake Bite Plots/hazard_function_time_to_first_risk.pdf", height = 5
 p <- ggplot(df_surv, aes(x = time, y = hazard)) +
   geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "#ffebeb") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
@@ -891,7 +891,7 @@ m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Fight Plots/survival_function_time_to_first_risk.pdf", height = 5)
 p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
-         surv.colour = "#ffebeb") +
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Fight") +
@@ -967,7 +967,7 @@ pdf(file = "Fight Plots/hazard_function_time_to_first_risk.pdf", height = 5)
 p <- ggplot(df_surv, aes(x = time, y = hazard)) +
   geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "#ffebeb") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
@@ -1243,7 +1243,7 @@ m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Sickness Plots/survival_function_time_to_first_risk.pdf", height = 5)
 p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
-         surv.colour = "#ffebeb") +
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Sickness") +
@@ -1320,7 +1320,7 @@ pdf(file = "Sickness Plots/hazard_function_time_to_first_risk.pdf", height = 5)
 p <- ggplot(df_surv, aes(x = time, y = hazard)) +
   geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "#ffebeb") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
@@ -1593,7 +1593,7 @@ m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Animal Attack Plots/survival_function_time_to_first_risk.pdf", height = 5)
 p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
-         surv.colour = "#ffebeb") +
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Animal Attack") +
@@ -1670,7 +1670,7 @@ pdf(file = "Animal Attack Plots/hazard_function_time_to_first_risk.pdf", height 
 p <- ggplot(df_surv, aes(x = time, y = hazard)) +
   geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "#ffebeb") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
@@ -1940,7 +1940,7 @@ m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Canoe Capsize Plots/survival_function_time_to_first_risk.pdf", height = 5)
 p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
-         surv.colour = "#ffebeb") +
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Canoe Capsize") +
@@ -2017,7 +2017,7 @@ pdf(file = "Canoe Capsize Plots/hazard_function_time_to_first_risk.pdf", height 
 p <- ggplot(df_surv, aes(x = time, y = hazard)) +
   geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "#ffebeb") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
@@ -2288,7 +2288,7 @@ m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Cut Self Plots/survival_function_time_to_first_risk.pdf", height = 5)
 p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
-         surv.colour = "#ffebeb") +
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Cut Self") +
@@ -2365,7 +2365,7 @@ pdf(file = "Cut Self Plots/hazard_function_time_to_first_risk.pdf", height = 5)
 p <- ggplot(df_surv, aes(x = time, y = hazard)) +
   geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "#ffebeb") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
@@ -2637,7 +2637,7 @@ m1 <- survfit(Surv(exit, event) ~ 1, data = df, conf.type = "log-log")
 summary(m1)
 pdf(file = "Animal Attack Combined Plots/survival_function_time_to_first_risk.pdf", height = 5)
 p <- autoplot(m1, censor.shape = '|', censor.colour = "orange2",
-         surv.colour = "#ffebeb") +
+         surv.colour = "pink3") +
   geom_segment(aes(x = 0, y = 0.5, xend = 75, yend = 0.5), lty = 2) +
   theme_classic(base_size = 14) +
   ggtitle("Animal Attack") +
@@ -2717,7 +2717,7 @@ pdf(file = "Animal Attack Combined Plots/hazard_function_time_to_first_risk.pdf"
 p <- ggplot(df_surv, aes(x = time, y = hazard)) +
   geom_line(color = "orange2") +
   geom_ribbon(aes(ymin = lower.ci, ymax = upper.ci), alpha = 0.2,
-              fill = "#ffebeb") +
+              fill = "pink3") +
   theme_classic(base_size = 14) +
   xlab("Age [years]") +
   ylab("Hazard") +
@@ -3036,60 +3036,60 @@ dev.off()
 
 # Final panel plot --------------------------------------------------------
 
-d <- data.frame(x = c("Sickness", "Subsistence", "Fight"),
-                y = c(1, 1, 1))
+d <- data.frame(x = c("Sickness", "Subsistence", "Tree Fall", "Fight"),
+                y = c(1, 1, 1, 1))
 
-d$x <- factor(d$x, levels = c("Sickness", "Subsistence", "Fight"))
+d$x <- factor(d$x, levels = c("Sickness", "Subsistence", "Tree Fall", "Fight"))
 
 b <- d %>% ggplot() +
   geom_bar(aes(x, fill = x), alpha = 0.8) +
   theme(legend.position = "bottom") +
   labs(fill = "") +
-  scale_fill_manual(values = c("#ebffeb", "#ebebeb", "#ffebeb"))+
+  scale_fill_manual(values = c("green3", "gray50", "gray80", "pink3"))+
   theme_classic(base_size = 20)
 
 ph_legend <- as_ggplot(get_legend(b + guides(fill = guide_legend(nrow = 1))))
 
-# #ebebeb
+# gray50
 
 figure <- ggarrange(readRDS("Sickness Plots/region_panel_plot.RDS") + rremove("ylab") + rremove("xlab") +
                       geom_bar(aes(x = covariate, y = exp_beta, fill = covariate), stat = "identity", width = 0.9) +
                       geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
                       geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-                      scale_fill_manual(values = c("#ebebeb", "#ebebeb", "#ebebeb", "#ffebeb", "#ebebeb")),
+                      scale_fill_manual(values = c("gray50", "gray50", "gray80", "pink3", "gray50")),
                     readRDS("Cut Self Plots/region_panel_plot.RDS") + rremove("ylab") + rremove("xlab") +
                       geom_bar(aes(x = covariate, y = exp_beta, fill = covariate), stat = "identity", width = 0.9) +
                       geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
                       geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-                      scale_fill_manual(values = c("#ebffeb", "#ebebeb", "#ebebeb", "#ffebeb", "#ebebeb")),
+                      scale_fill_manual(values = c("green3", "gray50", "gray80", "pink3", "gray50")),
                     readRDS("Animal Attack Combined Plots/sex_panel_plot.RDS") + rremove("ylab") + rremove("xlab") +
                       geom_bar(aes(x = covariate, y = exp_beta, fill = covariate), stat = "identity", width = 0.9) +
                       geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
                       geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-                      scale_fill_manual(values = c("#ebffeb", "#ebebeb", "#ebebeb", "#ffebeb", "#ebebeb")),
+                      scale_fill_manual(values = c("green3", "gray50", "gray80", "pink3", "gray50")),
                     readRDS("Tree Fall Plots/sex_panel_plot.RDS") + rremove("ylab") + rremove("xlab") +
                       geom_bar(aes(x = covariate, y = exp_beta, fill = covariate), stat = "identity", width = 0.9) +
                       geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
                       geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-                      scale_fill_manual(values = c("#ebffeb", "#ebebeb", "#ebebeb", "#ffebeb", "#ebebeb")),
+                      scale_fill_manual(values = c("green3", "gray50", "gray50", "pink3", "gray50")),
                     readRDS("Fight Plots/region_panel_plot_1.RDS") + rremove("ylab") + rremove("xlab") +
                       geom_bar(aes(x = covariate, y = exp_beta, fill = covariate), stat = "identity", width = 0.9) +
                       geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
                       geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-                      scale_fill_manual(values = c("#ebffeb", "#ebebeb", "#ebebeb", "#ebebeb", "#ebebeb")),
+                      scale_fill_manual(values = c("green3", "gray50", "gray50", "gray80", "gray50")),
                     readRDS("Canoe Capsize Plots/region_panel_plot.RDS") + rremove("ylab") + rremove("xlab") +
                       geom_bar(aes(x = covariate, y = exp_beta, fill = covariate), stat = "identity", width = 0.9) +
                       geom_errorbar(aes(x = covariate, ymin = X2.5.., ymax = X97.5..), width = 0.5, linewidth = 0.4) +
                       geom_segment(aes(x = 0, y = 1, xend = 6.6, yend = 1), lty = 2, col = "grey40", size = 0.4) +
-                      scale_fill_manual(values = c("#ebffeb", "#ebebeb", "#ebebeb", "#ebebeb", "#ffebeb")),
+                      scale_fill_manual(values = c("green3", "gray50", "gray50", "gray80", "pink3")),
                     "",
                     ph_legend,
                     "",
                     legend = "none",
                     heights = c(1, 1, 0.1))
-pdf(file = "Panel Plots/final_panel_plot3.pdf", height = 15, width = 15)
+pdf(file = "Panel Plots/final_panel_plot.pdf", height = 15, width = 15)
 annotate_figure(figure, left = textGrob("Hazard Ratio", rot = 90, vjust = 1, gp = gpar(cex = 1.7)),
-                bottom = grid::textGrob("Time-varying covariate: occurrence of event [*FDR significant]", gp = gpar(cex = 1.7)))
+                bottom = grid::textGrob("Time-varying covariate: occurrence of event", gp = gpar(cex = 1.7)))
 dev.off()
 
 
