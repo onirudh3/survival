@@ -50,7 +50,7 @@ df <- df %>%
   group_by(gender) %>%
   arrange(Freq)
 
-df$type <- fct_reorder(df$activity, df$rank_global, .desc = T)
+df$activity <- fct_reorder(df$activity, df$rank_global, .desc = T)
 
 pdf(file = "Cut Self Plots/mosaic_plot_cut_self.pdf", height = 6, width = 8)
 df %>% ggplot() +
