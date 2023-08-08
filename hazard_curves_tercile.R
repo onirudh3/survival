@@ -158,7 +158,7 @@ figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk_b
                     readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk_by_tercile.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"))
 
 pdf(file = "Panel Plots/hazard_by_tercile.pdf", height = 9, width = 15)
-annotate_figure(figure, left = textGrob("Percentage Not Experienced Risk", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
+annotate_figure(figure, left = textGrob("Hazard", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
                 bottom = grid::textGrob("Age (Years)", gp = gpar(cex = 1.3)))
 dev.off()
 
@@ -321,7 +321,7 @@ figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk_b
                     readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk_by_tercile_male.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"))
 
 pdf(file = "Panel Plots/hazard_by_tercile_male.pdf", height = 9, width = 15)
-annotate_figure(figure, left = textGrob("Percentage Not Experienced Risk", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
+annotate_figure(figure, left = textGrob("Hazard", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
                 bottom = grid::textGrob("Age (Years)", gp = gpar(cex = 1.3)))
 dev.off()
 
@@ -493,6 +493,6 @@ figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk_b
                     readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk_by_tercile_female.RDS"))
 
 pdf(file = "Panel Plots/hazard_by_tercile_female.pdf", height = 9, width = 15)
-annotate_figure(figure, left = textGrob("Percentage Not Experienced Risk", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
+annotate_figure(figure, left = textGrob("Hazard", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
                 bottom = grid::textGrob("Age (Years)", gp = gpar(cex = 1.3)))
 dev.off()

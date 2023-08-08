@@ -48,9 +48,9 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
 df <- left_join(df, dg)
-df <- df %>% relocate(tercile, .after = exit)
+df <- df %>% relocate(pre_median, tercile, .after = exit)
 
 write.csv(df, "tree_fall_time_to_first_risk_long_interval.csv", row.names = F)
 
@@ -92,9 +92,9 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
 df <- left_join(df, dg)
-df <- df %>% relocate(tercile, .after = exit)
+df <- df %>% relocate(pre_median, tercile, .after = exit)
 
 write.csv(df, "snake_ray_bite_time_to_first_risk_long_interval.csv",
           row.names = F)
@@ -137,9 +137,9 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
 df <- left_join(df, dg)
-df <- df %>% relocate(tercile, .after = exit)
+df <- df %>% relocate(pre_median, tercile, .after = exit)
 
 write.csv(df, "sickness_time_to_first_risk_long_interval.csv", row.names = F)
 
@@ -181,9 +181,9 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
 df <- left_join(df, dg)
-df <- df %>% relocate(tercile, .after = exit)
+df <- df %>% relocate(pre_median, tercile, .after = exit)
 
 write.csv(df, "fought_time_to_first_risk_long_interval.csv", row.names = F)
 
@@ -225,9 +225,9 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
 df <- left_join(df, dg)
-df <- df %>% relocate(tercile, .after = exit)
+df <- df %>% relocate(pre_median, tercile, .after = exit)
 
 write.csv(df, "animal_attack_time_to_first_risk_long_interval.csv", row.names = F)
 
@@ -269,9 +269,9 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
 df <- left_join(df, dg)
-df <- df %>% relocate(tercile, .after = exit)
+df <- df %>% relocate(pre_median, tercile, .after = exit)
 
 write.csv(df, "canoe_capsize_time_to_first_risk_long_interval.csv", row.names = F)
 
@@ -313,9 +313,9 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
 df <- left_join(df, dg)
-df <- df %>% relocate(tercile, .after = exit)
+df <- df %>% relocate(pre_median, tercile, .after = exit)
 
 write.csv(df, "cut_self_time_to_first_risk_long_interval.csv", row.names = F)
 
@@ -357,9 +357,9 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
 df <- left_join(df, dg)
-df <- df %>% relocate(tercile, .after = exit)
+df <- df %>% relocate(pre_median, tercile, .after = exit)
 
 write.csv(df, "Animal_Attack_combined_time_to_first_risk_long_interval.csv", row.names = F)
 
