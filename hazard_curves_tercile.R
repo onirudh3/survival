@@ -1,7 +1,7 @@
 
 # Libraries ---------------------------------------------------------------
 
-library(ggplot2)
+library(tidyverse)
 library(survival)
 library(bshazard)
 library(ggfortify)
@@ -27,8 +27,7 @@ p <- ggplot(hazards, aes(x = time, y = hazard, group = tercile)) + geom_line(aes
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Sickness") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-  scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5), legend.position = c(0.2, 0.9), legend.background = element_blank()) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
   scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, NA))
@@ -47,8 +46,7 @@ p <- ggplot(hazards, aes(x = time, y = hazard, group = tercile)) + geom_line(aes
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Cut Self") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-  scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5), legend.position = c(0.2, 0.9), legend.background = element_blank()) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
   scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, NA))
@@ -68,7 +66,6 @@ pdf(file = "Animal Attack Combined Plots/hazard_function_time_to_first_risk_by_t
 #   theme_classic(base_size = 14) +
 #   ggtitle("Animal Attack") +
 #   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-#   scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
 #   guides(fill = F) +
 #   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
 #   scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, NA))
@@ -97,7 +94,6 @@ pdf(file = "Tree Fall Plots/hazard_function_time_to_first_risk_by_tercile.pdf", 
 #   theme_classic(base_size = 14) +
 #   ggtitle("Tree Fall") +
 #   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-#   scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
 #   guides(fill = F) +
 #   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
 #   scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, NA))
@@ -125,8 +121,7 @@ p <- ggplot(hazards, aes(x = time, y = hazard, group = tercile)) + geom_line(aes
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Fight") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-  scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5), legend.position = c(0.2, 0.9), legend.background = element_blank()) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
   scale_y_continuous(breaks = seq(0, 100, 0.1), expand = c(0, 0), limits = c(0, NA))
@@ -145,8 +140,7 @@ p <- ggplot(hazards, aes(x = time, y = hazard, group = tercile)) + geom_line(aes
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Canoe Capsize") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-  scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5), legend.position = c(0.2, 0.9), legend.background = element_blank()) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
   scale_y_continuous(breaks = seq(0, 100, 0.05), expand = c(0, 0), limits = c(0, NA))
@@ -161,9 +155,7 @@ figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk_b
                     readRDS("Animal Attack Combined Plots/hazard_function_time_to_first_risk_by_tercile.RDS"),
                     readRDS("Tree Fall Plots/hazard_function_time_to_first_risk_by_tercile.RDS"),
                     readRDS("Fight Plots/hazard_function_time_to_first_risk_by_tercile.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.05, fill = "red") + rremove("ylab") + rremove("xlab"),
-                    readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk_by_tercile.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"),
-                    common.legend = T,
-                    legend = "bottom")
+                    readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk_by_tercile.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"))
 
 pdf(file = "Panel Plots/hazard_by_tercile.pdf", height = 9, width = 15)
 annotate_figure(figure, left = textGrob("Percentage Not Experienced Risk", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
@@ -175,9 +167,6 @@ dev.off()
 # Sickness
 df <- read.csv("sickness_time_to_first_risk_long_interval.csv")
 df <- subset(df, male == 1)
-as.data.frame.bshazard <- function(x, ...) {
-  with(x, data.frame(time, hazard, lower.ci, upper.ci))
-}
 hazards <- group_by(df, tercile) %>%
   do(as.data.frame(bshazard(Surv(enter, exit, event) ~ 1, data = ., verbose = FALSE))) %>%
   ungroup()
@@ -187,8 +176,7 @@ p <- ggplot(hazards, aes(x = time, y = hazard, group = tercile)) + geom_line(aes
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Sickness") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-  scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5), legend.position = c(0.2, 0.9), legend.background = element_blank()) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
   scale_y_continuous(breaks = seq(0, 100, 0.1), expand = c(0, 0), limits = c(0, NA))
@@ -208,11 +196,10 @@ p <- ggplot(hazards, aes(x = time, y = hazard, group = tercile)) + geom_line(aes
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Cut Self") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-  scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5), legend.position = c(0.2, 0.9), legend.background = element_blank()) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
-  scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, NA))
+  scale_y_continuous(breaks = seq(0, 100, 0.05), expand = c(0, 0), limits = c(0, NA))
 p
 dev.off()
 saveRDS(p, file = "Cut Self Plots/hazard_function_time_to_first_risk_by_tercile_male.RDS")
@@ -230,7 +217,6 @@ pdf(file = "Animal Attack Combined Plots/hazard_function_time_to_first_risk_by_t
 #   theme_classic(base_size = 14) +
 #   ggtitle("Animal Attack") +
 #   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-#   scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
 #   guides(fill = F) +
 #   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
 #   scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, NA))
@@ -260,7 +246,6 @@ pdf(file = "Tree Fall Plots/hazard_function_time_to_first_risk_by_tercile_male.p
 #   theme_classic(base_size = 14) +
 #   ggtitle("Tree Fall") +
 #   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-#   scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
 #   guides(fill = F) +
 #   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
 #   scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, NA))
@@ -290,7 +275,6 @@ pdf(file = "Fight Plots/hazard_function_time_to_first_risk_by_tercile_male.pdf",
 #   theme_classic(base_size = 14) +
 #   ggtitle("Fight") +
 #   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-#   scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
 #   guides(fill = F) +
 #   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
 #   scale_y_continuous(breaks = seq(0, 100, 0.1), expand = c(0, 0), limits = c(0, NA))
@@ -319,8 +303,7 @@ p <- ggplot(hazards, aes(x = time, y = hazard, group = tercile)) + geom_line(aes
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Canoe Capsize") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-  scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5), legend.position = c(0.2, 0.9), legend.background = element_blank()) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
   scale_y_continuous(breaks = seq(0, 100, 0.05), expand = c(0, 0), limits = c(0, NA))
@@ -335,9 +318,7 @@ figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk_b
                     readRDS("Animal Attack Combined Plots/hazard_function_time_to_first_risk_by_tercile_male.RDS"),
                     readRDS("Tree Fall Plots/hazard_function_time_to_first_risk_by_tercile_male.RDS"),
                     readRDS("Fight Plots/hazard_function_time_to_first_risk_by_tercile_male.RDS"),
-                    readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk_by_tercile_male.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"),
-                    common.legend = T,
-                    legend = "bottom")
+                    readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk_by_tercile_male.RDS") + annotate("rect", xmin = 0, xmax = 75, ymin = 0, ymax = Inf, alpha = 0.1, fill = "black") + rremove("ylab") + rremove("xlab"))
 
 pdf(file = "Panel Plots/hazard_by_tercile_male.pdf", height = 9, width = 15)
 annotate_figure(figure, left = textGrob("Percentage Not Experienced Risk", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
@@ -349,9 +330,6 @@ dev.off()
 # Sickness
 df <- read.csv("sickness_time_to_first_risk_long_interval.csv")
 df <- subset(df, male == 0)
-as.data.frame.bshazard <- function(x, ...) {
-  with(x, data.frame(time, hazard, lower.ci, upper.ci))
-}
 hazards <- group_by(df, tercile) %>%
   do(as.data.frame(bshazard(Surv(enter, exit, event) ~ 1, data = ., verbose = FALSE))) %>%
   ungroup()
@@ -361,8 +339,7 @@ p <- ggplot(hazards, aes(x = time, y = hazard, group = tercile)) + geom_line(aes
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Sickness") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-  scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5), legend.position = c(0.2, 0.9), legend.background = element_blank()) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
   scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, NA))
@@ -382,8 +359,7 @@ p <- ggplot(hazards, aes(x = time, y = hazard, group = tercile)) + geom_line(aes
   labs(color = "", x = "Age [years]", y = "Hazard") +
   theme_classic(base_size = 14) +
   ggtitle("Cut Self") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-  scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
+  theme(plot.title = element_text(size = 30, hjust = 0.5), legend.position = c(0.2, 0.9), legend.background = element_blank()) +
   guides(fill = F) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
   scale_y_continuous(breaks = seq(0, 100, 0.05), expand = c(0, 0), limits = c(0, NA))
@@ -404,7 +380,6 @@ pdf(file = "Animal Attack Combined Plots/hazard_function_time_to_first_risk_by_t
 #   theme_classic(base_size = 14) +
 #   ggtitle("Animal Attack") +
 #   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-#   scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
 #   guides(fill = F) +
 #   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
 #   scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, NA))
@@ -434,7 +409,6 @@ pdf(file = "Tree Fall Plots/hazard_function_time_to_first_risk_by_tercile_female
 #   theme_classic(base_size = 14) +
 #   ggtitle("Tree Fall") +
 #   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-#   scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
 #   guides(fill = F) +
 #   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
 #   scale_y_continuous(breaks = seq(0, 100, 0.02), expand = c(0, 0), limits = c(0, NA))
@@ -464,7 +438,6 @@ pdf(file = "Fight Plots/hazard_function_time_to_first_risk_by_tercile_female.pdf
 #   theme_classic(base_size = 14) +
 #   ggtitle("Fight") +
 #   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-#   scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
 #   guides(fill = F) +
 #   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
 #   scale_y_continuous(breaks = seq(0, 100, 0.1), expand = c(0, 0), limits = c(0, NA))
@@ -494,7 +467,6 @@ pdf(file = "Canoe Capsize Plots/hazard_function_time_to_first_risk_by_tercile_fe
 #   theme_classic(base_size = 14) +
 #   ggtitle("Canoe Capsize") +
 #   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-#   scale_color_hue(labels = c("1st Tercile", "2nd Tercile", "3rd Tercile")) +
 #   guides(fill = F) +
 #   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 75)) +
 #   scale_y_continuous(breaks = seq(0, 100, 0.05), expand = c(0, 0), limits = c(0, NA))
@@ -518,9 +490,7 @@ figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk_b
                     readRDS("Animal Attack Combined Plots/hazard_function_time_to_first_risk_by_tercile_female.RDS"),
                     readRDS("Tree Fall Plots/hazard_function_time_to_first_risk_by_tercile_female.RDS"),
                     readRDS("Fight Plots/hazard_function_time_to_first_risk_by_tercile_female.RDS"),
-                    readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk_by_tercile_female.RDS"),
-                    common.legend = T,
-                    legend = "bottom")
+                    readRDS("Canoe Capsize Plots/hazard_function_time_to_first_risk_by_tercile_female.RDS"))
 
 pdf(file = "Panel Plots/hazard_by_tercile_female.pdf", height = 9, width = 15)
 annotate_figure(figure, left = textGrob("Percentage Not Experienced Risk", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
