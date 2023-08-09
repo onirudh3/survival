@@ -905,18 +905,18 @@ raw <- dplyr::select(raw, c(7, sickness.what:sickness.cause2))
 
 # Arrange the instances in ascending order
 raw <- transform(raw,
-                 sickness.what = ifelse(sickness.age > sickness.age1, sickness.what1, sickness.what),
-                 sickness.what1 = ifelse(sickness.age > sickness.age1, sickness.what, sickness.what1),
-                 days.disabled.sickness = ifelse(sickness.age > sickness.age1, days.disabled.sickness1, days.disabled.sickness),
-                 days.disabled.sickness1 = ifelse(sickness.age > sickness.age1, days.disabled.sickness, days.disabled.sickness1),
-                 almost.died.sickness = ifelse(sickness.age > sickness.age1, almost.died.sickness1, almost.died.sickness),
-                 almost.died.sickness1 = ifelse(sickness.age > sickness.age1, almost.died.sickness, almost.died.sickness1),
-                 how.cured.sickness = ifelse(sickness.age > sickness.age1, how.cured.sickness1, how.cured.sickness),
-                 how.cured.sickness1 = ifelse(sickness.age > sickness.age1, how.cured.sickness, how.cured.sickness1),
-                 who.helped.sickness = ifelse(sickness.age > sickness.age1, who.helped.sickness1, who.helped.sickness),
-                 who.helped.sickness1 = ifelse(sickness.age > sickness.age1, who.helped.sickness, who.helped.sickness1),
-                 sickness.cause = ifelse(sickness.age > sickness.age1, sickness.cause1, sickness.cause),
-                 sickness.cause1 = ifelse(sickness.age > sickness.age1, sickness.cause, sickness.cause1))
+                 sickness.what = case_when(sickness.age > sickness.age1 ~ sickness.what1, T ~ sickness.what),
+                 sickness.what1 = case_when(sickness.age > sickness.age1 ~ sickness.what, T ~ sickness.what1),
+                 days.disabled.sickness = case_when(sickness.age > sickness.age1 ~ days.disabled.sickness1, T ~ days.disabled.sickness),
+                 days.disabled.sickness1 = case_when(sickness.age > sickness.age1 ~ days.disabled.sickness, T ~ days.disabled.sickness1),
+                 almost.died.sickness = case_when(sickness.age > sickness.age1 ~ almost.died.sickness1, T ~ almost.died.sickness),
+                 almost.died.sickness1 = case_when(sickness.age > sickness.age1 ~ almost.died.sickness, T ~ almost.died.sickness1),
+                 how.cured.sickness = case_when(sickness.age > sickness.age1 ~ how.cured.sickness1, T ~ how.cured.sickness),
+                 how.cured.sickness1 = case_when(sickness.age > sickness.age1 ~ how.cured.sickness, T ~ how.cured.sickness1),
+                 who.helped.sickness = case_when(sickness.age > sickness.age1 ~ who.helped.sickness1, T ~ who.helped.sickness),
+                 who.helped.sickness1 = case_when(sickness.age > sickness.age1 ~ who.helped.sickness, T ~ who.helped.sickness1),
+                 sickness.cause = case_when(sickness.age > sickness.age1 ~ sickness.cause1, T ~ sickness.cause),
+                 sickness.cause1 = case_when(sickness.age > sickness.age1 ~ sickness.cause, T ~ sickness.cause1))
 
 raw <- subset(raw, select = -c(sickness.age, sickness.age1, sickness.age2))
 dx <- left_join(df, raw)
@@ -2738,6 +2738,8 @@ dx <- subset(dx, select = -c(TIPO1, TIPO2, TIPO3, TIPO4, TIPO5, TIPO6))
 df <- left_join(df, dx)
 df <- relocate(df, c(tree_fall_where_hurt_1:tree_fall_still_bothers_2), .after = n.tree.fall)
 df <- subset(df, select = -c(index, cum))
+
+
 ## Canoe Capsize ----
 raw <- read.csv("raw_data_no_duplicates.csv")
 raw <- dplyr::select(raw, c(7, TIPO1:other.serious.accident.age5))

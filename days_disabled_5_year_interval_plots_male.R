@@ -433,4 +433,4 @@ df %>%
   ylab("Proportion of Days Disabled/Injured") +
   ggtitle("All Risks (Male)") +
   theme(plot.title = element_text(size = 50, hjust = 0.5),
-        legend.position = c(0.75, 0.7))
+        legend.position = c(0.7, 0.7))
