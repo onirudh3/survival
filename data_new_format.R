@@ -5640,7 +5640,7 @@ df <- df %>% mutate(n.Animal_Attack =
 
 df$what_Animal_Attacked_you_1 <- df$what_bit_you_snake_ray_1
 df <- df %>% mutate(what_Animal_Attacked_you_1 =
-                      case_when(what_Animal_Attacked_you_1 == 0 ~
+                      case_when(is.na(what_Animal_Attacked_you_1) ~
                                   what_attacked_you, T ~
                                   what_Animal_Attacked_you_1))
 df$what_Animal_Attacked_you_2 <- df$what_bit_you_snake_ray_2
@@ -5651,7 +5651,7 @@ df$what_Animal_Attacked_you_3 <- df$what_bit_you_snake_ray_3
 
 df$where_Animal_Attacked_body_1 <- df$where_bit_body_snake_ray_1
 df <- df %>% mutate(where_Animal_Attacked_body_1 =
-                      case_when(where_Animal_Attacked_body_1 == 0 ~
+                      case_when(is.na(where_Animal_Attacked_body_1) ~
                                   where_attacked_body, T ~
                                   where_Animal_Attacked_body_1))
 df$where_Animal_Attacked_body_2 <- df$where_bit_body_snake_ray_2
@@ -5660,7 +5660,7 @@ df$where_Animal_Attacked_body_3 <- df$where_bit_body_snake_ray_3
 
 df$activity_when_Animal_Attacked_1 <- df$activity_when_bit_snake_ray_1
 df <- df %>% mutate(activity_when_Animal_Attacked_1 =
-                      case_when(activity_when_Animal_Attacked_1 == 0 ~
+                      case_when(is.na(activity_when_Animal_Attacked_1) ~
                                   activity_when_attacked, T ~
                                   activity_when_Animal_Attacked_1))
 df$activity_when_Animal_Attacked_2 <- df$activity_when_bit_snake_ray_2
@@ -5669,7 +5669,7 @@ df$activity_when_Animal_Attacked_3 <- df$activity_when_bit_snake_ray_3
 
 df$days_disabled_Animal_Attacked_1 <- df$days_disabled_snake_ray_1
 df <- df %>% mutate(days_disabled_Animal_Attacked_1 =
-                      case_when(days_disabled_Animal_Attacked_1 == 0 ~
+                      case_when(is.na(days_disabled_Animal_Attacked_1) ~
                                   as.numeric(days_disabled_attack), T ~
                                   days_disabled_Animal_Attacked_1))
 df$days_disabled_Animal_Attacked_2 <- df$days_disabled_snake_ray_2
@@ -5678,7 +5678,7 @@ df$days_disabled_Animal_Attacked_3 <- df$days_disabled_snake_ray_3
 
 df$almost_died_Animal_Attacked_1 <- df$almost_died_snake_ray_1
 df <- df %>% mutate(almost_died_Animal_Attacked_1 =
-                      case_when(almost_died_Animal_Attacked_1 == 0 ~
+                      case_when(is.na(almost_died_Animal_Attacked_1) ~
                                   almost_died_attack, T ~
                                   almost_died_Animal_Attacked_1))
 df$almost_died_Animal_Attacked_2 <- df$almost_died_snake_ray_2
@@ -5687,7 +5687,7 @@ df$almost_died_Animal_Attacked_3 <- df$almost_died_snake_ray_3
 
 df$still_bothers_Animal_Attacked_1 <- df$still_bothers_snake_ray_1
 df <- df %>% mutate(still_bothers_Animal_Attacked_1 =
-                      case_when(still_bothers_Animal_Attacked_1 == 0 ~
+                      case_when(is.na(still_bothers_Animal_Attacked_1) ~
                                   still_bothers_attack, T ~
                                   still_bothers_Animal_Attacked_1))
 df$still_bothers_Animal_Attacked_2 <- df$still_bothers_snake_ray_2
