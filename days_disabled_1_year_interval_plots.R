@@ -368,6 +368,7 @@ df %>%
 
  # 2. Stacked proportion plot one year intervals ---------------------------
 
+pdf(file = "Days Disabled Plots/1_year_interval_proportion.pdf", width = 13)
 df %>%
   ggplot(aes(x = exit.char, y = days_disabled_risk / n_prop, group = risk, fill = risk)) +
   geom_area(position = 'stack') +
@@ -379,6 +380,7 @@ df %>%
   xlab("Age of Occurrence") +
   guides(x =  guide_axis(angle = 45)) +
   ylab("Proportion of Days Disabled/Injured") +
-  ggtitle("ALL RISKS") +
+  # ggtitle("ALL RISKS") +
   theme(plot.title = element_text(size = 50, hjust = 0.5),
         legend.position = c(0.75, 0.7))
+dev.off()

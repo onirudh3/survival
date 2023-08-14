@@ -5693,6 +5693,20 @@ df <- df %>% mutate(still_bothers_Animal_Attacked_1 =
 df$still_bothers_Animal_Attacked_2 <- df$still_bothers_snake_ray_2
 df$still_bothers_Animal_Attacked_3 <- df$still_bothers_snake_ray_3
 
+# Read raw data for adding calendar year ----------------------------------
+raw_df <- subset(read.csv("raw_data_no_duplicates.csv"), select = c(pid, YearBorn))
+
+# Create birth year median
+raw_df$birth_pre_median <- ifelse(raw_df$YearBorn < median(raw_df$YearBorn), sprintf("Pre %d", median(raw_df$YearBorn)), sprintf("Post %d", median(raw_df$YearBorn)))
+
+# Birth year tercile
+raw_df$birth_tercile <- fabricatr::split_quantile(raw_df$YearBorn, 3)
+raw_df <- raw_df %>%
+  group_by(birth_tercile) %>%
+  mutate(birth_tercile = sprintf("Period %d-%d", min(YearBorn), max(YearBorn)), .after = birth_pre_median)
+
+df <- left_join(df, raw_df)
+
 # Export as csv -----------------------------------------------------------
 
 write.csv(df, "data_new_format.csv", row.names = F)

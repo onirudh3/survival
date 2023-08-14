@@ -6,7 +6,14 @@ library(tidyverse)
 # Read raw data for adding calendar year ----
 raw_df <- subset(read.csv("raw_data_no_duplicates.csv"), select = c(pid, YearBorn))
 
+# Create birth year median
+raw_df$birth_pre_median <- ifelse(raw_df$YearBorn < median(raw_df$YearBorn), sprintf("Pre %d", median(raw_df$YearBorn)), sprintf("Post %d", median(raw_df$YearBorn)))
 
+# Birth year tercile
+raw_df$birth_tercile <- fabricatr::split_quantile(raw_df$YearBorn, 3)
+raw_df <- raw_df %>%
+  group_by(birth_tercile) %>%
+  mutate(birth_tercile = sprintf("Period %d-%d", min(YearBorn), max(YearBorn)), .after = birth_pre_median)
 
 # Time to first risk ------------------------------------------------------
 
@@ -48,7 +55,7 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile, birth_pre_median, birth_tercile))
 df <- left_join(df, dg)
 df <- df %>% relocate(pre_median, tercile, .after = exit)
 
@@ -92,7 +99,7 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile, birth_pre_median, birth_tercile))
 df <- left_join(df, dg)
 df <- df %>% relocate(pre_median, tercile, .after = exit)
 
@@ -137,7 +144,7 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile, birth_pre_median, birth_tercile))
 df <- left_join(df, dg)
 df <- df %>% relocate(pre_median, tercile, .after = exit)
 
@@ -181,7 +188,7 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile, birth_pre_median, birth_tercile))
 df <- left_join(df, dg)
 df <- df %>% relocate(pre_median, tercile, .after = exit)
 
@@ -225,7 +232,7 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile, birth_pre_median, birth_tercile))
 df <- left_join(df, dg)
 df <- df %>% relocate(pre_median, tercile, .after = exit)
 
@@ -269,7 +276,7 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile, birth_pre_median, birth_tercile))
 df <- left_join(df, dg)
 df <- df %>% relocate(pre_median, tercile, .after = exit)
 
@@ -313,7 +320,7 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile, birth_pre_median, birth_tercile))
 df <- left_join(df, dg)
 df <- df %>% relocate(pre_median, tercile, .after = exit)
 
@@ -357,7 +364,7 @@ df <- subset(df_long, enter == 0)
 df <- df %>%
   mutate(exit = case_when(age != exit ~ ceiling(exit), T ~ exit))
 
-dg <- subset(dg, select = c(pid, exit, pre_median, tercile))
+dg <- subset(dg, select = c(pid, exit, pre_median, tercile, birth_pre_median, birth_tercile))
 df <- left_join(df, dg)
 df <- df %>% relocate(pre_median, tercile, .after = exit)
 

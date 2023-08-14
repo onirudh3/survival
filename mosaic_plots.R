@@ -218,7 +218,7 @@ p <- df %>% ggplot() +
   guides(x = F) +
   theme_classic(base_size = 25) +
   theme(axis.line.x = element_line(color = "white"), axis.line.y = element_line(color = "white"),
-        axis.ticks = element_blank()) +
+        axis.ticks = element_blank(), axis.text.y=element_text(colour="black")) +
   ggtitle("Sickness") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
@@ -262,7 +262,7 @@ p <- df %>% ggplot() +
   guides(x = F) +
   theme_classic(base_size = 25) +
   theme(axis.line.x = element_line(color = "white"), axis.line.y = element_line(color = "white"),
-        axis.ticks = element_blank()) +
+        axis.ticks = element_blank(), axis.text.y=element_text(colour="black")) +
   ggtitle("Cut Self") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_productlist(labels = c("",
@@ -276,9 +276,9 @@ p <- df %>% ggplot() +
                                  "",
                                  "",
                                  "",
-                                 "Making Tools",
+                                 "Making tools",
                                  "Cooking",
-                                 "Clearing Field"))
+                                 "Clearing field"))
 p
 dev.off()
 saveRDS(p, file = "Cut Self Plots/mosaic_plot_cut_self_top_3.RDS")
@@ -308,7 +308,7 @@ p <- df %>% ggplot() +
   guides(x = F) +
   theme_classic(base_size = 25) +
   theme(axis.line.x = element_line(color = "white"), axis.line.y = element_line(color = "white"),
-        axis.ticks = element_blank()) +
+        axis.ticks = element_blank(), axis.text.y=element_text(colour="black")) +
   ggtitle("Animal Attack") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_productlist(labels = c("",
@@ -353,9 +353,12 @@ p <- df %>% ggplot() +
   guides(x = F) +
   theme_classic(base_size = 25) +
   theme(axis.line.x = element_line(color = "white"), axis.line.y = element_line(color = "white"),
-        axis.ticks = element_blank()) +
+        axis.ticks = element_blank(), axis.text.y=element_text(colour="black")) +
   ggtitle("Tree Fall") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5))
+  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  scale_y_productlist(labels = c("Hunting",
+                                 "Foraging/collecting honey",
+                                 "Playing"))
 p
 dev.off()
 saveRDS(p, file = "Tree Fall Plots/mosaic_plot_tree_fall_top_3.RDS")
@@ -385,14 +388,14 @@ p <- df %>% ggplot() +
   guides(x = F) +
   theme_classic(base_size = 25) +
   theme(axis.line.x = element_line(color = "white"), axis.line.y = element_line(color = "white"),
-        axis.ticks = element_blank()) +
+        axis.ticks = element_blank(), axis.text.y=element_text(colour="black")) +
   ggtitle("Fight") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_productlist(labels = c("",
                                  "",
                                  "",
-                                 "Resource Competition",
-                                 "Partner Competition",
+                                 "Resource competition",
+                                 "Partner competition",
                                  "Drunk"))
 p
 dev.off()
@@ -423,13 +426,13 @@ p <- df %>% ggplot() +
   guides(x = F) +
   theme_classic(base_size = 25) +
   theme(axis.line.x = element_line(color = "white"), axis.line.y = element_line(color = "white"),
-        axis.ticks = element_blank()) +
+        axis.ticks = element_blank(), axis.text.y=element_text(colour="black")) +
   ggtitle("Canoe Capsize") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_productlist(labels = c("",
-                                 "Crossing River with Platanos",
+                                 "Crossing river with platanos",
                                  "Fishing",
-                                 "Crossing River"))
+                                 "Crossing river"))
 p
 dev.off()
 saveRDS(p, file = "Canoe Capsize Plots/mosaic_plot_canoe_capsize_top_3.RDS")
@@ -438,7 +441,7 @@ saveRDS(p, file = "Canoe Capsize Plots/mosaic_plot_canoe_capsize_top_3.RDS")
 
 # Panel plot --------------------------------------------------------------
 
-figure <- ggarrange(readRDS("Sickness Plots/mosaic_plot_sickness_top_3.RDS") + rremove("ylab") + rremove("xlab"),
+figure <- ggarrange(readRDS("Sickness Plots/mosaic_plot_sickness_top_3.RDS") + rremove("ylab") + rremove("xlab") + scale_fill_discrete(labels = c("Female", "Male")),
                     readRDS("Cut Self Plots/mosaic_plot_cut_self_top_3.RDS") + rremove("ylab") + rremove("xlab"),
                     readRDS("Animal Attack Combined Plots/mosaic_plot_Animal_Attack_top_3.RDS") + rremove("ylab") + rremove("xlab"),
                     readRDS("Tree Fall Plots/mosaic_plot_tree_fall_top_3.RDS") + rremove("ylab") + rremove("xlab"),
@@ -447,5 +450,6 @@ figure <- ggarrange(readRDS("Sickness Plots/mosaic_plot_sickness_top_3.RDS") + r
                     common.legend = T,
                     legend = "bottom")
 pdf(file = "Panel Plots/mosaic_panel_plot.pdf", height = 15, width = 20)
-annotate_figure(figure, bottom = grid::textGrob("Top 3 Causes/Activities", gp = gpar(cex = 1.7)))
+figure
+# annotate_figure(figure, bottom = grid::textGrob("Top 3 Causes/Activities", gp = gpar(cex = 1.7)))
 dev.off()
