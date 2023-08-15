@@ -48,7 +48,7 @@ dev.off()
 saveRDS(p, file = "Cut Self Plots/survival_function_time_to_first_risk_by_median.RDS")
 
 # Animal Attack
-df <- read.csv("Animal_Attack_time_to_first_risk_long_interval.csv")
+df <- read.csv("Animal_Attack_combined_time_to_first_risk_long_interval.csv")
 fit <- survfit(Surv(exit, event) ~ pre_median, data = df, conf.type = "log-log")
 pdf(file = "Animal Attack Combined Plots/survival_function_time_to_first_risk_by_median.pdf", height = 5)
 p <- autoplot(fit) +
@@ -166,7 +166,7 @@ dev.off()
 saveRDS(p, file = "Cut Self Plots/survival_function_time_to_first_risk_by_median_male.RDS")
 
 # Animal Attack
-df <- read.csv("Animal_Attack_time_to_first_risk_long_interval.csv")
+df <- read.csv("Animal_Attack_combined_time_to_first_risk_long_interval.csv")
 fit <- survfit(Surv(exit, event) ~ pre_median, data = subset(df, male == 1), conf.type = "log-log")
 pdf(file = "Animal Attack Combined Plots/survival_function_time_to_first_risk_by_median_male.pdf", height = 5)
 p <- autoplot(fit) +
@@ -284,7 +284,7 @@ dev.off()
 saveRDS(p, file = "Cut Self Plots/survival_function_time_to_first_risk_by_median_female.RDS")
 
 # Animal Attack
-df <- read.csv("Animal_Attack_time_to_first_risk_long_interval.csv")
+df <- read.csv("Animal_Attack_combined_time_to_first_risk_long_interval.csv")
 fit <- survfit(Surv(exit, event) ~ pre_median, data = subset(df, male == 0), conf.type = "log-log")
 pdf(file = "Animal Attack Combined Plots/survival_function_time_to_first_risk_by_median_female.pdf", height = 5)
 p <- autoplot(fit) +

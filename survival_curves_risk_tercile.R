@@ -48,7 +48,7 @@ dev.off()
 saveRDS(p, file = "Cut Self Plots/survival_function_time_to_first_risk_by_tercile.RDS")
 
 # Animal Attack
-df <- read.csv("Animal_Attack_time_to_first_risk_long_interval.csv")
+df <- read.csv("Animal_Attack_combined_time_to_first_risk_long_interval.csv")
 fit <- survfit(Surv(exit, event) ~ tercile, data = df, conf.type = "log-log")
 pdf(file = "Animal Attack Combined Plots/survival_function_time_to_first_risk_by_tercile.pdf", height = 5)
 p <- autoplot(fit) +
@@ -167,7 +167,7 @@ dev.off()
 saveRDS(p, file = "Cut Self Plots/survival_function_time_to_first_risk_by_tercile_male.RDS")
 
 # Animal Attack
-df <- read.csv("Animal_Attack_time_to_first_risk_long_interval.csv")
+df <- read.csv("Animal_Attack_combined_time_to_first_risk_long_interval.csv")
 fit <- survfit(Surv(exit, event) ~ tercile, data = subset(df, male == 1), conf.type = "log-log")
 pdf(file = "Animal Attack Combined Plots/survival_function_time_to_first_risk_by_tercile_male.pdf", height = 5)
 p <- autoplot(fit) +
@@ -286,7 +286,7 @@ dev.off()
 saveRDS(p, file = "Cut Self Plots/survival_function_time_to_first_risk_by_tercile_female.RDS")
 
 # Animal Attack
-df <- read.csv("Animal_Attack_time_to_first_risk_long_interval.csv")
+df <- read.csv("Animal_Attack_combined_time_to_first_risk_long_interval.csv")
 fit <- survfit(Surv(exit, event) ~ tercile, data = subset(df, male == 0), conf.type = "log-log")
 pdf(file = "Animal Attack Combined Plots/survival_function_time_to_first_risk_by_tercile_female.pdf", height = 5)
 p <- autoplot(fit) +

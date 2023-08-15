@@ -362,6 +362,63 @@ rownames(df_canoe_capsize) <- c("Canoe Capsize")
 
 
 
+
+# No. of occurrences entire data ------------------------------------------
+
+dc <- read.csv("data_new_format.csv")
+
+dx <- dc %>%
+  group_by(pid) %>%
+  summarise(sum_n_sickness = sum(n.sickness),
+            sum_n_cut_self = sum(n.cut.self),
+            sum_n_Animal_Attack = sum(n.Animal_Attack),
+            sum_n_tree_fall = sum(n.tree.fall),
+            sum_n_fight = sum(n.fought),
+            sum_n_canoe_capsize = sum(n.canoe.capsize))
+
+df1 <- dx %>%
+  summarise(avg_n_risk_individual = mean(sum_n_sickness),
+            min_n_risk_individual = min(sum_n_sickness),
+            max_n_risk_individual = max(sum_n_sickness))
+
+df_sickness <- cbind(df_sickness, df1)
+
+df2 <- dx %>%
+  summarise(avg_n_risk_individual = mean(sum_n_cut_self),
+            min_n_risk_individual = min(sum_n_cut_self),
+            max_n_risk_individual = max(sum_n_cut_self))
+
+df_cut_self <- cbind(df_cut_self, df2)
+
+df3 <- dx %>%
+  summarise(avg_n_risk_individual = mean(sum_n_Animal_Attack),
+            min_n_risk_individual = min(sum_n_Animal_Attack),
+            max_n_risk_individual = max(sum_n_Animal_Attack))
+
+df_Animal_Attack <- cbind(df_Animal_Attack, df3)
+
+df4 <- dx %>%
+  summarise(avg_n_risk_individual = mean(sum_n_tree_fall),
+            min_n_risk_individual = min(sum_n_tree_fall),
+            max_n_risk_individual = max(sum_n_tree_fall))
+
+df_tree_fall <- cbind(df_tree_fall, df4)
+
+df5 <- dx %>%
+  summarise(avg_n_risk_individual = mean(sum_n_fight),
+            min_n_risk_individual = min(sum_n_fight),
+            max_n_risk_individual = max(sum_n_fight))
+
+df_fight <- cbind(df_fight, df5)
+
+df6 <- dx %>%
+  summarise(avg_n_risk_individual = mean(sum_n_canoe_capsize),
+            min_n_risk_individual = min(sum_n_canoe_capsize),
+            max_n_risk_individual = max(sum_n_canoe_capsize))
+
+df_canoe_capsize <- cbind(df_canoe_capsize, df6)
+
+
 # Combine dfs -------------------------------------------------------------
 
 combined_df <- bind_rows(df_sickness, df_cut_self, df_Animal_Attack, df_tree_fall,
