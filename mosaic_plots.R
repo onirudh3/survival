@@ -449,7 +449,7 @@ figure <- ggarrange(readRDS("Sickness Plots/mosaic_plot_sickness_top_3.RDS") + r
                     readRDS("Canoe Capsize Plots/mosaic_plot_canoe_capsize_top_3.RDS") + rremove("ylab") + rremove("xlab"),
                     common.legend = T,
                     legend = "bottom")
-pdf(file = "Panel Plots/mosaic_panel_plot.pdf", height = 15, width = 20)
+pdf(file = "Panel Plots/mosaic_panel_plot.pdf", width = 19.5, height = 9)
 figure
 # annotate_figure(figure, bottom = grid::textGrob("Top 3 Causes/Activities", gp = gpar(cex = 1.7)))
 dev.off()

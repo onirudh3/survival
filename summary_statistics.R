@@ -59,7 +59,7 @@ median_days_disabled <- median(subset(df, !is.na(days_disabled_sickness_1))$days
 min_days_disabled <- min(subset(df, !is.na(days_disabled_sickness_1))$days_disabled_sickness_1)
 max_days_disabled <- max(subset(df, !is.na(days_disabled_sickness_1))$days_disabled_sickness_1)
 
-df_sickness <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, first_exposure,
+df_sickness <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, min_n_risk, max_n_risk, first_exposure,
                           first_exposure_min, first_exposure_max, perc_report_disability,
                           perc_report_disability_sample, perc_almost_died, perc_almost_died_sample,
                           median_days_disabled, min_days_disabled, max_days_disabled)
@@ -120,7 +120,7 @@ median_days_disabled <- median(subset(df, !is.na(cut_self_days_disabled_1))$cut_
 min_days_disabled <- min(subset(df, !is.na(cut_self_days_disabled_1))$cut_self_days_disabled_1)
 max_days_disabled <- max(subset(df, !is.na(cut_self_days_disabled_1))$cut_self_days_disabled_1)
 
-df_cut_self <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, first_exposure,
+df_cut_self <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, min_n_risk, max_n_risk, first_exposure,
                           first_exposure_min, first_exposure_max, perc_report_disability,
                           perc_report_disability_sample, perc_almost_died, perc_almost_died_sample,
                           median_days_disabled, min_days_disabled, max_days_disabled)
@@ -182,7 +182,7 @@ median_days_disabled <- median(subset(df, !is.na(days_disabled_Animal_Attacked_1
 min_days_disabled <- min(subset(df, !is.na(days_disabled_Animal_Attacked_1))$days_disabled_Animal_Attacked_1)
 max_days_disabled <- max(subset(df, !is.na(days_disabled_Animal_Attacked_1))$days_disabled_Animal_Attacked_1)
 
-df_Animal_Attack <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, first_exposure,
+df_Animal_Attack <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, min_n_risk, max_n_risk, first_exposure,
                                first_exposure_min, first_exposure_max, perc_report_disability,
                                perc_report_disability_sample, perc_almost_died, perc_almost_died_sample,
                                median_days_disabled, min_days_disabled, max_days_disabled)
@@ -237,7 +237,7 @@ median_days_disabled <- median(subset(df, !is.na(tree_fall_days_disabled_1))$tre
 min_days_disabled <- min(subset(df, !is.na(tree_fall_days_disabled_1))$tree_fall_days_disabled_1)
 max_days_disabled <- max(subset(df, !is.na(tree_fall_days_disabled_1))$tree_fall_days_disabled_1)
 
-df_tree_fall <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, first_exposure,
+df_tree_fall <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, min_n_risk, max_n_risk, first_exposure,
                            first_exposure_min, first_exposure_max, perc_report_disability,
                            perc_report_disability_sample, perc_almost_died, perc_almost_died_sample,
                            median_days_disabled, min_days_disabled, max_days_disabled)
@@ -299,7 +299,7 @@ median_days_disabled <- median(subset(df, !is.na(fought_days_injured_1))$fought_
 min_days_disabled <- min(subset(df, !is.na(fought_days_injured_1))$fought_days_injured_1)
 max_days_disabled <- max(subset(df, !is.na(fought_days_injured_1))$fought_days_injured_1)
 
-df_fight <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, first_exposure,
+df_fight <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, min_n_risk, max_n_risk, first_exposure,
                        first_exposure_min, first_exposure_max, perc_report_disability,
                        perc_report_disability_sample, perc_almost_died, perc_almost_died_sample,
                        median_days_disabled, min_days_disabled, max_days_disabled)
@@ -354,7 +354,7 @@ median_days_disabled <- median(subset(df, !is.na(canoe_capsize_days_disabled_1))
 min_days_disabled <- min(subset(df, !is.na(canoe_capsize_days_disabled_1))$canoe_capsize_days_disabled_1)
 max_days_disabled <- max(subset(df, !is.na(canoe_capsize_days_disabled_1))$canoe_capsize_days_disabled_1)
 
-df_canoe_capsize <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, first_exposure,
+df_canoe_capsize <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, min_n_risk, max_n_risk, first_exposure,
                                first_exposure_min, first_exposure_max, perc_report_disability,
                                perc_report_disability_sample, perc_almost_died, perc_almost_died_sample,
                                median_days_disabled, min_days_disabled, max_days_disabled)
