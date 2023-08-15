@@ -21,3 +21,5 @@ figure <- ggarrange(readRDS("Sickness Plots/hazard_function_time_to_first_risk_b
 annotate_figure(figure, left = text_grob("Hazard", rot = 90, vjust = 1, size = 15, family = "CMU"),
                      bottom = text_grob("Age (Years)", size = 15, family = "CMU"))
 # dev.off()
+
+# This is not needed
