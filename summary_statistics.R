@@ -55,6 +55,30 @@ perc_report_disability_sample <- scales::percent(summarise(subset(df, days_disab
 perc_almost_died_sample <- scales::percent(summarise(subset(df, almost_died_sickness_1 == 1),
                                               perc = n() / nrow(df))[1, ], accuracy = 1)
 
+perc_report_disability_less_than_18 <- scales::percent(summarise(subset(df, days_disabled_sickness_1 > 0 & exit < 18),
+                                                                 perc = n() / 388)[1, ], accuracy = 1)
+
+perc_almost_died_less_than_18 <- scales::percent(summarise(subset(df, almost_died_sickness_1 == 1 & exit < 18),
+                                              perc = n() / 388)[1, ], accuracy = 1)
+
+perc_report_disability_less_than_18_sample <- scales::percent(summarise(subset(df, days_disabled_sickness_1 > 0 & exit < 18),
+                                                                 perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_almost_died_less_than_18_sample <- scales::percent(summarise(subset(df, almost_died_sickness_1 == 1 & exit < 18),
+                                                           perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_report_disability_more_than_18 <- scales::percent(summarise(subset(df, days_disabled_sickness_1 > 0 & exit >= 18),
+                                                                 perc = n() / 388)[1, ], accuracy = 1)
+
+perc_almost_died_more_than_18 <- scales::percent(summarise(subset(df, almost_died_sickness_1 == 1 & exit >= 18),
+                                                           perc = n() / 388)[1, ], accuracy = 1)
+
+perc_report_disability_more_than_18_sample <- scales::percent(summarise(subset(df, days_disabled_sickness_1 > 0 & exit >= 18),
+                                                                        perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_almost_died_more_than_18_sample <- scales::percent(summarise(subset(df, almost_died_sickness_1 == 1 & exit >= 18),
+                                                                  perc = n() / nrow(df))[1, ], accuracy = 1)
+
 median_days_disabled <- median(subset(df, !is.na(days_disabled_sickness_1))$days_disabled_sickness_1)
 min_days_disabled <- min(subset(df, !is.na(days_disabled_sickness_1))$days_disabled_sickness_1)
 max_days_disabled <- max(subset(df, !is.na(days_disabled_sickness_1))$days_disabled_sickness_1)
@@ -62,7 +86,11 @@ max_days_disabled <- max(subset(df, !is.na(days_disabled_sickness_1))$days_disab
 df_sickness <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, min_n_risk, max_n_risk, first_exposure,
                           first_exposure_min, first_exposure_max, perc_report_disability,
                           perc_report_disability_sample, perc_almost_died, perc_almost_died_sample,
-                          median_days_disabled, min_days_disabled, max_days_disabled)
+                          median_days_disabled, min_days_disabled, max_days_disabled,
+                          perc_report_disability_less_than_18, perc_report_disability_less_than_18_sample,
+                          perc_report_disability_more_than_18, perc_report_disability_more_than_18_sample,
+                          perc_almost_died_less_than_18, perc_almost_died_less_than_18_sample,
+                          perc_almost_died_more_than_18, perc_almost_died_more_than_18_sample)
 rownames(df_sickness) <- c("Sickness")
 
 # Cut Self ----------------------------------------------------------------
@@ -116,6 +144,30 @@ perc_report_disability_sample <- scales::percent(summarise(subset(df, cut_self_d
 perc_almost_died_sample <- scales::percent(summarise(subset(df, cut_self_almost_died_1 == 1),
                                               perc = n() / nrow(df))[1, ], accuracy = 1)
 
+perc_report_disability_less_than_18 <- scales::percent(summarise(subset(df, cut_self_days_disabled_1 > 0 & exit < 18),
+                                                                 perc = n() / 388)[1, ], accuracy = 1)
+
+perc_almost_died_less_than_18 <- scales::percent(summarise(subset(df, cut_self_almost_died_1 == 1 & exit < 18),
+                                                           perc = n() / 388)[1, ], accuracy = 1)
+
+perc_report_disability_less_than_18_sample <- scales::percent(summarise(subset(df, cut_self_days_disabled_1 > 0 & exit < 18),
+                                                                        perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_almost_died_less_than_18_sample <- scales::percent(summarise(subset(df, cut_self_almost_died_1 == 1 & exit < 18),
+                                                                  perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_report_disability_more_than_18 <- scales::percent(summarise(subset(df, cut_self_days_disabled_1 > 0 & exit >= 18),
+                                                                 perc = n() / 388)[1, ], accuracy = 1)
+
+perc_almost_died_more_than_18 <- scales::percent(summarise(subset(df, cut_self_almost_died_1 == 1 & exit >= 18),
+                                                           perc = n() / 388)[1, ], accuracy = 1)
+
+perc_report_disability_more_than_18_sample <- scales::percent(summarise(subset(df, cut_self_days_disabled_1 > 0 & exit >= 18),
+                                                                        perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_almost_died_more_than_18_sample <- scales::percent(summarise(subset(df, cut_self_almost_died_1 == 1 & exit >= 18),
+                                                                  perc = n() / nrow(df))[1, ], accuracy = 1)
+
 median_days_disabled <- median(subset(df, !is.na(cut_self_days_disabled_1))$cut_self_days_disabled_1)
 min_days_disabled <- min(subset(df, !is.na(cut_self_days_disabled_1))$cut_self_days_disabled_1)
 max_days_disabled <- max(subset(df, !is.na(cut_self_days_disabled_1))$cut_self_days_disabled_1)
@@ -123,7 +175,11 @@ max_days_disabled <- max(subset(df, !is.na(cut_self_days_disabled_1))$cut_self_d
 df_cut_self <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, min_n_risk, max_n_risk, first_exposure,
                           first_exposure_min, first_exposure_max, perc_report_disability,
                           perc_report_disability_sample, perc_almost_died, perc_almost_died_sample,
-                          median_days_disabled, min_days_disabled, max_days_disabled)
+                          median_days_disabled, min_days_disabled, max_days_disabled,
+                          perc_report_disability_less_than_18, perc_report_disability_less_than_18_sample,
+                          perc_report_disability_more_than_18, perc_report_disability_more_than_18_sample,
+                          perc_almost_died_less_than_18, perc_almost_died_less_than_18_sample,
+                          perc_almost_died_more_than_18, perc_almost_died_more_than_18_sample)
 rownames(df_cut_self) <- c("Cut Self")
 
 # Animal Attack ----------------------------------------------------------------
@@ -178,6 +234,30 @@ perc_report_disability_sample <- scales::percent(summarise(subset(df, days_disab
 perc_almost_died_sample <- scales::percent(summarise(subset(df, almost_died_Animal_Attacked_1 == 1),
                                               perc = n() / nrow(df))[1, ], accuracy = 1)
 
+perc_report_disability_less_than_18 <- scales::percent(summarise(subset(df, days_disabled_Animal_Attacked_1 > 0 & exit < 18),
+                                                                 perc = n() / 388)[1, ], accuracy = 1)
+
+perc_almost_died_less_than_18 <- scales::percent(summarise(subset(df, almost_died_Animal_Attacked_1 == 1 & exit < 18),
+                                                           perc = n() / 388)[1, ], accuracy = 1)
+
+perc_report_disability_less_than_18_sample <- scales::percent(summarise(subset(df, days_disabled_Animal_Attacked_1 > 0 & exit < 18),
+                                                                        perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_almost_died_less_than_18_sample <- scales::percent(summarise(subset(df, almost_died_Animal_Attacked_1 == 1 & exit < 18),
+                                                                  perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_report_disability_more_than_18 <- scales::percent(summarise(subset(df, days_disabled_Animal_Attacked_1 > 0 & exit >= 18),
+                                                                 perc = n() / 388)[1, ], accuracy = 1)
+
+perc_almost_died_more_than_18 <- scales::percent(summarise(subset(df, almost_died_Animal_Attacked_1 == 1 & exit >= 18),
+                                                           perc = n() / 388)[1, ], accuracy = 1)
+
+perc_report_disability_more_than_18_sample <- scales::percent(summarise(subset(df, days_disabled_Animal_Attacked_1 > 0 & exit >= 18),
+                                                                        perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_almost_died_more_than_18_sample <- scales::percent(summarise(subset(df, almost_died_Animal_Attacked_1 == 1 & exit >= 18),
+                                                                  perc = n() / nrow(df))[1, ], accuracy = 1)
+
 median_days_disabled <- median(subset(df, !is.na(days_disabled_Animal_Attacked_1))$days_disabled_Animal_Attacked_1)
 min_days_disabled <- min(subset(df, !is.na(days_disabled_Animal_Attacked_1))$days_disabled_Animal_Attacked_1)
 max_days_disabled <- max(subset(df, !is.na(days_disabled_Animal_Attacked_1))$days_disabled_Animal_Attacked_1)
@@ -185,7 +265,11 @@ max_days_disabled <- max(subset(df, !is.na(days_disabled_Animal_Attacked_1))$day
 df_Animal_Attack <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, min_n_risk, max_n_risk, first_exposure,
                                first_exposure_min, first_exposure_max, perc_report_disability,
                                perc_report_disability_sample, perc_almost_died, perc_almost_died_sample,
-                               median_days_disabled, min_days_disabled, max_days_disabled)
+                               median_days_disabled, min_days_disabled, max_days_disabled,
+                               perc_report_disability_less_than_18, perc_report_disability_less_than_18_sample,
+                               perc_report_disability_more_than_18, perc_report_disability_more_than_18_sample,
+                               perc_almost_died_less_than_18, perc_almost_died_less_than_18_sample,
+                               perc_almost_died_more_than_18, perc_almost_died_more_than_18_sample)
 rownames(df_Animal_Attack) <- c("Animal Attack")
 
 # Tree Fall ----------------------------------------------------------------
@@ -233,6 +317,30 @@ perc_report_disability_sample <- scales::percent(summarise(subset(df, tree_fall_
 perc_almost_died_sample <- scales::percent(summarise(subset(df, tree_fall_almost_died_1 == 1),
                                               perc = n() / nrow(df))[1, ], accuracy = 1)
 
+perc_report_disability_less_than_18 <- scales::percent(summarise(subset(df, tree_fall_days_disabled_1 > 0 & exit < 18),
+                                                                 perc = n() / 388)[1, ], accuracy = 1)
+
+perc_almost_died_less_than_18 <- scales::percent(summarise(subset(df, tree_fall_almost_died_1 == 1 & exit < 18),
+                                                           perc = n() / 388)[1, ], accuracy = 1)
+
+perc_report_disability_less_than_18_sample <- scales::percent(summarise(subset(df, tree_fall_days_disabled_1 > 0 & exit < 18),
+                                                                        perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_almost_died_less_than_18_sample <- scales::percent(summarise(subset(df, tree_fall_almost_died_1 == 1 & exit < 18),
+                                                                  perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_report_disability_more_than_18 <- scales::percent(summarise(subset(df, tree_fall_days_disabled_1 > 0 & exit >= 18),
+                                                                 perc = n() / 388)[1, ], accuracy = 1)
+
+perc_almost_died_more_than_18 <- scales::percent(summarise(subset(df, tree_fall_almost_died_1 == 1 & exit >= 18),
+                                                           perc = n() / 388)[1, ], accuracy = 1)
+
+perc_report_disability_more_than_18_sample <- scales::percent(summarise(subset(df, tree_fall_days_disabled_1 > 0 & exit >= 18),
+                                                                        perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_almost_died_more_than_18_sample <- scales::percent(summarise(subset(df, tree_fall_almost_died_1 == 1 & exit >= 18),
+                                                                  perc = n() / nrow(df))[1, ], accuracy = 1)
+
 median_days_disabled <- median(subset(df, !is.na(tree_fall_days_disabled_1))$tree_fall_days_disabled_1)
 min_days_disabled <- min(subset(df, !is.na(tree_fall_days_disabled_1))$tree_fall_days_disabled_1)
 max_days_disabled <- max(subset(df, !is.na(tree_fall_days_disabled_1))$tree_fall_days_disabled_1)
@@ -240,7 +348,11 @@ max_days_disabled <- max(subset(df, !is.na(tree_fall_days_disabled_1))$tree_fall
 df_tree_fall <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, min_n_risk, max_n_risk, first_exposure,
                            first_exposure_min, first_exposure_max, perc_report_disability,
                            perc_report_disability_sample, perc_almost_died, perc_almost_died_sample,
-                           median_days_disabled, min_days_disabled, max_days_disabled)
+                           median_days_disabled, min_days_disabled, max_days_disabled,
+                           perc_report_disability_less_than_18, perc_report_disability_less_than_18_sample,
+                           perc_report_disability_more_than_18, perc_report_disability_more_than_18_sample,
+                           perc_almost_died_less_than_18, perc_almost_died_less_than_18_sample,
+                           perc_almost_died_more_than_18, perc_almost_died_more_than_18_sample)
 rownames(df_tree_fall) <- c("Tree Fall")
 
 # Fight ----------------------------------------------------------------
@@ -295,6 +407,30 @@ perc_report_disability_sample <- scales::percent(summarise(subset(df, fought_day
 perc_almost_died_sample <- scales::percent(summarise(subset(df, fought_almost_died_1 == 1),
                                               perc = n() / nrow(df))[1, ], accuracy = 1)
 
+perc_report_disability_less_than_18 <- scales::percent(summarise(subset(df, fought_days_injured_1 > 0 & exit < 18),
+                                                                 perc = n() / 388)[1, ], accuracy = 1)
+
+perc_almost_died_less_than_18 <- scales::percent(summarise(subset(df, fought_almost_died_1 == 1 & exit < 18),
+                                                           perc = n() / 388)[1, ], accuracy = 1)
+
+perc_report_disability_less_than_18_sample <- scales::percent(summarise(subset(df, fought_days_injured_1 > 0 & exit < 18),
+                                                                        perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_almost_died_less_than_18_sample <- scales::percent(summarise(subset(df, fought_almost_died_1 == 1 & exit < 18),
+                                                                  perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_report_disability_more_than_18 <- scales::percent(summarise(subset(df, fought_days_injured_1 > 0 & exit >= 18),
+                                                                 perc = n() / 388)[1, ], accuracy = 1)
+
+perc_almost_died_more_than_18 <- scales::percent(summarise(subset(df, fought_almost_died_1 == 1 & exit >= 18),
+                                                           perc = n() / 388)[1, ], accuracy = 1)
+
+perc_report_disability_more_than_18_sample <- scales::percent(summarise(subset(df, fought_days_injured_1 > 0 & exit >= 18),
+                                                                        perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_almost_died_more_than_18_sample <- scales::percent(summarise(subset(df, fought_almost_died_1 == 1 & exit >= 18),
+                                                                  perc = n() / nrow(df))[1, ], accuracy = 1)
+
 median_days_disabled <- median(subset(df, !is.na(fought_days_injured_1))$fought_days_injured_1)
 min_days_disabled <- min(subset(df, !is.na(fought_days_injured_1))$fought_days_injured_1)
 max_days_disabled <- max(subset(df, !is.na(fought_days_injured_1))$fought_days_injured_1)
@@ -302,7 +438,11 @@ max_days_disabled <- max(subset(df, !is.na(fought_days_injured_1))$fought_days_i
 df_fight <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, min_n_risk, max_n_risk, first_exposure,
                        first_exposure_min, first_exposure_max, perc_report_disability,
                        perc_report_disability_sample, perc_almost_died, perc_almost_died_sample,
-                       median_days_disabled, min_days_disabled, max_days_disabled)
+                       median_days_disabled, min_days_disabled, max_days_disabled,
+                       perc_report_disability_less_than_18, perc_report_disability_less_than_18_sample,
+                       perc_report_disability_more_than_18, perc_report_disability_more_than_18_sample,
+                       perc_almost_died_less_than_18, perc_almost_died_less_than_18_sample,
+                       perc_almost_died_more_than_18, perc_almost_died_more_than_18_sample)
 rownames(df_fight) <- c("Fight")
 
 # Canoe Capsize ----------------------------------------------------------------
@@ -350,6 +490,30 @@ perc_report_disability_sample <- scales::percent(summarise(subset(df, canoe_caps
 perc_almost_died_sample <- scales::percent(summarise(subset(df, canoe_capsize_almost_died_1 == 1),
                                               perc = n() / nrow(df))[1, ], accuracy = 1)
 
+perc_report_disability_less_than_18 <- scales::percent(summarise(subset(df, canoe_capsize_days_disabled_1 > 0 & exit < 18),
+                                                                 perc = n() / 388)[1, ], accuracy = 1)
+
+perc_almost_died_less_than_18 <- scales::percent(summarise(subset(df, canoe_capsize_almost_died_1 == 1 & exit < 18),
+                                                           perc = n() / 388)[1, ], accuracy = 1)
+
+perc_report_disability_less_than_18_sample <- scales::percent(summarise(subset(df, canoe_capsize_days_disabled_1 > 0 & exit < 18),
+                                                                        perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_almost_died_less_than_18_sample <- scales::percent(summarise(subset(df, canoe_capsize_almost_died_1 == 1 & exit < 18),
+                                                                  perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_report_disability_more_than_18 <- scales::percent(summarise(subset(df, canoe_capsize_days_disabled_1 > 0 & exit >= 18),
+                                                                 perc = n() / 388)[1, ], accuracy = 1)
+
+perc_almost_died_more_than_18 <- scales::percent(summarise(subset(df, canoe_capsize_almost_died_1 == 1 & exit >= 18),
+                                                           perc = n() / 388)[1, ], accuracy = 1)
+
+perc_report_disability_more_than_18_sample <- scales::percent(summarise(subset(df, canoe_capsize_days_disabled_1 > 0 & exit >= 18),
+                                                                        perc = n() / nrow(df))[1, ], accuracy = 1)
+
+perc_almost_died_more_than_18_sample <- scales::percent(summarise(subset(df, canoe_capsize_almost_died_1 == 1 & exit >= 18),
+                                                                  perc = n() / nrow(df))[1, ], accuracy = 1)
+
 median_days_disabled <- median(subset(df, !is.na(canoe_capsize_days_disabled_1))$canoe_capsize_days_disabled_1)
 min_days_disabled <- min(subset(df, !is.na(canoe_capsize_days_disabled_1))$canoe_capsize_days_disabled_1)
 max_days_disabled <- max(subset(df, !is.na(canoe_capsize_days_disabled_1))$canoe_capsize_days_disabled_1)
@@ -357,7 +521,11 @@ max_days_disabled <- max(subset(df, !is.na(canoe_capsize_days_disabled_1))$canoe
 df_canoe_capsize <- data.frame(sample, perc_risk, sample_18, perc_risk_18, avg_n_risk, min_n_risk, max_n_risk, first_exposure,
                                first_exposure_min, first_exposure_max, perc_report_disability,
                                perc_report_disability_sample, perc_almost_died, perc_almost_died_sample,
-                               median_days_disabled, min_days_disabled, max_days_disabled)
+                               median_days_disabled, min_days_disabled, max_days_disabled,
+                               perc_report_disability_less_than_18, perc_report_disability_less_than_18_sample,
+                               perc_report_disability_more_than_18, perc_report_disability_more_than_18_sample,
+                               perc_almost_died_less_than_18, perc_almost_died_less_than_18_sample,
+                               perc_almost_died_more_than_18, perc_almost_died_more_than_18_sample)
 rownames(df_canoe_capsize) <- c("Canoe Capsize")
 
 
