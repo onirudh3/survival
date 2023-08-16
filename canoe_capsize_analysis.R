@@ -607,7 +607,7 @@ p <- df_hazard_plot %>%
   geom_text(data = subset(df_hazard_plot, fdr < 0.05), aes(x = covariate, y = X97.5..), label = "*", nudge_y = 0.1, size = 10) +
   ggtitle("Canoe Capsize") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
-  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 19)) + theme(legend.position = "none")
+  scale_y_continuous(breaks = seq(0, 100, 1), limits = c(0, 19.5), expand = c(0, 0)) + theme(legend.position = "none")
 p
 dev.off()
 saveRDS(p + labs(x = "", y = "", subtitle = ""), file = "Canoe Capsize Plots/region_panel_plot.RDS")
