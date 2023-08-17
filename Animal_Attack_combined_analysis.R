@@ -19,6 +19,24 @@ extract_coxme_table <- function (mod){
   return(table)
 }
 
+df <- read.csv("Animal_Attack_combined_time_to_first_risk_long_interval.csv")
+
+# Survival risk table
+fit <- survfit(Surv(enter, exit, event) ~ 1, df)
+gg <- ggsurvtable(fit, break.time.by = 1, data = df)
+gg <- data.frame(gg[["risk.table"]][["data"]])
+gg <- gg[c("time", "n.risk", "cum.n.event", "pct.risk")]
+gg$pct.risk <- gg$pct.risk / 100
+gg <- gg %>% rename("Age (Years)" = "time",
+                    "No. at Risk" = "n.risk",
+                    "No. of Events" = "cum.n.event",
+                    "Proportion at Risk" = "pct.risk")
+stargazer(gg, summary = F, out = "Animal Attack Combined Tables/risk_table.tex",
+          title = "Animal Attack (c) \\vspace{-1.4em}", rownames = F,
+          digits = 2)
+
+ggsurvplot(fit)
+
 
 # Summary Table Mixed Effects ---------------------------------------------
 
