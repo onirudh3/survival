@@ -35,7 +35,7 @@ stargazer(gg, summary = F, out = "Animal Attack Combined Tables/risk_table.tex",
           title = "Animal Attack (c) \\vspace{-1.4em}", rownames = F,
           digits = 2)
 
-ggsurvplot(fit)
+ggsurvplot(m1)
 
 
 # Summary Table Mixed Effects ---------------------------------------------
