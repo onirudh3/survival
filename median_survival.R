@@ -87,4 +87,4 @@ median_survival <- median_survival %>% rename("Age (Years)" = "time",
                                     "No. of Events" = "events",
                                     "Proportion at Risk" = "pct.risk")
 
-stargazer(median_survival, summary = F, rownames = F)
+stargazer(median_survival, summary = F, rownames = T)
