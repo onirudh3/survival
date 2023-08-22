@@ -390,7 +390,9 @@ rm(df1, df2, df3, df4, df5, df6)
 
 # Getting n proportion denominator ----------------------------------------
 
-df$n_prop <- df$n * 365 * df$group_count
+df$denominator <- df$n * 365 * df$group_count
+
+df$prop <- df$days_disabled_risk / df$denominator
 
 write.csv(df, file = "C:/Users/oniru/OneDrive/Tsimane/Survival Analysis/Results/Results Old Organisation/Data/days_disabled_data_5_year_interval.csv")
 
@@ -416,7 +418,7 @@ df %>%
 
 pdf(file = "Days Disabled Plots/5_year_interval_proportion.pdf", width = 13)
 df %>%
-  ggplot(aes(x = exit.char, y = days_disabled_risk / n_prop, group = risk, fill = risk)) +
+  ggplot(aes(x = exit.char, y = days_disabled_risk / denominator, group = risk, fill = risk)) +
   geom_area(position = 'stack') +
   viridis::scale_fill_viridis(option = "H", discrete = T) +
   theme_classic(base_size = 18) +
