@@ -388,13 +388,12 @@ df$exit.char <- factor(df$exit.char, levels = c("0-5", "5-10", "10-15", "15-20",
 
 rm(df1, df2, df3, df4, df5, df6)
 
-write.csv(df, file = "C:/Users/oniru/OneDrive/Tsimane/Survival Analysis/Results/Results Old Organisation/Data/days_disabled_data_5_year_interval.csv")
-
-
-
 # Getting n proportion denominator ----------------------------------------
 
 df$n_prop <- df$n * 365 * df$group_count
+
+write.csv(df, file = "C:/Users/oniru/OneDrive/Tsimane/Survival Analysis/Results/Results Old Organisation/Data/days_disabled_data_5_year_interval.csv")
+
 
 # 1. Stacked plot 5 year intervals --------------------------------------
 
