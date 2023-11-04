@@ -5,7 +5,6 @@ library(tidyverse)
 library(eha)
 library(survival)
 library(readxl)
-library(dplyr)
 
 # Raw data
 raw_data <- read_xls("threat_wide___sumACEs_for anirudh.xls")
@@ -5707,9 +5706,47 @@ raw_df <- raw_df %>%
 
 df <- left_join(df, raw_df)
 
+
+# Tally subsequent occurrences of events for each PID ---------------------
+
+# Sickness
+df <- df %>%
+  mutate(sickness.during.interval.episode = replace(cumsum(sickness.during.interval),
+                                                    sickness.during.interval == 0, 0),
+         .by = pid, .after = sickness.during.interval)
+
+# Cut Self
+df <- df %>%
+  mutate(cut.self.during.interval.episode = replace(cumsum(cut.self.during.interval),
+                                                    cut.self.during.interval == 0, 0),
+         .by = pid, .after = cut.self.during.interval)
+
+# Animal Attack
+df <- df %>%
+  mutate(Animal_Attack.during.interval.episode = replace(cumsum(Animal_Attack.during.interval),
+                                                         Animal_Attack.during.interval == 0, 0),
+         .by = pid, .after = Animal_Attack.during.interval)
+
+# Tree Fall
+df <- df %>%
+  mutate(tree.fall.during.interval.episode = replace(cumsum(tree.fall.during.interval),
+                                                     tree.fall.during.interval == 0, 0),
+         .by = pid, .after = tree.fall.during.interval)
+
+# Fight
+df <- df %>%
+  mutate(fought.during.interval.episode = replace(cumsum(fought.during.interval),
+                                                  fought.during.interval == 0, 0),
+         .by = pid, .after = fought.during.interval)
+
+# Canoe Capsize
+df <- df %>%
+  mutate(canoe.capsize.during.interval.episode = replace(cumsum(canoe.capsize.during.interval),
+                                                         canoe.capsize.during.interval == 0, 0),
+         .by = pid, .after = canoe.capsize.during.interval)
+
 # Export as csv -----------------------------------------------------------
 
 write.csv(df, "data_new_format.csv", row.names = F)
-
 
 

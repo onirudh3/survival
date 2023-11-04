@@ -7,6 +7,8 @@ library(tidyverse)
 
 df1 <- read.csv("tree_fall_time_to_first_risk_short_interval.csv") # read time-to-first-risk data
 
+# df1 <- read.csv("data_new_format.csv")
+
 df1$exit <- ceiling(df1$exit) # round up values of exit, only affects those values where age at interview is equal to exit
 
 # df1 <- df1 %>%
