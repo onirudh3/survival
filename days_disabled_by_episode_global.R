@@ -31,12 +31,17 @@ dx <- subset(dx, select = c(sickness.during.interval.episode, total_days_disable
 
 dx$sickness.during.interval.episode <- as.factor(dx$sickness.during.interval.episode)
 
+# Test for group differences
+kruskal.test(total_days_disabled ~ sickness.during.interval.episode, data = dx)
+
 # Plot
 p <- dx %>% ggplot(aes(x = sickness.during.interval.episode, y = total_days_disabled)) +
   geom_violin() +
   theme_classic() +
   ggtitle("Sickness") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  labs(subtitle = "p-value = 0.55") +
+  theme(plot.title = element_text(size = 30, hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
   xlab("Episode") +
   ylab("Total days disabled")
 p
@@ -64,12 +69,17 @@ dx <- subset(dx, select = c(cut.self.during.interval.episode, total_days_disable
 
 dx$cut.self.during.interval.episode <- as.factor(dx$cut.self.during.interval.episode)
 
+# Test for group differences
+kruskal.test(total_days_disabled ~ cut.self.during.interval.episode, data = dx)
+
 # Plot
 p <- dx %>% ggplot(aes(x = cut.self.during.interval.episode, y = total_days_disabled)) +
   geom_violin() +
   theme_classic() +
   ggtitle("Cut Self") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  labs(subtitle = "p-value = 0.00") +
+  theme(plot.title = element_text(size = 30, hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
   xlab("Episode") +
   ylab("Total days disabled")
 p
@@ -97,12 +107,17 @@ dx <- subset(dx, select = c(Animal_Attack.during.interval.episode, total_days_di
 
 dx$Animal_Attack.during.interval.episode <- as.factor(dx$Animal_Attack.during.interval.episode)
 
+# Test for group differences
+kruskal.test(total_days_disabled ~ Animal_Attack.during.interval.episode, data = dx)
+
 # Plot
 p <- dx %>% ggplot(aes(x = Animal_Attack.during.interval.episode, y = total_days_disabled)) +
   geom_violin() +
   theme_classic() +
   ggtitle("Animal Attack") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  labs(subtitle = "p-value = 0.23") +
+  theme(plot.title = element_text(size = 30, hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
   xlab("Episode") +
   ylab("Total days disabled")
 p
@@ -123,12 +138,17 @@ dx <- subset(dx, select = c(tree.fall.during.interval.episode, total_days_disabl
 
 dx$tree.fall.during.interval.episode <- as.factor(dx$tree.fall.during.interval.episode)
 
+# Test for group differences
+kruskal.test(total_days_disabled ~ tree.fall.during.interval.episode, data = dx)
+
 # Plot
 p <- dx %>% ggplot(aes(x = tree.fall.during.interval.episode, y = total_days_disabled)) +
   geom_violin() +
   theme_classic() +
   ggtitle("Tree Fall") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  labs(subtitle = "p-value = 0.17") +
+  theme(plot.title = element_text(size = 30, hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
   xlab("Episode") +
   ylab("Total days disabled")
 p
@@ -156,12 +176,17 @@ dx <- subset(dx, select = c(fought.during.interval.episode, total_days_disabled)
 
 dx$fought.during.interval.episode <- as.factor(dx$fought.during.interval.episode)
 
+# Test for group differences
+kruskal.test(total_days_disabled ~ fought.during.interval.episode, data = dx)
+
 # Plot
 p <- dx %>% ggplot(aes(x = fought.during.interval.episode, y = total_days_disabled)) +
   geom_violin() +
   theme_classic() +
   ggtitle("Fight") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  labs(subtitle = "p-value = 0.99") +
+  theme(plot.title = element_text(size = 30, hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
   xlab("Episode") +
   ylab("Total days disabled")
 p
@@ -182,12 +207,17 @@ dx <- subset(dx, select = c(canoe.capsize.during.interval.episode, total_days_di
 
 dx$canoe.capsize.during.interval.episode <- as.factor(dx$canoe.capsize.during.interval.episode)
 
+# Test for group differences
+kruskal.test(total_days_disabled ~ canoe.capsize.during.interval.episode, data = dx)
+
 # Plot
 p <- dx %>% ggplot(aes(x = canoe.capsize.during.interval.episode, y = total_days_disabled)) +
   geom_violin() +
   theme_classic() +
   ggtitle("Canoe Capsize") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  labs(subtitle = "p-value = 0.36") +
+  theme(plot.title = element_text(size = 30, hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
   xlab("Episode") +
   ylab("Total days disabled")
 p

@@ -2,6 +2,9 @@
 # Libraries and data ------------------------------------------------------
 
 library(reda)
+library(tidyverse)
+library(ggpubr)
+library(grid)
 
 # Data
 df <- read.csv("data_new_format.csv")
@@ -26,12 +29,14 @@ saveRDS(p, file = "MCF/sickness_global.RDS")
 
 # By sex
 mcf <- mcf(Recur(exit, pid, sickness.during.interval, check = "soft") ~ male, data = df)
+mcfDiff(mcf)
 
 p <- plot(mcf, conf.int = T, mark.time = F, addOrigin = T, col = 2, legendName = "") +
   ggplot2::xlab("Age (Years)") +
   ggplot2::theme_classic() +
   ggtitle("Sickness") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  geom_text(x = 15, y = 3.5, label = "p-value = 0.01") +
   scale_x_continuous(expand = c(0, 0), breaks = seq(0, 80, 5), limits = c(0, 77)) +
   scale_y_continuous(expand = c(0, 0), breaks = seq(0, 4.5, 0.5), limits = c(0, 4.3))
 p
@@ -55,12 +60,14 @@ saveRDS(p, file = "MCF/cut_self_global.RDS")
 
 # By sex
 mcf <- mcf(Recur(exit, pid, cut.self.during.interval, check = "soft") ~ male, data = df)
+mcfDiff(mcf)
 
 p <- plot(mcf, conf.int = T, mark.time = F, addOrigin = T, col = 2, legendName = "") +
   ggplot2::xlab("Age (Years)") +
   ggplot2::theme_classic() +
   ggtitle("Cut Self") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  geom_text(x = 15, y = 3.5, label = "p-value = 0.01") +
   scale_x_continuous(expand = c(0, 0), breaks = seq(0, 80, 5), limits = c(0, 77)) +
   scale_y_continuous(expand = c(0, 0), breaks = seq(0, 4.5, 0.5), limits = c(0, 4.3))
 p
@@ -84,12 +91,14 @@ saveRDS(p, file = "MCF/Animal_Attack_global.RDS")
 
 # By sex
 mcf <- mcf(Recur(exit, pid, Animal_Attack.during.interval, check = "soft") ~ male, data = df)
+mcfDiff(mcf)
 
 p <- plot(mcf, conf.int = T, mark.time = F, addOrigin = T, col = 2, legendName = "") +
   ggplot2::xlab("Age (Years)") +
   ggplot2::theme_classic() +
   ggtitle("Animal Attack") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  geom_text(x = 15, y = 3.5, label = "p-value = 0.00") +
   scale_x_continuous(expand = c(0, 0), breaks = seq(0, 80, 5), limits = c(0, 77)) +
   scale_y_continuous(expand = c(0, 0), breaks = seq(0, 4.5, 0.5), limits = c(0, 4.3))
 p
@@ -113,12 +122,14 @@ saveRDS(p, file = "MCF/tree_fall_global.RDS")
 
 # By sex
 mcf <- mcf(Recur(exit, pid, tree.fall.during.interval, check = "soft") ~ male, data = df)
+mcfDiff(mcf)
 
 p <- plot(mcf, conf.int = T, mark.time = F, addOrigin = T, col = 2, legendName = "") +
   ggplot2::xlab("Age (Years)") +
   ggplot2::theme_classic() +
   ggtitle("Tree Fall") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  geom_text(x = 15, y = 3.5, label = "p-value = 0.23") +
   scale_x_continuous(expand = c(0, 0), breaks = seq(0, 80, 5), limits = c(0, 77)) +
   scale_y_continuous(expand = c(0, 0), breaks = seq(0, 4.5, 0.5), limits = c(0, 4.3))
 p
@@ -142,12 +153,14 @@ saveRDS(p, file = "MCF/fight_global.RDS")
 
 # By sex
 mcf <- mcf(Recur(exit, pid, fought.during.interval, check = "soft") ~ male, data = df)
+mcfDiff(mcf)
 
 p <- plot(mcf, conf.int = T, mark.time = F, addOrigin = T, col = 2, legendName = "") +
   ggplot2::xlab("Age (Years)") +
   ggplot2::theme_classic() +
   ggtitle("Fight") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  geom_text(x = 15, y = 3.5, label = "p-value = 0.00") +
   scale_x_continuous(expand = c(0, 0), breaks = seq(0, 80, 5), limits = c(0, 77)) +
   scale_y_continuous(expand = c(0, 0), breaks = seq(0, 4.5, 0.5), limits = c(0, 4.3))
 p
@@ -171,12 +184,14 @@ saveRDS(p, file = "MCF/canoe_capsize_global.RDS")
 
 # By sex
 mcf <- mcf(Recur(exit, pid, canoe.capsize.during.interval, check = "soft") ~ male, data = df)
+mcfDiff(mcf)
 
 p <- plot(mcf, conf.int = T, mark.time = F, addOrigin = T, col = 2, legendName = "") +
   ggplot2::xlab("Age (Years)") +
   ggplot2::theme_classic() +
   ggtitle("Canoe Capsize") +
   theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  geom_text(x = 15, y = 3.5, label = "p-value = 0.00") +
   scale_x_continuous(expand = c(0, 0), breaks = seq(0, 80, 5), limits = c(0, 77)) +
   scale_y_continuous(expand = c(0, 0), breaks = seq(0, 4.5, 0.5), limits = c(0, 4.3))
 p
