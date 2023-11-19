@@ -693,6 +693,11 @@ df <- df %>%
                              exit > 60 ~ "60+"))
 
 
+# Episodes ----------------------------------------------------------------
+
+df <- df %>%
+  mutate(event.episode = replace(cumsum(event), event == 0, 0), .by = pid, .after = event)
+
 # Export final table to csv -----------------------------------------------
 
 write.csv(df, "sickness_final_table.csv", row.names = F)

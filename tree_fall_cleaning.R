@@ -1570,6 +1570,11 @@ df$age.cat <- factor(df$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
                                             "40-45", "45-50", "50-55", "55-60",
                                             "60+"))
 
+# Episodes ----------------------------------------------------------------
+
+df <- df %>%
+  mutate(event.episode = replace(cumsum(event), event == 0, 0), .by = pid, .after = event)
+
 
 # Export final table to csv -----------------------------------------------
 write.csv(df, "tree_fall_final_table.csv", row.names = F)

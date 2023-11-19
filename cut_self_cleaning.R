@@ -2137,6 +2137,11 @@ df <- df %>%
                              exit > 55 & exit <= 60 ~ "55-60",
                              exit > 60 ~ "60+"))
 
+# Episodes ----------------------------------------------------------------
+
+df <- df %>%
+  mutate(event.episode = replace(cumsum(event), event == 0, 0), .by = pid, .after = event)
+
 # Export final table to csv -----------------------------------------------
 
 write.csv(df, "cut_self_final_table.csv", row.names = F)

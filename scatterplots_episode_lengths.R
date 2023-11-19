@@ -255,6 +255,26 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76))
+saveRDS(p, file = "Scatterplot Episode Time/tree_fall_1_v_2.RDS")
+
+# Episode 2 v 3
+dx <- subset(dc, count == 3)
+dz <- data.frame(ep2_time = dx[(dx$tree.fall.during.interval.episode == 2), ]$exit,
+                 ep3_time = dx[(dx$tree.fall.during.interval.episode == 3), ]$exit)
+dz <- dz %>% mutate(group = case_when(ep3_time %% 1 == 0 ~ 1, T ~ 2))
+dz$group <- as.factor(dz$group)
+p <- dz %>%
+  ggplot(aes(ep2_time, ep3_time, shape = group)) +
+  scale_shape_manual(values = c(20, 3)) +
+  geom_point() +
+  # ggtitle("Tree Fall") +
+  xlab("Episode 2 Time") +
+  ylab("Episode 3 Time") +
+  theme_classic(base_size = 15) +
+  theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
+  scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76))
+saveRDS(p, file = "Scatterplot Episode Time/tree_fall_2_v_3.RDS")
 
 
 # Fight -------------------------------------------------------------------
@@ -381,6 +401,14 @@ figure <- ggarrange(readRDS("Scatterplot Episode Time/Animal_Attack_1_v_2.RDS"),
 
 pdf(file = "Scatterplot Episode Time/panel_Animal_Attack.pdf", height = 10, width = 12)
 annotate_figure(figure, top = textGrob("Animal Attack", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
+dev.off()
+
+# Tree Fall
+figure <- ggarrange(readRDS("Scatterplot Episode Time/tree_fall_1_v_2.RDS"),
+                    readRDS("Scatterplot Episode Time/tree_fall_2_v_3.RDS"))
+
+pdf(file = "Scatterplot Episode Time/panel_tree_fall.pdf", height = 7, width = 15)
+annotate_figure(figure, top = textGrob("Tree Fall", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
 dev.off()
 
 # Fight
