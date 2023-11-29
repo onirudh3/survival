@@ -40,9 +40,10 @@ saveRDS(p$plot + theme(plot.title = element_text(size = 30, hjust = 0.5)),
 
 df <- read.csv("cut_self_final_table.csv")
 df <- subset(df, !(event.episode %in% c(0)))
+df <- df %>% mutate(event.episode = case_when(event.episode == 5 | event.episode == 6 ~ 4, T ~ event.episode))
 fit <- survfit(Surv(exit, event) ~ event.episode, df, conf.type = "log-log")
 p <- ggsurvplot(fit, conf.int = TRUE, title = "Cut Self", font.title = "30",
-                surv.scale = "percent", legend.labs = c("1", "2", "3", "4", "5", "6"),
+                surv.scale = "percent", legend.labs = c("1", "2", "3", "4+"),
                 legend.title = "Episode", axes.offset = F, pval = T,
                 break.x.by = 5, legend = c(0.75, 0.7), xlim = c(0, 75),
                 xlab = "", ylab = "")
