@@ -7,7 +7,7 @@ library(grid)
 
 # Data
 df <- read.csv("data_new_format.csv")
-df <- subset(df, male == 1)
+df <- subset(df, male == 0)
 
 
 # Sickness ----------------------------------------------------------------
@@ -38,7 +38,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/sickness_1_v_2_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/sickness_1_v_2_female.RDS")
 
 # Episode 2 v 3
 dx <- subset(dc, count == 3)
@@ -59,7 +59,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/sickness_2_v_3_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/sickness_2_v_3_female.RDS")
 
 
 # Cut Self ----------------------------------------------------------------
@@ -90,7 +90,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep1_time, ep1_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/cut_self_1_v_2_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/cut_self_1_v_2_female.RDS")
 
 # Episode 2 v 3
 dx <- subset(dc, count == 3)
@@ -111,7 +111,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/cut_self_2_v_3_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/cut_self_2_v_3_female.RDS")
 
 # Episode 3 v 4
 dx <- subset(dc, count == 4)
@@ -132,7 +132,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep3_time, ep4_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/cut_self_3_v_4_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/cut_self_3_v_4_female.RDS")
 
 # Episode 4 v 5
 dx <- subset(dc, count == 5)
@@ -153,7 +153,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep4_time, ep5_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/cut_self_4_v_5_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/cut_self_4_v_5_female.RDS")
 
 # Episode 5 v 6
 dx <- subset(dc, count == 6)
@@ -174,7 +174,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep5_time, ep6_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/cut_self_5_v_6_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/cut_self_5_v_6_female.RDS")
 
 
 # Animal Attack -----------------------------------------------------------
@@ -205,7 +205,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_1_v_2_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_1_v_2_female.RDS")
 
 # Episode 2 v 3
 dx <- subset(dc, count == 3)
@@ -226,7 +226,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_2_v_3_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_2_v_3_female.RDS")
 
 # Episode 3 v 4
 dx <- subset(dc, count == 4)
@@ -247,7 +247,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep3_time, ep4_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_3_v_4_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_3_v_4_female.RDS")
 
 
 # Tree Fall ---------------------------------------------------------------
@@ -278,7 +278,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/tree_fall_1_v_2_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/tree_fall_1_v_2_female.RDS")
 
 # Episode 2 v 3
 dx <- subset(dc, count == 3)
@@ -299,7 +299,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/tree_fall_2_v_3_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/tree_fall_2_v_3_female.RDS")
 
 
 # Fight -------------------------------------------------------------------
@@ -330,7 +330,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/fight_1_v_2_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/fight_1_v_2_female.RDS")
 
 # Episode 2 v 3
 dx <- subset(dc, count == 3)
@@ -351,7 +351,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/fight_2_v_3_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/fight_2_v_3_female.RDS")
 
 
 # Canoe Capsize -----------------------------------------------------------
@@ -382,7 +382,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/canoe_capsize_1_v_2_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/canoe_capsize_1_v_2_female.RDS")
 
 # Episode 2 v 3
 dx <- subset(dc, count == 3)
@@ -403,60 +403,60 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/canoe_capsize_2_v_3_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/canoe_capsize_2_v_3_female.RDS")
 
 
 # Panel plots -------------------------------------------------------------
 
 # Sickness
-figure <- ggarrange(readRDS("Scatterplot Episode Time/sickness_1_v_2_male.RDS"),
-                    readRDS("Scatterplot Episode Time/sickness_2_v_3_male.RDS"))
+figure <- ggarrange(readRDS("Scatterplot Episode Time/sickness_1_v_2_female.RDS"),
+                    readRDS("Scatterplot Episode Time/sickness_2_v_3_female.RDS"))
 
-pdf(file = "Scatterplot Episode Time/panel_sickness_male.pdf", height = 7, width = 15)
+pdf(file = "Scatterplot Episode Time/panel_sickness_female.pdf", height = 7, width = 15)
 annotate_figure(figure, top = textGrob("Sickness", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
 dev.off()
 
 # Cut Self
-figure <- ggarrange(readRDS("Scatterplot Episode Time/cut_self_1_v_2_male.RDS"),
-                    readRDS("Scatterplot Episode Time/cut_self_2_v_3_male.RDS"),
-                    readRDS("Scatterplot Episode Time/cut_self_3_v_4_male.RDS"),
-                    readRDS("Scatterplot Episode Time/cut_self_4_v_5_male.RDS"),
-                    readRDS("Scatterplot Episode Time/cut_self_5_v_6_male.RDS"))
+figure <- ggarrange(readRDS("Scatterplot Episode Time/cut_self_1_v_2_female.RDS"),
+                    readRDS("Scatterplot Episode Time/cut_self_2_v_3_female.RDS"),
+                    readRDS("Scatterplot Episode Time/cut_self_3_v_4_female.RDS"),
+                    readRDS("Scatterplot Episode Time/cut_self_4_v_5_female.RDS"),
+                    readRDS("Scatterplot Episode Time/cut_self_5_v_6_female.RDS"))
 
-pdf(file = "Scatterplot Episode Time/panel_cut_self_male.pdf", height = 9, width = 15)
+pdf(file = "Scatterplot Episode Time/panel_cut_self_female.pdf", height = 9, width = 15)
 annotate_figure(figure, top = textGrob("Cut Self", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
 dev.off()
 
 # Animal Attack
-figure <- ggarrange(readRDS("Scatterplot Episode Time/Animal_Attack_1_v_2_male.RDS"),
-                    readRDS("Scatterplot Episode Time/Animal_Attack_2_v_3_male.RDS"),
-                    readRDS("Scatterplot Episode Time/Animal_Attack_3_v_4_male.RDS"))
+figure <- ggarrange(readRDS("Scatterplot Episode Time/Animal_Attack_1_v_2_female.RDS"),
+                    readRDS("Scatterplot Episode Time/Animal_Attack_2_v_3_female.RDS"),
+                    readRDS("Scatterplot Episode Time/Animal_Attack_3_v_4_female.RDS"))
 
-pdf(file = "Scatterplot Episode Time/panel_Animal_Attack_male.pdf", height = 10, width = 12)
+pdf(file = "Scatterplot Episode Time/panel_Animal_Attack_female.pdf", height = 10, width = 12)
 annotate_figure(figure, top = textGrob("Animal Attack", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
 dev.off()
 
 # Tree Fall
-figure <- ggarrange(readRDS("Scatterplot Episode Time/tree_fall_1_v_2_male.RDS"),
-                    readRDS("Scatterplot Episode Time/tree_fall_2_v_3_male.RDS"))
+figure <- ggarrange(readRDS("Scatterplot Episode Time/tree_fall_1_v_2_female.RDS"),
+                    readRDS("Scatterplot Episode Time/tree_fall_2_v_3_female.RDS"))
 
-pdf(file = "Scatterplot Episode Time/panel_tree_fall_male.pdf", height = 7, width = 15)
+pdf(file = "Scatterplot Episode Time/panel_tree_fall_female.pdf", height = 7, width = 15)
 annotate_figure(figure, top = textGrob("Tree Fall", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
 dev.off()
 
 # Fight
-figure <- ggarrange(readRDS("Scatterplot Episode Time/fight_1_v_2_male.RDS"),
-                    readRDS("Scatterplot Episode Time/fight_2_v_3_male.RDS"))
+figure <- ggarrange(readRDS("Scatterplot Episode Time/fight_1_v_2_female.RDS"),
+                    readRDS("Scatterplot Episode Time/fight_2_v_3_female.RDS"))
 
-pdf(file = "Scatterplot Episode Time/panel_fight_male.pdf", height = 7, width = 15)
+pdf(file = "Scatterplot Episode Time/panel_fight_female.pdf", height = 7, width = 15)
 annotate_figure(figure, top = textGrob("Fight", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
 dev.off()
 
 # Canoe Capsize
-figure <- ggarrange(readRDS("Scatterplot Episode Time/canoe_capsize_1_v_2_male.RDS"),
-                    readRDS("Scatterplot Episode Time/canoe_capsize_2_v_3_male.RDS"))
+figure <- ggarrange(readRDS("Scatterplot Episode Time/canoe_capsize_1_v_2_female.RDS"),
+                    readRDS("Scatterplot Episode Time/canoe_capsize_2_v_3_female.RDS"))
 
-pdf(file = "Scatterplot Episode Time/panel_canoe_capsize_male.pdf", height = 7, width = 15)
+pdf(file = "Scatterplot Episode Time/panel_canoe_capsize_female.pdf", height = 7, width = 15)
 annotate_figure(figure, top = textGrob("Canoe Capsize", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
 dev.off()
 
@@ -497,7 +497,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/sickness_1_v_2_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/sickness_1_v_2_a_female.RDS")
 
 # Episode 2 v 3
 dx <- subset(dc, count == 3)
@@ -519,7 +519,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/sickness_2_v_3_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/sickness_2_v_3_a_female.RDS")
 
 
 # Cut Self ----------------------------------------------------------------
@@ -551,7 +551,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep1_time, ep1_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/cut_self_1_v_2_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/cut_self_1_v_2_a_female.RDS")
 
 # Episode 2 v 3
 dx <- subset(dc, count == 3)
@@ -573,7 +573,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/cut_self_2_v_3_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/cut_self_2_v_3_a_female.RDS")
 
 # Episode 3 v 4
 dx <- subset(dc, count == 4)
@@ -595,7 +595,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep3_time, ep4_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/cut_self_3_v_4_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/cut_self_3_v_4_a_female.RDS")
 
 # Episode 4 v 5
 dx <- subset(dc, count == 5)
@@ -617,7 +617,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep4_time, ep5_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/cut_self_4_v_5_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/cut_self_4_v_5_a_female.RDS")
 
 # Episode 5 v 6
 dx <- subset(dc, count == 6)
@@ -639,7 +639,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep5_time, ep6_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/cut_self_5_v_6_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/cut_self_5_v_6_a_female.RDS")
 
 
 # Animal Attack -----------------------------------------------------------
@@ -671,7 +671,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_1_v_2_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_1_v_2_a_female.RDS")
 
 # Episode 2 v 3
 dx <- subset(dc, count == 3)
@@ -693,7 +693,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_2_v_3_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_2_v_3_a_female.RDS")
 
 # Episode 3 v 4
 dx <- subset(dc, count == 4)
@@ -715,7 +715,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep3_time, ep4_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_3_v_4_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_3_v_4_a_female.RDS")
 
 
 # Tree Fall ---------------------------------------------------------------
@@ -747,7 +747,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/tree_fall_1_v_2_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/tree_fall_1_v_2_a_female.RDS")
 
 # Episode 2 v 3
 dx <- subset(dc, count == 3)
@@ -769,7 +769,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/tree_fall_2_v_3_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/tree_fall_2_v_3_a_female.RDS")
 
 
 # Fight -------------------------------------------------------------------
@@ -801,7 +801,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/fight_1_v_2_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/fight_1_v_2_a_female.RDS")
 
 # Episode 2 v 3
 dx <- subset(dc, count == 3)
@@ -823,7 +823,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/fight_2_v_3_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/fight_2_v_3_a_female.RDS")
 
 
 # Canoe Capsize -----------------------------------------------------------
@@ -855,7 +855,7 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/canoe_capsize_1_v_2_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/canoe_capsize_1_v_2_a_female.RDS")
 
 # Episode 2 v 3
 dx <- subset(dc, count == 3)
@@ -877,59 +877,59 @@ p <- dz %>%
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
   geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
-saveRDS(p, file = "Scatterplot Episode Time/canoe_capsize_2_v_3_a_male.RDS")
+saveRDS(p, file = "Scatterplot Episode Time/canoe_capsize_2_v_3_a_female.RDS")
 
 
 # Panel plots -------------------------------------------------------------
 
 # Sickness
-figure <- ggarrange(readRDS("Scatterplot Episode Time/sickness_1_v_2_a_male.RDS"),
-                    readRDS("Scatterplot Episode Time/sickness_2_v_3_a_male.RDS"))
+figure <- ggarrange(readRDS("Scatterplot Episode Time/sickness_1_v_2_a_female.RDS"),
+                    readRDS("Scatterplot Episode Time/sickness_2_v_3_a_female.RDS"))
 
-pdf(file = "Scatterplot Episode Time/panel_sickness_a_male.pdf", height = 7, width = 15)
+pdf(file = "Scatterplot Episode Time/panel_sickness_a_female.pdf", height = 7, width = 15)
 annotate_figure(figure, top = textGrob("Sickness", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
 dev.off()
 
 # Cut Self
-figure <- ggarrange(readRDS("Scatterplot Episode Time/cut_self_1_v_2_a_male.RDS"),
-                    readRDS("Scatterplot Episode Time/cut_self_2_v_3_a_male.RDS"),
-                    readRDS("Scatterplot Episode Time/cut_self_3_v_4_a_male.RDS"),
-                    readRDS("Scatterplot Episode Time/cut_self_4_v_5_a_male.RDS"),
-                    readRDS("Scatterplot Episode Time/cut_self_5_v_6_a_male.RDS"))
+figure <- ggarrange(readRDS("Scatterplot Episode Time/cut_self_1_v_2_a_female.RDS"),
+                    readRDS("Scatterplot Episode Time/cut_self_2_v_3_a_female.RDS"),
+                    readRDS("Scatterplot Episode Time/cut_self_3_v_4_a_female.RDS"),
+                    readRDS("Scatterplot Episode Time/cut_self_4_v_5_a_female.RDS"),
+                    readRDS("Scatterplot Episode Time/cut_self_5_v_6_a_female.RDS"))
 
-pdf(file = "Scatterplot Episode Time/panel_cut_self_a_male.pdf", height = 9, width = 15)
+pdf(file = "Scatterplot Episode Time/panel_cut_self_a_female.pdf", height = 9, width = 15)
 annotate_figure(figure, top = textGrob("Cut Self", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
 dev.off()
 
 # Animal Attack
-figure <- ggarrange(readRDS("Scatterplot Episode Time/Animal_Attack_1_v_2_a_male.RDS"),
-                    readRDS("Scatterplot Episode Time/Animal_Attack_2_v_3_a_male.RDS"),
-                    readRDS("Scatterplot Episode Time/Animal_Attack_3_v_4_a_male.RDS"))
+figure <- ggarrange(readRDS("Scatterplot Episode Time/Animal_Attack_1_v_2_a_female.RDS"),
+                    readRDS("Scatterplot Episode Time/Animal_Attack_2_v_3_a_female.RDS"),
+                    readRDS("Scatterplot Episode Time/Animal_Attack_3_v_4_a_female.RDS"))
 
-pdf(file = "Scatterplot Episode Time/panel_Animal_Attack_a_male.pdf", height = 10, width = 12)
+pdf(file = "Scatterplot Episode Time/panel_Animal_Attack_a_female.pdf", height = 10, width = 12)
 annotate_figure(figure, top = textGrob("Animal Attack", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
 dev.off()
 
 # Tree Fall
-figure <- ggarrange(readRDS("Scatterplot Episode Time/tree_fall_1_v_2_a_male.RDS"),
-                    readRDS("Scatterplot Episode Time/tree_fall_2_v_3_a_male.RDS"))
+figure <- ggarrange(readRDS("Scatterplot Episode Time/tree_fall_1_v_2_a_female.RDS"),
+                    readRDS("Scatterplot Episode Time/tree_fall_2_v_3_a_female.RDS"))
 
-pdf(file = "Scatterplot Episode Time/panel_tree_fall_a_male.pdf", height = 7, width = 15)
+pdf(file = "Scatterplot Episode Time/panel_tree_fall_a_female.pdf", height = 7, width = 15)
 annotate_figure(figure, top = textGrob("Tree Fall", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
 dev.off()
 
 # Fight
-figure <- ggarrange(readRDS("Scatterplot Episode Time/fight_1_v_2_a_male.RDS"),
-                    readRDS("Scatterplot Episode Time/fight_2_v_3_a_male.RDS"))
+figure <- ggarrange(readRDS("Scatterplot Episode Time/fight_1_v_2_a_female.RDS"),
+                    readRDS("Scatterplot Episode Time/fight_2_v_3_a_female.RDS"))
 
-pdf(file = "Scatterplot Episode Time/panel_fight_a_male.pdf", height = 7, width = 15)
+pdf(file = "Scatterplot Episode Time/panel_fight_a_female.pdf", height = 7, width = 15)
 annotate_figure(figure, top = textGrob("Fight", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
 dev.off()
 
 # Canoe Capsize
-figure <- ggarrange(readRDS("Scatterplot Episode Time/canoe_capsize_1_v_2_a_male.RDS"),
-                    readRDS("Scatterplot Episode Time/canoe_capsize_2_v_3_a_male.RDS"))
+figure <- ggarrange(readRDS("Scatterplot Episode Time/canoe_capsize_1_v_2_a_female.RDS"),
+                    readRDS("Scatterplot Episode Time/canoe_capsize_2_v_3_a_female.RDS"))
 
-pdf(file = "Scatterplot Episode Time/panel_canoe_capsize_a_male.pdf", height = 7, width = 15)
+pdf(file = "Scatterplot Episode Time/panel_canoe_capsize_a_female.pdf", height = 7, width = 15)
 annotate_figure(figure, top = textGrob("Canoe Capsize", rot = 0, vjust = 0.5, gp = gpar(cex = 5)))
 dev.off()
