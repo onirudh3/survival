@@ -28,7 +28,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep1_time, ep2_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Sickness") +
   xlab("Episode 1 Time") +
   ylab("Episode 2 Time") +
@@ -36,8 +36,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/sickness_1_v_2_female.RDS")
 
 # Episode 2 v 3
@@ -49,7 +49,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep2_time, ep3_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Sickness") +
   xlab("Episode 2 Time") +
   ylab("Episode 3 Time") +
@@ -57,8 +57,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/sickness_2_v_3_female.RDS")
 
 
@@ -80,7 +80,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep1_time, ep2_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Cut Self") +
   xlab("Episode 1 Time") +
   ylab("Episode 2 Time") +
@@ -88,8 +88,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep1_time, ep1_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/cut_self_1_v_2_female.RDS")
 
 # Episode 2 v 3
@@ -101,7 +101,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep2_time, ep3_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Cut Self") +
   xlab("Episode 2 Time") +
   ylab("Episode 3 Time") +
@@ -109,8 +109,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/cut_self_2_v_3_female.RDS")
 
 # Episode 3 v 4
@@ -122,7 +122,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep3_time, ep4_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Cut Self") +
   xlab("Episode 3 Time") +
   ylab("Episode 4 Time") +
@@ -130,8 +130,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep3_time, ep4_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep3_time, ep4_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/cut_self_3_v_4_female.RDS")
 
 # Episode 4 v 5
@@ -143,7 +143,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep4_time, ep5_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Cut Self") +
   xlab("Episode 4 Time") +
   ylab("Episode 5 Time") +
@@ -151,8 +151,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep4_time, ep5_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep4_time, ep5_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/cut_self_4_v_5_female.RDS")
 
 # Episode 5 v 6
@@ -164,7 +164,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep5_time, ep6_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Cut Self") +
   xlab("Episode 5 Time") +
   ylab("Episode 6 Time") +
@@ -172,8 +172,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep5_time, ep6_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep5_time, ep6_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/cut_self_5_v_6_female.RDS")
 
 
@@ -195,7 +195,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep1_time, ep2_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Animal Attack") +
   xlab("Episode 1 Time") +
   ylab("Episode 2 Time") +
@@ -203,8 +203,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_1_v_2_female.RDS")
 
 # Episode 2 v 3
@@ -216,7 +216,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep2_time, ep3_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Animal Attack") +
   xlab("Episode 2 Time") +
   ylab("Episode 3 Time") +
@@ -224,8 +224,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_2_v_3_female.RDS")
 
 # Episode 3 v 4
@@ -237,7 +237,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep3_time, ep4_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Animal Attack") +
   xlab("Episode 3 Time") +
   ylab("Episode 4 Time") +
@@ -245,8 +245,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep3_time, ep4_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep3_time, ep4_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_3_v_4_female.RDS")
 
 
@@ -268,7 +268,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep1_time, ep2_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Tree Fall") +
   xlab("Episode 1 Time") +
   ylab("Episode 2 Time") +
@@ -276,8 +276,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/tree_fall_1_v_2_female.RDS")
 
 # Episode 2 v 3
@@ -289,7 +289,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep2_time, ep3_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Tree Fall") +
   xlab("Episode 2 Time") +
   ylab("Episode 3 Time") +
@@ -297,8 +297,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/tree_fall_2_v_3_female.RDS")
 
 
@@ -320,7 +320,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep1_time, ep2_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Fight") +
   xlab("Episode 1 Time") +
   ylab("Episode 2 Time") +
@@ -328,8 +328,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/fight_1_v_2_female.RDS")
 
 # Episode 2 v 3
@@ -341,7 +341,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep2_time, ep3_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Fight") +
   xlab("Episode 2 Time") +
   ylab("Episode 3 Time") +
@@ -349,8 +349,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/fight_2_v_3_female.RDS")
 
 
@@ -372,7 +372,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep1_time, ep2_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Canoe Capsize") +
   xlab("Episode 1 Time") +
   ylab("Episode 2 Time") +
@@ -380,8 +380,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/canoe_capsize_1_v_2_female.RDS")
 
 # Episode 2 v 3
@@ -393,7 +393,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep2_time, ep3_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Canoe Capsize") +
   xlab("Episode 2 Time") +
   ylab("Episode 3 Time") +
@@ -401,8 +401,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/canoe_capsize_2_v_3_female.RDS")
 
 
@@ -487,7 +487,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep1_time, ep2_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Sickness") +
   xlab("Episode 1 Time") +
   ylab("Time to Next Episode") +
@@ -495,8 +495,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/sickness_1_v_2_a_female.RDS")
 
 # Episode 2 v 3
@@ -509,7 +509,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep2_time, ep3_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Sickness") +
   xlab("Episode 2 Time") +
   ylab("Time to Next Episode") +
@@ -517,8 +517,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/sickness_2_v_3_a_female.RDS")
 
 
@@ -541,7 +541,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep1_time, ep2_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Cut Self") +
   xlab("Episode 1 Time") +
   ylab("Time to Next Episode") +
@@ -549,8 +549,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep1_time, ep1_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/cut_self_1_v_2_a_female.RDS")
 
 # Episode 2 v 3
@@ -563,7 +563,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep2_time, ep3_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Cut Self") +
   xlab("Episode 2 Time") +
   ylab("Time to Next Episode") +
@@ -571,8 +571,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/cut_self_2_v_3_a_female.RDS")
 
 # Episode 3 v 4
@@ -585,7 +585,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep3_time, ep4_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Cut Self") +
   xlab("Episode 3 Time") +
   ylab("Time to Next Episode") +
@@ -593,8 +593,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep3_time, ep4_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep3_time, ep4_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/cut_self_3_v_4_a_female.RDS")
 
 # Episode 4 v 5
@@ -607,7 +607,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep4_time, ep5_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Cut Self") +
   xlab("Episode 4 Time") +
   ylab("Time to Next Episode") +
@@ -615,8 +615,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep4_time, ep5_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep4_time, ep5_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/cut_self_4_v_5_a_female.RDS")
 
 # Episode 5 v 6
@@ -629,7 +629,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep5_time, ep6_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Cut Self") +
   xlab("Episode 5 Time") +
   ylab("Time to Next Episode") +
@@ -637,8 +637,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep5_time, ep6_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep5_time, ep6_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/cut_self_5_v_6_a_female.RDS")
 
 
@@ -661,7 +661,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep1_time, ep2_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Animal Attack") +
   xlab("Episode 1 Time") +
   ylab("Time to Next Episode") +
@@ -669,8 +669,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_1_v_2_a_female.RDS")
 
 # Episode 2 v 3
@@ -683,7 +683,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep2_time, ep3_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Animal Attack") +
   xlab("Episode 2 Time") +
   ylab("Time to Next Episode") +
@@ -691,8 +691,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_2_v_3_a_female.RDS")
 
 # Episode 3 v 4
@@ -705,7 +705,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep3_time, ep4_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Animal Attack") +
   xlab("Episode 3 Time") +
   ylab("Time to Next Episode") +
@@ -713,8 +713,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep3_time, ep4_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep3_time, ep4_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/Animal_Attack_3_v_4_a_female.RDS")
 
 
@@ -737,7 +737,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep1_time, ep2_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Tree Fall") +
   xlab("Episode 1 Time") +
   ylab("Time to Next Episode") +
@@ -745,8 +745,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/tree_fall_1_v_2_a_female.RDS")
 
 # Episode 2 v 3
@@ -759,7 +759,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep2_time, ep3_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Tree Fall") +
   xlab("Episode 2 Time") +
   ylab("Time to Next Episode") +
@@ -767,8 +767,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/tree_fall_2_v_3_a_female.RDS")
 
 
@@ -791,7 +791,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep1_time, ep2_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Fight") +
   xlab("Episode 1 Time") +
   ylab("Time to Next Episode") +
@@ -799,8 +799,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/fight_1_v_2_a_female.RDS")
 
 # Episode 2 v 3
@@ -813,7 +813,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep2_time, ep3_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Fight") +
   xlab("Episode 2 Time") +
   ylab("Time to Next Episode") +
@@ -821,8 +821,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/fight_2_v_3_a_female.RDS")
 
 
@@ -845,7 +845,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep1_time, ep2_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Canoe Capsize") +
   xlab("Episode 1 Time") +
   ylab("Time to Next Episode") +
@@ -853,8 +853,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep1_time, ep2_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/canoe_capsize_1_v_2_a_female.RDS")
 
 # Episode 2 v 3
@@ -867,7 +867,7 @@ dz$group <- as.factor(dz$group)
 p <- dz %>%
   ggplot(aes(ep2_time, ep3_time, shape = group)) +
   scale_shape_manual(values = c(20, 3)) +
-  geom_point() +
+  geom_point(position = "jitter") +
   # ggtitle("Canoe Capsize") +
   xlab("Episode 2 Time") +
   ylab("Time to Next Episode") +
@@ -875,8 +875,8 @@ p <- dz %>%
   theme(legend.position = "none", plot.title = element_text(size = 30, hjust = 0.5)) +
   scale_y_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
   scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, 76)) +
-  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10) +
-  geom_abline(intercept = 0, slope = 1, colour = "grey", linetype = 3)
+  stat_cor(mapping = aes(ep2_time, ep3_time), inherit.aes = F, method = "pearson", label.x = 10)
+
 saveRDS(p, file = "Scatterplot Episode Time/canoe_capsize_2_v_3_a_female.RDS")
 
 
