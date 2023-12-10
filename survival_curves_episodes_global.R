@@ -11,12 +11,14 @@ library(grid)
 # Sickness ----------------------------------------------------------------
 
 df <- read.csv("sickness_final_table.csv")
-df <- subset(df, !(event.episode %in% c(0)))
 df$enter <- 0
+df <- df %>%
+  mutate(exit = c(exit[1], diff(exit)), .by = pid)
+df <- subset(df, !(event.episode %in% c(0)))
 fit <- survfit(Surv(exit, event) ~ event.episode, df, conf.type = "log-log")
 p <- ggsurvplot(fit, conf.int = TRUE, title = "Sickness", font.title = "30",
                 surv.scale = "percent", legend.labs = c("1", "2", "3"),
-                legend.title = "Episode", axes.offset = F, pval = T,
+                legend.title = "Episode", axes.offset = F, pval = T, pval.coord = c(50, 0.25),
                 break.x.by = 5, legend = c(0.75, 0.7), xlim = c(0, 75),
                 xlab = "", ylab = "")
 p$plot + theme(plot.title = element_text(size = 30, hjust = 0.5)) +
@@ -40,13 +42,15 @@ saveRDS(p$plot + theme(plot.title = element_text(size = 30, hjust = 0.5)),
 # Cut Self ----------------------------------------------------------------
 
 df <- read.csv("cut_self_final_table.csv")
-df <- subset(df, !(event.episode %in% c(0)))
 df$enter <- 0
+df <- df %>%
+  mutate(exit = c(exit[1], diff(exit)), .by = pid)
+df <- subset(df, !(event.episode %in% c(0)))
 df <- df %>% mutate(event.episode = case_when(event.episode == 5 | event.episode == 6 ~ 4, T ~ event.episode))
 fit <- survfit(Surv(exit, event) ~ event.episode, df, conf.type = "log-log")
 p <- ggsurvplot(fit, conf.int = TRUE, title = "Cut Self", font.title = "30",
                 surv.scale = "percent", legend.labs = c("1", "2", "3", "4+"),
-                legend.title = "Episode", axes.offset = F, pval = T,
+                legend.title = "Episode", axes.offset = F, pval = T, pval.coord = c(50, 0.25),
                 break.x.by = 5, legend = c(0.75, 0.7), xlim = c(0, 75),
                 xlab = "", ylab = "")
 p$plot + theme(plot.title = element_text(size = 30, hjust = 0.5)) +
@@ -59,12 +63,14 @@ saveRDS(p$plot + theme(plot.title = element_text(size = 30, hjust = 0.5)),
 # Animal Attack -----------------------------------------------------------
 
 df <- read.csv("Animal_Attack_combined_final_table.csv")
-df <- subset(df, !(event.episode %in% c(0)))
 df$enter <- 0
+df <- df %>%
+  mutate(exit = c(exit[1], diff(exit)), .by = pid)
+df <- subset(df, !(event.episode %in% c(0)))
 fit <- survfit(Surv(exit, event) ~ event.episode, df, conf.type = "log-log")
 p <- ggsurvplot(fit, conf.int = TRUE, title = "Animal Attack", font.title = "30",
                 surv.scale = "percent", legend.labs = c("1", "2", "3", "4"),
-                legend.title = "Episode", axes.offset = F, pval = T,
+                legend.title = "Episode", axes.offset = F, pval = T, pval.coord = c(50, 0.25),
                 break.x.by = 5, legend = c(0.75, 0.7), xlim = c(0, 75),
                 xlab = "", ylab = "")
 p$plot + theme(plot.title = element_text(size = 30, hjust = 0.5)) +
@@ -77,12 +83,14 @@ saveRDS(p$plot + theme(plot.title = element_text(size = 30, hjust = 0.5)),
 # Tree Fall ---------------------------------------------------------------
 
 df <- read.csv("tree_fall_final_table.csv")
-df <- subset(df, !(event.episode %in% c(0)))
 df$enter <- 0
+df <- df %>%
+  mutate(exit = c(exit[1], diff(exit)), .by = pid)
+df <- subset(df, !(event.episode %in% c(0)))
 fit <- survfit(Surv(exit, event) ~ event.episode, df, conf.type = "log-log")
 p <- ggsurvplot(fit, conf.int = TRUE, title = "Tree Fall", font.title = "30",
                 surv.scale = "percent", legend.labs = c("1", "2", "3"),
-                legend.title = "Episode", axes.offset = F, pval = T,
+                legend.title = "Episode", axes.offset = F, pval = T, pval.coord = c(50, 0.25),
                 break.x.by = 5, legend = c(0.75, 0.7), xlim = c(0, 75),
                 xlab = "", ylab = "")
 p$plot + theme(plot.title = element_text(size = 30, hjust = 0.5)) +
@@ -95,12 +103,14 @@ saveRDS(p$plot + theme(plot.title = element_text(size = 30, hjust = 0.5)),
 # Fight -------------------------------------------------------------------
 
 df <- read.csv("fought_final_table.csv")
-df <- subset(df, !(event.episode %in% c(0)))
 df$enter <- 0
+df <- df %>%
+  mutate(exit = c(exit[1], diff(exit)), .by = pid)
+df <- subset(df, !(event.episode %in% c(0)))
 fit <- survfit(Surv(exit, event) ~ event.episode, df, conf.type = "log-log")
 p <- ggsurvplot(fit, conf.int = TRUE, title = "Fight", font.title = "30",
                 surv.scale = "percent", legend.labs = c("1", "2", "3"),
-                legend.title = "Episode", axes.offset = F, pval = T,
+                legend.title = "Episode", axes.offset = F, pval = T, pval.coord = c(50, 0.25),
                 break.x.by = 5, legend = c(0.75, 0.7), xlim = c(0, 75),
                 xlab = "", ylab = "")
 p$plot + theme(plot.title = element_text(size = 30, hjust = 0.5)) +
@@ -113,13 +123,14 @@ saveRDS(p$plot + theme(plot.title = element_text(size = 30, hjust = 0.5)),
 # Canoe Capsize -----------------------------------------------------------
 
 df <- read.csv("canoe_capsize_final_table.csv")
-df <- subset(df, !(event.episode %in% c(0)))
-df$event.episode <- as.character(df$event.episode)
 df$enter <- 0
+df <- df %>%
+  mutate(exit = c(exit[1], diff(exit)), .by = pid)
+df <- subset(df, !(event.episode %in% c(0)))
 fit <- survfit(Surv(exit, event) ~ event.episode, df, conf.type = "log-log")
 p <- ggsurvplot(fit, conf.int = TRUE, title = "Canoe Capsize", font.title = "30",
            surv.scale = "percent", legend.labs = c("1", "2", "3"),
-           legend.title = "Episode", axes.offset = F, pval = T,
+           legend.title = "Episode", axes.offset = F, pval = T, pval.coord = c(50, 0.25),
            break.x.by = 5, legend = c(0.75, 0.7), xlim = c(0, 75),
            xlab = "", ylab = "")
 p$plot + theme(plot.title = element_text(size = 30, hjust = 0.5)) +
