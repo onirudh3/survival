@@ -79,6 +79,7 @@ dx <- df %>%
 
 dz <- subset(dx, verify != 0)
 
+
 ### Times at risk ----
 
 # Tabulate proportions per age category
@@ -90,12 +91,13 @@ prop <- dz %>%
 prop %>%
   ggplot(aes(age.cat, prop)) +
   geom_col() +
-  theme_classic(base_size = 15) +
+  theme_classic(base_size = 25) +
   xlab("Age Category") +
   ylab("Percentage of Times at Risk") +
   ggtitle("Cut Self") +
-  theme(plot.title = element_text(size = 30, hjust = 0.5)) +
+  theme(plot.title = element_text(size = 65, hjust = 0.5)) +
   scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+
 
 ### Individuals at risk ----
 
@@ -106,5 +108,66 @@ dz <- dz %>%
 
 # Tabulate proportions per MidPId per age category
 prop <- dz %>%
-  group_by(MidPId, age.cat) %>%
+  group_by(MidPId, AgeYr, sex) %>%
   summarise(count = sum(row == "num"), total = n(), prop = sum(row == "num") / n())
+
+# Plot
+prop %>%
+  ggplot() +
+  geom_point(aes(AgeYr, prop)) +
+  geom_smooth(aes(AgeYr, prop, color = sex), method = "loess", se = F) +
+  theme_classic(base_size = 25) +
+  xlab("Age [Years]") +
+  ylab("Proportion at Risk") +
+  ggtitle("Cut Self") +
+  theme(plot.title = element_text(size = 65, hjust = 0.5)) +
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA))
+
+
+## More conservative ----
+
+dz <- subset(dx, verify == 5)
+
+
+### Times at risk ----
+
+# Tabulate proportions per age category
+prop <- dz %>%
+  group_by(age.cat) %>%
+  summarise(prop = sum(row == "num") / n())
+
+# Plot
+prop %>%
+  ggplot(aes(age.cat, prop)) +
+  geom_col() +
+  theme_classic(base_size = 25) +
+  xlab("Age Category") +
+  ylab("Percentage of Times at Risk") +
+  ggtitle("Cut Self") +
+  theme(plot.title = element_text(size = 65, hjust = 0.5)) +
+  scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+
+
+### Individuals at risk ----
+
+# Remove individuals with less than 50 observations
+dz <- dz %>%
+  group_by(MidPId) %>%
+  filter(n() >= 50)
+
+# Tabulate proportions per MidPId per age category
+prop <- dz %>%
+  group_by(MidPId, AgeYr, sex) %>%
+  summarise(count = sum(row == "num"), total = n(), prop = sum(row == "num") / n())
+
+# Plot
+prop %>%
+  ggplot() +
+  geom_point(aes(AgeYr, prop)) +
+  geom_smooth(aes(AgeYr, prop, color = sex), method = "loess", se = F) +
+  theme_classic(base_size = 25) +
+  xlab("Age [Years]") +
+  ylab("Proportion at Risk") +
+  ggtitle("Cut Self") +
+  theme(plot.title = element_text(size = 65, hjust = 0.5)) +
+  scale_x_continuous(breaks = seq(0, 100, 5), expand = c(0, 0), limits = c(0, NA))
