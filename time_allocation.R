@@ -14,6 +14,11 @@ df <- read_excel("Time Allocation/raw time allocation data for anirudh.xlsx")
 df <- subset(df, select = c(MidPId, ComID, hora, act1, obj1, act2, obj2, verify,
                             Visitor, AgeYr, sex))
 
+# Male or female
+df <- df %>% mutate(sex = case_when(sex == "0" ~ "F",
+                                     sex == "1" ~ "M",
+                                     T ~ sex))
+
 # Make all codes lowercase
 df <- df %>%
   mutate(across(4:7, tolower))
@@ -67,6 +72,56 @@ activity_codes <- c("gcr", "gsp", "fbt", "fca", "fct", "fpl", "fps", "frp",
 object_codes <- c("axe", "arrw", "mcht", "stik", "need", "hook", "cuch", "scis",
                   "syr")
 
+# Activity groups
+household_codes <- c("cuch", "scis", "syr", "gbt", "gcb", "gch", "gcl", "gcr",
+                     "gcm", "gcw", "gdac", "gdr", "dr", "drp", "eat", "gex",
+                     "gfn", "pgfg", "ins", "gfi", "gfw", "gwt", "ggr", "ggh",
+                     "gjp", "gks", "gli", "glk", "gpta", "grd", "run", "gsw",
+                     "gsp", "gsh", "gsi", "gsl", "gst", "gwm", "gsg", "gft",
+                     "gfast", "gvo", "gwk", "gws")
+
+food_process_codes <- c("fbt", "fch", "fca", "fcp", "fcu", "fct", "fdg", "fdr",
+                        "fpr", "fgr", "fma", "fpl", "fpo", "fps", "frp", "fsv",
+                        "fsh", "fsi", "fsl", "fst")
+
+labor_codes <- c("lbhs", "lgbr", "lgch", "lgcr", "lgcl", "lgpl", "lgun", "lgwd",
+                 "lghm", "lsbbt", "lsbhs", "lswd", "lwant", "lwbbt", "lwjc",
+                 "lwcn", "lwmtr", "lwngo", "lwoth", "lwtch", "lwtr", "lwwd",
+                 "gjat")
+
+manufacture_codes <- c("stik", "need", "hook", "plmu", "mgm", "msp", "mwv",
+                       "mfr", "mot", "mgl")
+
+resource_codes <- c("axe", "arrw", "mcht", "rfp", "rfc", "rfb", "rfk", "rff",
+                    "rfd", "rfn", "rfu", "rvg", "rht", "rhb", "rhr", "rhg",
+                    "rhs", "rrc", "rrcn")
+
+df$activity_group <- "0"
+
+df <- df %>%
+  mutate(activity_group = case_when(grepl(paste(household_codes, collapse = "|"), act1) |
+                                      grepl(paste(household_codes, collapse = "|"), act2) ~ "Household",
+                                    grepl(paste(household_codes, collapse = "|"), obj1) |
+                                      grepl(paste(household_codes, collapse = "|"), obj2) ~ "Household",
+                                    grepl(paste(food_process_codes, collapse = "|"), act1) |
+                                      grepl(paste(food_process_codes, collapse = "|"), act2) ~ "Food Process",
+                                    grepl(paste(food_process_codes, collapse = "|"), obj1) |
+                                      grepl(paste(food_process_codes, collapse = "|"), obj2) ~ "Food Process",
+                                    grepl(paste(labor_codes, collapse = "|"), act1) |
+                                      grepl(paste(labor_codes, collapse = "|"), act2) ~ "Labor",
+                                    grepl(paste(labor_codes, collapse = "|"), obj1) |
+                                      grepl(paste(labor_codes, collapse = "|"), obj2) ~ "Labor",
+                                    grepl(paste(manufacture_codes, collapse = "|"), act1) |
+                                      grepl(paste(manufacture_codes, collapse = "|"), act2) ~ "Manufacture",
+                                    grepl(paste(manufacture_codes, collapse = "|"), obj1) |
+                                      grepl(paste(manufacture_codes, collapse = "|"), obj2) ~ "Manufacture",
+                                    grepl(paste(resource_codes, collapse = "|"), act1) |
+                                      grepl(paste(resource_codes, collapse = "|"), act2) ~ "Resource Acq",
+                                    grepl(paste(resource_codes, collapse = "|"), obj1) |
+                                      grepl(paste(resource_codes, collapse = "|"), obj2) ~ "Resource Acq",
+                                    T ~ "Other"))
+
+
 # Assign numerator for proportion
 dx <- df %>%
   mutate(row = case_when(grepl(paste(activity_codes, collapse = "|"), act1) |
@@ -84,19 +139,32 @@ dz <- subset(dx, verify != 0)
 
 # Tabulate proportions per age category
 prop <- dz %>%
-  group_by(age.cat) %>%
-  summarise(prop = sum(row == "num") / n())
+  group_by(age.cat, sex, activity_group) %>%
+  summarise(count = sum(row == "num"), total = n())
+
+prop <- prop %>%
+  group_by(age.cat, sex) %>%
+  mutate(prop = count / sum(total))
+
+prop <- subset(prop, activity_group != "Other")
 
 # Plot
 prop %>%
-  ggplot(aes(age.cat, prop)) +
-  geom_col() +
-  theme_classic(base_size = 25) +
-  xlab("Age Category") +
-  ylab("Percentage of Times at Risk") +
+  ggplot(aes(paste0('', sex), prop, fill = activity_group)) +
+  geom_col(position = "stack", alpha = 0.5, color = 'gray50') +
+  facet_grid(.~age.cat, switch = 'x') +
+  theme_classic(base_size = 15) +
+  scale_x_discrete('Age Category', expand = c(0.5, 0.5)) +
+  scale_fill_brewer('', palette = 'Dark2') +
+  labs(y = 'Proportion of Times at Risk') +
+  theme(plot.title = element_text(size = 65, hjust = 0.5),
+        strip.background = element_blank(),
+        strip.placement = 'outside',
+        axis.text.x = element_text(face = 3),
+        panel.grid.major.x = element_blank(),
+        panel.spacing.x = unit(0, 'mm')) +
   ggtitle("Cut Self") +
-  theme(plot.title = element_text(size = 65, hjust = 0.5)) +
-  scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+  scale_y_continuous(expand = c(0, 0))
 
 
 ### Individuals at risk ----
@@ -133,19 +201,32 @@ dz <- subset(dx, verify == 5)
 
 # Tabulate proportions per age category
 prop <- dz %>%
-  group_by(age.cat) %>%
-  summarise(prop = sum(row == "num") / n())
+  group_by(age.cat, sex, activity_group) %>%
+  summarise(count = sum(row == "num"), total = n())
+
+prop <- prop %>%
+  group_by(age.cat, sex) %>%
+  mutate(prop = count / sum(total))
+
+prop <- subset(prop, activity_group != "Other")
 
 # Plot
 prop %>%
-  ggplot(aes(age.cat, prop)) +
-  geom_col() +
-  theme_classic(base_size = 25) +
-  xlab("Age Category") +
-  ylab("Percentage of Times at Risk") +
+  ggplot(aes(paste0('', sex), prop, fill = activity_group)) +
+  geom_col(position = "stack", alpha = 0.5, color = 'gray50') +
+  facet_grid(.~age.cat, switch = 'x') +
+  theme_classic(base_size = 15) +
+  scale_x_discrete('Age Category', expand = c(0.5, 0.5)) +
+  scale_fill_brewer('', palette = 'Dark2') +
+  labs(y = 'Proportion of Times at Risk') +
+  theme(plot.title = element_text(size = 65, hjust = 0.5),
+        strip.background = element_blank(),
+        strip.placement = 'outside',
+        axis.text.x = element_text(face = 3),
+        panel.grid.major.x = element_blank(),
+        panel.spacing.x = unit(0, 'mm')) +
   ggtitle("Cut Self") +
-  theme(plot.title = element_text(size = 65, hjust = 0.5)) +
-  scale_y_continuous(labels = scales::percent, expand = c(0, 0), limits = c(0, NA))
+  scale_y_continuous(expand = c(0, 0))
 
 
 ### Individuals at risk ----
