@@ -184,6 +184,42 @@ ggplot(prop, aes(x = age.cat)) +
   facet_wrap(.~sex, ncol = 1)
 
 
+#### Prentice-Williams[1] ----
+
+# Merge prop with mean hazard file
+prop <- subset(prop, select = -c(mean_hazard))
+prop <- left_join(prop, read.csv("cut_self_mean_hazard_prentice_williams_1.csv"))
+
+# Make age.cat as factor
+prop$age.cat <- factor(prop$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                                "20-25", "25-30", "30-35", "35-40",
+                                                "40-45", "45-50", "50-55", "55-60",
+                                                "60+"))
+
+# Plot
+scaleFactor <- max(prop$prop) / max(prop$mean_hazard)
+ggplot(prop, aes(x = age.cat)) +
+  geom_col(aes(y = prop, fill = activity_group), position = "stack", alpha = 0.5, color = 'gray50') +
+  geom_point(aes(y = mean_hazard * scaleFactor), size = 2, color = "blue") +
+  geom_line(aes(y = mean_hazard * scaleFactor), group = 1, size = 1, color = "blue") +
+  theme_classic(base_size = 15) +
+  scale_fill_brewer('', palette = 'Dark2') +
+  labs(x = "Age Category") +
+  scale_y_continuous(name = "Proportion of Time",
+                     sec.axis = sec_axis(~. / scaleFactor, name = "Hazard")) +
+  theme(plot.title = element_text(size = 65, hjust = 0.5),
+        strip.background = element_blank(),
+        strip.placement = 'outside',
+        axis.text.x = element_text(face = 3),
+        panel.grid.major.x = element_blank(),
+        axis.line.y.right = element_line(color = "blue"),
+        axis.ticks.y.right = element_line(color = "blue"),
+        axis.text.y.right = element_text(color = "blue"),
+        axis.title.y.right = element_text(color = "blue")) +
+  ggtitle("Cut Self") +
+  facet_wrap(.~sex, ncol = 1)
+
+
 ### Individuals at risk ----
 
 # Remove individuals with less than 50 observations
@@ -227,23 +263,76 @@ prop <- prop %>%
 
 prop <- subset(prop, activity_group != "Other")
 
+
+#### Anderson-Gill ----
+
+# Merge prop with mean hazard file
+prop <- left_join(prop, read.csv("cut_self_mean_hazard_anderson_gill.csv"))
+
+# Make age.cat as factor
+prop$age.cat <- factor(prop$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                                "20-25", "25-30", "30-35", "35-40",
+                                                "40-45", "45-50", "50-55", "55-60",
+                                                "60+"))
+
 # Plot
-prop %>%
-  ggplot(aes(paste0('', sex), prop, fill = activity_group)) +
-  geom_col(position = "stack", alpha = 0.5, color = 'gray50') +
-  facet_grid(.~age.cat, switch = 'x') +
+scaleFactor <- max(prop$prop) / max(prop$mean_hazard)
+ggplot(prop, aes(x = age.cat)) +
+  geom_col(aes(y = prop, fill = activity_group), position = "stack", alpha = 0.5, color = 'gray50') +
+  geom_point(aes(y = mean_hazard * scaleFactor), size = 2, color = "blue") +
+  geom_line(aes(y = mean_hazard * scaleFactor), group = 1, size = 1, color = "blue") +
   theme_classic(base_size = 15) +
-  scale_x_discrete('Age Category', expand = c(0.5, 0.5)) +
   scale_fill_brewer('', palette = 'Dark2') +
-  labs(y = 'Proportion of Time') +
+  labs(x = "Age Category") +
+  scale_y_continuous(name = "Proportion of Time",
+                     sec.axis = sec_axis(~. / scaleFactor, name = "Hazard")) +
   theme(plot.title = element_text(size = 65, hjust = 0.5),
         strip.background = element_blank(),
         strip.placement = 'outside',
         axis.text.x = element_text(face = 3),
         panel.grid.major.x = element_blank(),
-        panel.spacing.x = unit(0, 'mm')) +
+        axis.line.y.right = element_line(color = "blue"),
+        axis.ticks.y.right = element_line(color = "blue"),
+        axis.text.y.right = element_text(color = "blue"),
+        axis.title.y.right = element_text(color = "blue")) +
   ggtitle("Cut Self") +
-  scale_y_continuous(expand = c(0, 0))
+  facet_wrap(.~sex, ncol = 1)
+
+
+#### Prentice-Williams[1] ----
+
+# Merge prop with mean hazard file
+prop <- subset(prop, select = -c(mean_hazard))
+prop <- left_join(prop, read.csv("cut_self_mean_hazard_prentice_williams_1.csv"))
+
+# Make age.cat as factor
+prop$age.cat <- factor(prop$age.cat, levels = c("0-5", "5-10", "10-15", "15-20",
+                                                "20-25", "25-30", "30-35", "35-40",
+                                                "40-45", "45-50", "50-55", "55-60",
+                                                "60+"))
+
+# Plot
+scaleFactor <- max(prop$prop) / max(prop$mean_hazard)
+ggplot(prop, aes(x = age.cat)) +
+  geom_col(aes(y = prop, fill = activity_group), position = "stack", alpha = 0.5, color = 'gray50') +
+  geom_point(aes(y = mean_hazard * scaleFactor), size = 2, color = "blue") +
+  geom_line(aes(y = mean_hazard * scaleFactor), group = 1, size = 1, color = "blue") +
+  theme_classic(base_size = 15) +
+  scale_fill_brewer('', palette = 'Dark2') +
+  labs(x = "Age Category") +
+  scale_y_continuous(name = "Proportion of Time",
+                     sec.axis = sec_axis(~. / scaleFactor, name = "Hazard")) +
+  theme(plot.title = element_text(size = 65, hjust = 0.5),
+        strip.background = element_blank(),
+        strip.placement = 'outside',
+        axis.text.x = element_text(face = 3),
+        panel.grid.major.x = element_blank(),
+        axis.line.y.right = element_line(color = "blue"),
+        axis.ticks.y.right = element_line(color = "blue"),
+        axis.text.y.right = element_text(color = "blue"),
+        axis.title.y.right = element_text(color = "blue")) +
+  ggtitle("Cut Self") +
+  facet_wrap(.~sex, ncol = 1)
 
 
 ### Individuals at risk ----
